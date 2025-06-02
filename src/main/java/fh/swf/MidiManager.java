@@ -11,16 +11,14 @@ import javax.sound.midi.Synthesizer;
 public class MidiManager {
     private static MidiManager instance;
     private Synthesizer synth;
-    private MidiChannel channel;
+    private MidiChannel[] channels;
 
     private MidiManager() {
         try {
             synth = MidiSystem.getSynthesizer();
             synth.open();
-            channel = synth.getChannels()[0];
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+            channels = synth.getChannels();
+        } catch (Exception ignored) { }
     }
 
     public static MidiManager getInstance() {
@@ -30,16 +28,12 @@ public class MidiManager {
         return instance;
     }
 
-    public void playNote(int midiNote) {
-        if (channel != null) {
-            channel.noteOn(midiNote, 100);
-        }
+    public void playNote(int midiNote, int velocity, int channel) {
+        channels[channel].noteOn(midiNote, velocity);
     }
 
-    public void stopNote(int midiNote) {
-        if (channel != null) {
-            channel.noteOff(midiNote);
-        }
+    public void stopNote(int midiNote, int channel) {
+        channels[channel].noteOff(midiNote);
     }
 
     public void close() {
@@ -48,12 +42,9 @@ public class MidiManager {
         }
     }
 
-    public void changeInstrument(Instruments instrument) {
-        channel.programChange(instrument.getNum());
-    }
-    public void changeChannel(int channel) {
-        if (channel >= 0 && channel < synth.getChannels().length) {
-            synth.getChannels()[0] = synth.getChannels()[channel];
+    public void changeInstrument(Instruments instrument, int channel) {
+        if(channel >= 0 && channel < channels.length) {
+            channels[channel].programChange(instrument.getNum());
         }
     }
 
@@ -66,19 +57,15 @@ public class MidiManager {
     }
 
     public void setVolume(int volume) {
-        if(channel != null) {
-            channel.controlChange(7, volume);
+        for(MidiChannel channel : channels) {
+            if (channel != null) {
+                channel.controlChange(7, volume);
+            }
         }
     }
 
-    public void playNoteFor(int midiNote, int velocity, Duration duration) {
-        if(channel != null) {
-            channel.noteOn(midiNote, velocity);
-
-            PauseTransition pause = new PauseTransition(duration);
-            pause.setOnFinished(_ -> channel.noteOff(midiNote));
-            pause.play();
-        }
+    public void changeDemoChannel(Instruments instrument) {
+        changeInstrument(instrument, 0);
     }
 }
 

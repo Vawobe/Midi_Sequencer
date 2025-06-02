@@ -19,7 +19,7 @@ public class DrumButton extends KeyButton{
     public void playTone() {
         if(!isPlaying) {
             int midiNote = drum.getNum();
-            MidiManager.getInstance().playNote(midiNote);
+//            MidiManager.getInstance().playNote(midiNote);
             isPlaying = true;
         }
     }
@@ -27,7 +27,7 @@ public class DrumButton extends KeyButton{
     public void stopTone() {
         if(isPlaying) {
             int midiNote = drum.getNum();
-            MidiManager.getInstance().stopNote(midiNote);
+//            MidiManager.getInstance().stopNote(midiNote);
             isPlaying = false;
         }
     }

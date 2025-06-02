@@ -119,7 +119,14 @@ public class PianoGrid extends Pane {
             int col = (int) (event.getX() / (CELL_WIDTH * zoom));
             int row = (int) (event.getY() / (CELL_HEIGHT * zoom));
 
-            NoteEvent noteEvent = new NoteEvent(col, row, 1);
+            int channel = mainPane.getMenuBar().getInstrumentSelector().getCurrentInstrumentsChannel();
+
+            if(channel == -1) {
+                channel = mainPane.getMenuBar().getInstrumentSelector().getNextFreeChannel();
+                mainPane.getMenuBar().getInstrumentSelector().addCurrentInstrument(channel);
+            }
+
+            NoteEvent noteEvent = new NoteEvent(col, row, 1, channel);
             noteEvents.add(noteEvent);
 
             double snappedX = col * CELL_WIDTH * zoom;
@@ -133,10 +140,10 @@ public class PianoGrid extends Pane {
             getChildren().add(note);
 
             if(!isPlaying.get()) {
-                MidiManager.getInstance().noteOn(noteEvent.midiNote, 100);
+                MidiManager.getInstance().noteOn(noteEvent.getMidiNote(), 100);
 
                 PauseTransition pause = new PauseTransition(Duration.millis(200)); // Länge des "dum"
-                pause.setOnFinished(_ -> MidiManager.getInstance().noteOff(noteEvent.midiNote));
+                pause.setOnFinished(_ -> MidiManager.getInstance().noteOff(noteEvent.getMidiNote()));
                 pause.play();
             }
 
@@ -147,7 +154,6 @@ public class PianoGrid extends Pane {
 
     public void startPlayback() {
         isPlaying.set(true);
-        System.err.println("Hallo");
         playhead.setVisible(true);
         buildTimeline();
         playhead.setStartX(currentBeat * CELL_WIDTH * zoom);
@@ -192,34 +198,34 @@ public class PianoGrid extends Pane {
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        record MidiEvent(double time, int midiNote, boolean isOn) {}
+        record MidiEvent(double time, int midiNote, int channel, boolean isOn) {}
 
         List<MidiEvent> midiEvents = new ArrayList<>();
 
         noteEvents.sort(Comparator
-                .comparingInt(note -> note.column));
+                .comparingInt(NoteEvent::getColumn));
 
         int endBeat = signatureProperty.get();
         if(!noteEvents.isEmpty()) {
-            double lastNoteEnd = noteEvents.getLast().column + noteEvents.getLast().length;
+            double lastNoteEnd = noteEvents.getLast().getColumn() + noteEvents.getLast().getLength();
             if (lastNoteEnd % signatureProperty.get() == 0) endBeat = (int) lastNoteEnd;
             else endBeat = (int) (lastNoteEnd + signatureProperty.get() - lastNoteEnd % signatureProperty.get());
         }
         for (NoteEvent note : noteEvents) {
-            if (note.column < startBeat || note.column >= endBeat) continue;
-            double startTime = (note.column - startBeat) * msPerBeat;
-            double endTime = startTime + note.length * msPerBeat;
+            if (note.getColumn() < startBeat || note.getColumn() >= endBeat) continue;
+            double startTime = (note.getColumn() - startBeat) * msPerBeat;
+            double endTime = startTime + note.getLength() * msPerBeat;
 
-            midiEvents.add(new MidiEvent(startTime, note.midiNote, true));
-            midiEvents.add(new MidiEvent(endTime, note.midiNote, false));
+            midiEvents.add(new MidiEvent(startTime, note.getMidiNote(), note.getChannel(), true));
+            midiEvents.add(new MidiEvent(endTime, note.getMidiNote(), note.getChannel(), false));
         }
 
         for (MidiEvent event : midiEvents) {
             KeyFrame frame = new KeyFrame(Duration.millis(event.time), _ -> {
                 if (event.isOn)
-                    MidiManager.getInstance().noteOn(event.midiNote, 100);
+                    MidiManager.getInstance().playNote(event.midiNote, 100, event.channel);
                 else
-                    MidiManager.getInstance().noteOff(event.midiNote);
+                    MidiManager.getInstance().stopNote(event.midiNote, event.channel);
             });
             timeline.getKeyFrames().add(frame);
         }
@@ -262,7 +268,7 @@ public class PianoGrid extends Pane {
             currentBeat = getCurrentBeatFromPlayhead();
             playhead.setVisible(false);
             for(NoteEvent note : noteEvents) {
-                MidiManager.getInstance().stopNote(note.midiNote);
+                MidiManager.getInstance().stopNote(note.getMidiNote(), note.getChannel());
             }
         }
     }
@@ -274,7 +280,7 @@ public class PianoGrid extends Pane {
             currentBeat = 0;
             playhead.setVisible(false);
             for(NoteEvent note : noteEvents) {
-                MidiManager.getInstance().stopNote(note.midiNote);
+                MidiManager.getInstance().stopNote(note.getMidiNote(), note.getChannel());
             }
         }
     }

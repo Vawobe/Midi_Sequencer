@@ -9,6 +9,7 @@ import javafx.scene.text.Font;
 import lombok.Getter;
 
 import static fh.swf.KeyBox.WIDTH;
+import static fh.swf.Main.mainPane;
 import static fh.swf.ToneToMidiConverter.convertToMidi;
 
 public class KeyButton extends Button {
@@ -59,7 +60,7 @@ public class KeyButton extends Button {
     public void playTone() {
         if(!isPlaying) {
             int midiNote = convertToMidi(key);
-            MidiManager.getInstance().playNote(midiNote);
+            MidiManager.getInstance().playNote(midiNote, 100, mainPane.getMenuBar().getInstrumentSelector().getCurrentChannel());
             isPlaying = true;
         }
     }
@@ -67,7 +68,7 @@ public class KeyButton extends Button {
     public void stopTone() {
         if(isPlaying) {
             int midiNote = convertToMidi(key);
-            MidiManager.getInstance().stopNote(midiNote);
+            MidiManager.getInstance().stopNote(midiNote, mainPane.getMenuBar().getInstrumentSelector().getCurrentChannel());
             isPlaying = false;
         }
     }

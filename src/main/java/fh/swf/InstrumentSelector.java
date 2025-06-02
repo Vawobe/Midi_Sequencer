@@ -3,12 +3,42 @@ package fh.swf;
 import fh.swf.enums.Instruments;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
+import lombok.Getter;
+
+import java.util.*;
 
 import static fh.swf.Main.mainPane;
 
 public class InstrumentSelector extends ComboBox<Instruments> {
+    @Getter private final Map<Instruments, Integer> instrumentToChannel = new HashMap<>();
+    private final ArrayList<Integer> freeChannels = new ArrayList<>();
+
+    public int getNextFreeChannel() {
+        Collections.sort(freeChannels);
+        int nextFreeChannel = freeChannels.getFirst();
+        freeChannels.removeFirst();
+        return nextFreeChannel;
+    }
+
+    public int getCurrentChannel() { return instrumentToChannel.getOrDefault(getValue(),0); }
+
     public InstrumentSelector() {
         super();
+        freeChannels.add(1);
+        freeChannels.add(2);
+        freeChannels.add(3);
+        freeChannels.add(4);
+        freeChannels.add(5);
+        freeChannels.add(6);
+        freeChannels.add(7);
+        freeChannels.add(8);
+        freeChannels.add(9);
+        freeChannels.add(11);
+        freeChannels.add(12);
+        freeChannels.add(13);
+        freeChannels.add(14);
+        freeChannels.add(15);
+
         getItems().addAll(Instruments.values());
         setValue(Instruments.values()[1]);
 
@@ -36,17 +66,30 @@ public class InstrumentSelector extends ComboBox<Instruments> {
         });
 
         valueProperty().addListener((_, oldValue, newValue) -> {
-            if(newValue == Instruments.DRUMS) {
-                MidiManager.getInstance().changeChannel(9);
-                mainPane.getPianoPane().changeKeyBox();
+            if(!instrumentToChannel.containsKey(newValue)) {
+                MidiManager.getInstance().changeDemoChannel(newValue);
             }
-            else {
-                MidiManager.getInstance().changeChannel(0);
-                MidiManager.getInstance().changeInstrument(newValue);
-                if(oldValue == Instruments.DRUMS) {
-                    mainPane.getPianoPane().changeKeyBox();
-                }
+            if (newValue == Instruments.DRUMS || oldValue == Instruments.DRUMS) {
+                mainPane.getPianoPane().changeKeyBox();
+
             }
         });
+    }
+
+    public int getCurrentInstrumentsChannel() {
+        return instrumentToChannel.getOrDefault(getValue(), -1);
+    }
+
+    public void addCurrentInstrument(int channel) {
+        System.err.println(getValue());
+        instrumentToChannel.put(getValue(), channel);
+        MidiManager.getInstance().changeInstrument(getValue(), channel);
+    }
+
+    public void removeChannel(int channel) {
+        Instruments instrument = instrumentToChannel.entrySet().stream().
+                filter(entry -> entry.getValue() == channel).findFirst().orElseThrow().getKey();
+        instrumentToChannel.remove(instrument);
+        freeChannels.add(channel);
     }
 }

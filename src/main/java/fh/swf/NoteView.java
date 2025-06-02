@@ -1,14 +1,23 @@
 package fh.swf;
 
 import javafx.scene.Cursor;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import lombok.Getter;
 
+import java.util.ArrayList;
+
+import static fh.swf.Main.mainPane;
 import static fh.swf.PianoGrid.CELL_HEIGHT;
 import static fh.swf.PianoGrid.CELL_WIDTH;
 
 public class NoteView extends Pane {
     private double zoom = 1.0;
+
+    private ArrayList<Color> colors;
 
     @Getter private final NoteEvent noteEvent;
     private double dragStartX;
@@ -20,9 +29,11 @@ public class NoteView extends Pane {
     private boolean dragging = false;
 
     public NoteView(NoteEvent noteEvent) {
+        initColors();
         this.noteEvent = noteEvent;
-        setStyle("-fx-background-color: #00AAFF; -fx-border-color: black;");
-        setPrefSize(noteEvent.length*CELL_WIDTH*zoom, CELL_HEIGHT*zoom);
+        setBackground(new Background(new BackgroundFill(colors.get(noteEvent.getChannel()), new CornerRadii(5), null)));
+        setStyle("-fx-border-color: black;");
+        setPrefSize(noteEvent.getLength()*CELL_WIDTH*zoom, CELL_HEIGHT*zoom);
 
         initDragHandler();
     }
@@ -54,6 +65,9 @@ public class NoteView extends Pane {
                 PianoGrid parent = (PianoGrid) getParent();
                 parent.getChildren().remove(this);
                 parent.getNoteEvents().remove(noteEvent);
+                if(parent.getNoteEvents().stream().noneMatch(note -> note.getChannel() == noteEvent.getChannel())) {
+                    mainPane.getMenuBar().getInstrumentSelector().removeChannel(noteEvent.getChannel());
+                }
                 parent.updateNotes();
             }
         });
@@ -70,7 +84,7 @@ public class NoteView extends Pane {
                 newWidth = beats * zoomedCellWidth;
 
                 setPrefWidth(newWidth);
-                noteEvent.length = beats;
+                noteEvent.setLength(beats);
                 event.consume();
             } else if (dragging) {
                 double deltaX = event.getSceneX() - dragStartX;
@@ -84,9 +98,9 @@ public class NoteView extends Pane {
 
                 setLayoutX(newLayoutX);
                 setLayoutY(newLayoutY);
-                noteEvent.column = (int) (newLayoutX / zoomedCellWidth);
-                noteEvent.row = (int) (newLayoutY / zoomedCellHeight);
-                noteEvent.midiNote = 107 - noteEvent.row;
+                noteEvent.setColumn((int) (newLayoutX / zoomedCellWidth));
+                noteEvent.setRow((int) (newLayoutY / zoomedCellHeight));
+                noteEvent.setMidiNote(107 - noteEvent.getRow());
 
                 event.consume();
             }
@@ -115,9 +129,20 @@ public class NoteView extends Pane {
     }
 
     private void updateNoteSize() {
-        setLayoutX(noteEvent.column * CELL_WIDTH * zoom);
-        setLayoutY(noteEvent.row * CELL_HEIGHT * zoom);
-        setPrefWidth(CELL_WIDTH * noteEvent.length * zoom);
+        setLayoutX(noteEvent.getColumn() * CELL_WIDTH * zoom);
+        setLayoutY(noteEvent.getRow()* CELL_HEIGHT * zoom);
+        setPrefWidth(CELL_WIDTH * noteEvent.getLength() * zoom);
         setPrefHeight(CELL_HEIGHT * zoom);
+    }
+
+    private void initColors() {
+        colors = new ArrayList<>();
+        colors.add(Color.BLUE);
+        colors.add(Color.RED);
+        colors.add(Color.GREEN);
+        colors.add(Color.VIOLET);
+        colors.add(Color.BLACK);
+        colors.add(Color.BEIGE);
+
     }
 }

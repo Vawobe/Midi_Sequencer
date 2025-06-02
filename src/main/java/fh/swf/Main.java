@@ -4,6 +4,15 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * TODO:
+ * Schlagzeug??
+ * Speichern
+ * Laden
+ * Automatisches Grid verlängern
+ * Takt Markierung
+ * Selektieren und gemeinsame verschieben/löschen/kopieren/einfügen
+ */
 public class Main extends Application {
     public static MainPane mainPane;
 
