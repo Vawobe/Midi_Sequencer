@@ -1,7 +1,5 @@
-package fh.swf.enums;
+package fh.swf;
 
-import fh.swf.NoteEvent;
-import fh.swf.PianoGrid;
 import javafx.scene.Cursor;
 import javafx.scene.layout.Pane;
 import lombok.Getter;

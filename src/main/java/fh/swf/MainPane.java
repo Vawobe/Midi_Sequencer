@@ -1,5 +1,6 @@
 package fh.swf;
 
+import fh.swf.menubar.MenuBar;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;

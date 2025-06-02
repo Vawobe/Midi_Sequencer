@@ -10,6 +10,7 @@ public class InstrumentSelector extends ComboBox<Instruments> {
     public InstrumentSelector() {
         super();
         getItems().addAll(Instruments.values());
+        setValue(Instruments.values()[1]);
 
         setCellFactory(_ -> new ListCell<>() {
             @Override

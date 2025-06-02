@@ -1,9 +1,9 @@
 package fh.swf;
 
-import fh.swf.enums.NoteView;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -17,12 +17,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static fh.swf.Main.mainPane;
+
 public class PianoGrid extends Pane {
     private double zoom = 1.0;
 
     private boolean isDragging = false;
     private Timeline timeline;
-    @Getter private boolean isPlaying = false;
+    @Getter private final SimpleBooleanProperty isPlaying = new SimpleBooleanProperty(false);
     private final Line playhead;
     private int currentBeat = 0;
     @Getter private final List<NoteEvent> noteEvents = new ArrayList<>();
@@ -55,6 +57,8 @@ public class PianoGrid extends Pane {
         playhead.endXProperty().bind(playhead.startXProperty());
         playhead.setVisible(false);
         getChildren().add(playhead);
+
+        isPlaying.addListener((_,_,_) -> mainPane.getMenuBar().getPlayButton().changeGraphic());
 
         setOnMouseClicked(this::onMouseClickedEvent);
         setOnMouseDragged(this::onMouseDraggedEvent);
@@ -128,7 +132,7 @@ public class PianoGrid extends Pane {
             note.setPrefHeight(CELL_HEIGHT * zoom);
             getChildren().add(note);
 
-            if(!isPlaying) {
+            if(!isPlaying.get()) {
                 MidiManager.getInstance().noteOn(noteEvent.midiNote, 100);
 
                 PauseTransition pause = new PauseTransition(Duration.millis(200)); // Länge des "dum"
@@ -142,7 +146,8 @@ public class PianoGrid extends Pane {
 
 
     public void startPlayback() {
-        isPlaying = true;
+        isPlaying.set(true);
+        System.err.println("Hallo");
         playhead.setVisible(true);
         buildTimeline();
         playhead.setStartX(currentBeat * CELL_WIDTH * zoom);
@@ -151,7 +156,7 @@ public class PianoGrid extends Pane {
     }
 
     public void updateNotes() {
-        if(isPlaying) {
+        if(isPlaying.get()) {
             if(timeline != null) timeline.stop();
 
             buildTimeline(0);
@@ -164,7 +169,7 @@ public class PianoGrid extends Pane {
     }
 
     public void changeBpm() {
-        if(isPlaying) {
+        if(isPlaying.get()) {
             if (timeline != null) {
                 currentBeat = getCurrentBeatFromPlayhead();
                 timeline.stop();
@@ -244,17 +249,29 @@ public class PianoGrid extends Pane {
 
     private int getCurrentBpm() {
         try {
-            return Math.max(30, Integer.parseInt(Main.mainPane.getMenuBar().getBpmField().getText()));
+            return Math.max(30, Integer.parseInt(mainPane.getMenuBar().getBpmField().getText()));
         } catch (NumberFormatException e) {
             return 120;
         }
     }
 
-    public void stopPlayback() {
+    public void pausePlayback() {
         if (timeline != null) {
-            isPlaying = false;
+            isPlaying.set(false);
             timeline.stop();
             currentBeat = getCurrentBeatFromPlayhead();
+            playhead.setVisible(false);
+            for(NoteEvent note : noteEvents) {
+                MidiManager.getInstance().stopNote(note.midiNote);
+            }
+        }
+    }
+
+    public void stopPlayback() {
+        if(timeline != null) {
+            isPlaying.set(false);
+            timeline.stop();
+            currentBeat = 0;
             playhead.setVisible(false);
             for(NoteEvent note : noteEvents) {
                 MidiManager.getInstance().stopNote(note.midiNote);
