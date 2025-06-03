@@ -31,9 +31,9 @@ public class NoteView extends Pane {
     public NoteView(NoteEvent noteEvent) {
         initColors();
         this.noteEvent = noteEvent;
-        setBackground(new Background(new BackgroundFill(colors.get(noteEvent.getChannel()), new CornerRadii(5), null)));
-        setStyle("-fx-border-color: black;");
-        setPrefSize(noteEvent.getLength()*CELL_WIDTH*zoom, CELL_HEIGHT*zoom);
+        setBackground(new Background(new BackgroundFill(colors.get(noteEvent.getChannel()), new CornerRadii(10), null)));
+        double width = noteEvent.getLength() * CELL_WIDTH;
+        setPrefSize(width*zoom, CELL_HEIGHT*zoom);
 
         initDragHandler();
     }
@@ -68,6 +68,7 @@ public class NoteView extends Pane {
                 if(parent.getNoteEvents().stream().noneMatch(note -> note.getChannel() == noteEvent.getChannel())) {
                     mainPane.getMenuBar().getInstrumentSelector().removeChannel(noteEvent.getChannel());
                 }
+                parent.setCurrentBeat(parent.getCurrentBeatFromPlayhead());
                 parent.updateNotes();
             }
         });
@@ -76,11 +77,13 @@ public class NoteView extends Pane {
             double zoomedCellWidth = CELL_WIDTH * zoom;
             double zoomedCellHeight = CELL_HEIGHT * zoom;
 
+            double gridWidth = 4.0/mainPane.getPianoPane().getPianoGrid().getGridProperty().get();
+
             if (resizing) {
                 double deltaX = event.getSceneX() - dragStartX;
-                double newWidth = Math.max(zoomedCellWidth, startWidth + deltaX);
-
-                int beats = (int) Math.round(newWidth / zoomedCellWidth);
+                double newWidth = Math.max(zoomedCellWidth*gridWidth, startWidth + deltaX);
+                double snappedCells = Math.round(newWidth / (zoomedCellWidth*gridWidth));
+                double beats = snappedCells * gridWidth;
                 newWidth = beats * zoomedCellWidth;
 
                 setPrefWidth(newWidth);
@@ -90,15 +93,15 @@ public class NoteView extends Pane {
                 double deltaX = event.getSceneX() - dragStartX;
                 double deltaY = event.getSceneY() - dragStartY;
 
-                int deltaCellsX = (int) Math.round(deltaX / zoomedCellWidth);
+                int deltaCellsX = (int) Math.round(deltaX / (zoomedCellWidth*gridWidth));
                 int deltaCellsY = (int) Math.round(deltaY / zoomedCellHeight);
 
-                double newLayoutX = Math.max(0, startLayoutX + deltaCellsX * zoomedCellWidth);
+                double newLayoutX = Math.max(0, startLayoutX + deltaCellsX * (zoomedCellWidth*gridWidth));
                 double newLayoutY = Math.max(0, startLayoutY + deltaCellsY * zoomedCellHeight);
 
                 setLayoutX(newLayoutX);
                 setLayoutY(newLayoutY);
-                noteEvent.setColumn((int) (newLayoutX / zoomedCellWidth));
+                noteEvent.setColumn((int) (newLayoutX / (zoomedCellWidth*gridWidth)));
                 noteEvent.setRow((int) (newLayoutY / zoomedCellHeight));
                 noteEvent.setMidiNote(107 - noteEvent.getRow());
 
@@ -116,9 +119,8 @@ public class NoteView extends Pane {
             startLayoutX = 0;
             startLayoutY = 0;
 
-
-            PianoGrid parent = (PianoGrid) getParent();
-            if(parent != null) parent.updateNotes();
+            mainPane.getPianoPane().getPianoGrid().setCurrentBeat(mainPane.getPianoPane().getPianoGrid().getCurrentBeatFromPlayhead());
+            mainPane.getPianoPane().getPianoGrid().updateNotes();
             event.consume();
         });
     }

@@ -3,6 +3,7 @@ package fh.swf;
 import fh.swf.enums.Instruments;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Tooltip;
 import lombok.Getter;
 
 import java.util.*;
@@ -41,6 +42,8 @@ public class InstrumentSelector extends ComboBox<Instruments> {
 
         getItems().addAll(Instruments.values());
         setValue(Instruments.values()[1]);
+        setTooltip(new Tooltip(getValue().getName()));
+
 
         setCellFactory(_ -> new ListCell<>() {
             @Override
@@ -51,7 +54,6 @@ public class InstrumentSelector extends ComboBox<Instruments> {
                     setText(item.getName());
                     setDisable(item.getNum() == -1);
                     setStyle(item.getNum() == -1 ? "-fx-font-weight: bold; -fx-underline: true;" : "");
-
                 }
             }
         });
@@ -71,8 +73,8 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             }
             if (newValue == Instruments.DRUMS || oldValue == Instruments.DRUMS) {
                 mainPane.getPianoPane().changeKeyBox();
-
             }
+            setTooltip(new Tooltip(newValue.getName()));
         });
     }
 
@@ -81,7 +83,6 @@ public class InstrumentSelector extends ComboBox<Instruments> {
     }
 
     public void addCurrentInstrument(int channel) {
-        System.err.println(getValue());
         instrumentToChannel.put(getValue(), channel);
         MidiManager.getInstance().changeInstrument(getValue(), channel);
     }

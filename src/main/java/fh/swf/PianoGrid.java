@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,15 +27,16 @@ public class PianoGrid extends Pane {
     private Timeline timeline;
     @Getter private final SimpleBooleanProperty isPlaying = new SimpleBooleanProperty(false);
     private final Line playhead;
-    private int currentBeat = 0;
+    @Setter private int currentBeat = 0;
     @Getter private final List<NoteEvent> noteEvents = new ArrayList<>();
 
     public static final String[] TONES = {"B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"};
     public static final int OCTAVES = 7;
-    private final SimpleIntegerProperty signatureProperty = new SimpleIntegerProperty(4);
-    private final SimpleIntegerProperty strokeAmountProperty = new SimpleIntegerProperty(18);
+    @Getter private final SimpleIntegerProperty signatureProperty = new SimpleIntegerProperty(4);
+    @Getter private final SimpleIntegerProperty strokeAmountProperty = new SimpleIntegerProperty(18);
+    @Getter private final SimpleIntegerProperty gridProperty = new SimpleIntegerProperty(4);
 
-    public static final int CELL_WIDTH = 50;
+    public static final int CELL_WIDTH = 100;
     public static final int CELL_HEIGHT = 25;
 
     private final ArrayList<Line> horizontalLines = new ArrayList<>();
@@ -59,6 +61,12 @@ public class PianoGrid extends Pane {
         getChildren().add(playhead);
 
         isPlaying.addListener((_,_,_) -> mainPane.getMenuBar().getPlayButton().changeGraphic());
+        signatureProperty.addListener((_,_,_) -> {
+            drawVerticalLines();
+            buildTimeline();
+        });
+        strokeAmountProperty.addListener((_,_,_) -> drawVerticalLines());
+        gridProperty.addListener((_,_,_) -> drawVerticalLines());
 
         setOnMouseClicked(this::onMouseClickedEvent);
         setOnMouseDragged(this::onMouseDraggedEvent);
@@ -96,11 +104,18 @@ public class PianoGrid extends Pane {
         double height = getHeight();
         if (height <= 0) return;
 
-        for (int col = 0; col < signatureProperty.get() * strokeAmountProperty.get(); col++) {
-            double x = (col + 1) * CELL_WIDTH * zoom;
+        double gridDividers = gridProperty.get()/4.0;
+
+        for (int col = 0; col < signatureProperty.get() * strokeAmountProperty.get() * gridDividers; col++) {
+            double x = ((col + 1) * CELL_WIDTH * zoom) / gridDividers;
             Line vLine = new Line(x, 0, x, height);
-            vLine.setStroke(Color.BLACK);
-            vLine.setStrokeWidth((col + 1) % signatureProperty.get() == 0 ? 1 : 0.5);
+            vLine.setStroke(Color.GREY);
+            double signatureLength = signatureProperty.get() * gridDividers;
+            double strokeWidth = 0.5;
+            if((col + 1) % signatureLength == 0) strokeWidth = 2;
+            else if((col + 1) % (signatureLength/signatureProperty.get()) == 0) strokeWidth = 1;
+
+            vLine.setStrokeWidth(strokeWidth);
             verticalLines.add(vLine);
         }
 
@@ -116,7 +131,10 @@ public class PianoGrid extends Pane {
 
     private void onMouseClickedEvent(MouseEvent event) {
         if (event.getTarget() == this && !isDragging) {
-            int col = (int) (event.getX() / (CELL_WIDTH * zoom));
+            double length = 4.0/gridProperty.get();
+
+            int cell = (int) Math.ceil(event.getX()/(length*zoom*100))-1;
+            double col = cell*length;
             int row = (int) (event.getY() / (CELL_HEIGHT * zoom));
 
             int channel = mainPane.getMenuBar().getInstrumentSelector().getCurrentInstrumentsChannel();
@@ -126,27 +144,28 @@ public class PianoGrid extends Pane {
                 mainPane.getMenuBar().getInstrumentSelector().addCurrentInstrument(channel);
             }
 
-            NoteEvent noteEvent = new NoteEvent(col, row, 1, channel);
+            NoteEvent noteEvent = new NoteEvent(col, row, length, channel);
             noteEvents.add(noteEvent);
 
-            double snappedX = col * CELL_WIDTH * zoom;
+
+            double snappedX = col * CELL_WIDTH * (4.0/gridProperty.get()) * zoom;
             double snappedY = row * CELL_HEIGHT * zoom;
 
             NoteView note = new NoteView(noteEvent);
             note.setLayoutX(snappedX);
             note.setLayoutY(snappedY);
-            note.setPrefWidth(CELL_WIDTH * zoom);
-            note.setPrefHeight(CELL_HEIGHT * zoom);
+            note.setZoom(zoom);
             getChildren().add(note);
 
             if(!isPlaying.get()) {
                 MidiManager.getInstance().noteOn(noteEvent.getMidiNote(), 100);
 
-                PauseTransition pause = new PauseTransition(Duration.millis(200)); // Länge des "dum"
+                PauseTransition pause = new PauseTransition(Duration.millis(200));
                 pause.setOnFinished(_ -> MidiManager.getInstance().noteOff(noteEvent.getMidiNote()));
                 pause.play();
             }
 
+            currentBeat = getCurrentBeatFromPlayhead();
             updateNotes();
         }
     }
@@ -164,11 +183,8 @@ public class PianoGrid extends Pane {
     public void updateNotes() {
         if(isPlaying.get()) {
             if(timeline != null) timeline.stop();
-
             buildTimeline(0);
-
             playhead.setStartX(currentBeat * CELL_WIDTH* zoom);
-
             timeline.play();
             timeline.jumpTo(Duration.millis(currentBeat * getMsPerBeat()));
         }
@@ -203,7 +219,7 @@ public class PianoGrid extends Pane {
         List<MidiEvent> midiEvents = new ArrayList<>();
 
         noteEvents.sort(Comparator
-                .comparingInt(NoteEvent::getColumn));
+                .comparingDouble(NoteEvent::getColumn));
 
         int endBeat = signatureProperty.get();
         if(!noteEvents.isEmpty()) {
@@ -232,23 +248,22 @@ public class PianoGrid extends Pane {
 
 
         int totalBeats = endBeat - startBeat;
-        for (int i = 0; i <= totalBeats; i++) {
-            double time = i * msPerBeat;
-            double x = (startBeat + i) * CELL_WIDTH;
-            int finalI = i;
-            KeyFrame playheadFrame = new KeyFrame(Duration.millis(time), _ -> {
-                playhead.setStartX(x * zoom);
-                currentBeat = startBeat + finalI;
-            });
-            timeline.getKeyFrames().add(playheadFrame);
-        }
+        double updateInterval = 10;
+        double totalTime = totalBeats * msPerBeat;
 
+        for (double t = 0; t <= totalTime; t += updateInterval) {
+            double progress = t / totalTime;
+            double x = (startBeat * CELL_WIDTH) + (totalBeats * CELL_WIDTH * progress);
+            KeyFrame frame = new KeyFrame(Duration.millis(t), _ -> {
+                playhead.setStartX(x * zoom);
+                currentBeat = (int) Math.round(progress);
+            });
+            timeline.getKeyFrames().add(frame);
+        }
     }
 
 
-
-
-    private int getCurrentBeatFromPlayhead() {
+    public int getCurrentBeatFromPlayhead() {
         double x = playhead.getStartX();
         return (int) (x / (CELL_WIDTH * zoom));
     }

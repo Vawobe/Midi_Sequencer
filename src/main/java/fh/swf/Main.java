@@ -12,6 +12,8 @@ import javafx.stage.Stage;
  * Automatisches Grid verlängern
  * Takt Markierung
  * Selektieren und gemeinsame verschieben/löschen/kopieren/einfügen
+ * Zoom anpassen -> ab bestimmten Punkt nur horizontal Zoomen
+ * 
  */
 public class Main extends Application {
     public static MainPane mainPane;
