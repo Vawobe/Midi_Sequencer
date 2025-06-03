@@ -101,7 +101,10 @@ public class NoteView extends Pane {
 
                 setLayoutX(newLayoutX);
                 setLayoutY(newLayoutY);
-                noteEvent.setColumn((int) (newLayoutX / (zoomedCellWidth*gridWidth)));
+
+
+                double newColumn = (newLayoutX/zoomedCellWidth);
+                noteEvent.setColumn(newColumn);
                 noteEvent.setRow((int) (newLayoutY / zoomedCellHeight));
                 noteEvent.setMidiNote(107 - noteEvent.getRow());
 
