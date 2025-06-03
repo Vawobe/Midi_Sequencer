@@ -1,8 +1,7 @@
-package fh.swf;
+package fh.swf.model.manager;
 
+import fh.swf.Note;
 import fh.swf.enums.Instruments;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
 
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -10,6 +9,7 @@ import javax.sound.midi.Synthesizer;
 
 public class MidiManager {
     private static MidiManager instance;
+
     private Synthesizer synth;
     private MidiChannel[] channels;
 
@@ -28,12 +28,12 @@ public class MidiManager {
         return instance;
     }
 
-    public void playNote(int midiNote, int velocity, int channel) {
-        channels[channel].noteOn(midiNote, velocity);
+    public void playNote(Note note){ //int midiNote, int velocity, int channel) {
+        channels[note.getChannel()].noteOn(note.getMidiNote(), note.getVelocity());
     }
 
-    public void stopNote(int midiNote, int channel) {
-        channels[channel].noteOff(midiNote);
+    public void stopNote(Note note) {
+        channels[note.getChannel()].noteOff(note.getMidiNote());
     }
 
     public void close() {
@@ -48,11 +48,11 @@ public class MidiManager {
         }
     }
 
-    public void noteOn(int note, int velocity) {
-        synth.getChannels()[0].noteOn(note, velocity); // Kanal 0 ist Standard
+    public void playDemoTone(int note) {
+        synth.getChannels()[0].noteOn(note, 100);
     }
 
-    public void noteOff(int note) {
+    public void stopDemoTone(int note) {
         synth.getChannels()[0].noteOff(note);
     }
 

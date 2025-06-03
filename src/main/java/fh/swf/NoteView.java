@@ -1,5 +1,8 @@
 package fh.swf;
 
+import fh.swf.controller.PlaybackController;
+import fh.swf.model.manager.NoteManager;
+import fh.swf.render.GridRenderer;
 import javafx.scene.Cursor;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -11,15 +14,15 @@ import lombok.Getter;
 import java.util.ArrayList;
 
 import static fh.swf.Main.mainPane;
-import static fh.swf.PianoGrid.CELL_HEIGHT;
-import static fh.swf.PianoGrid.CELL_WIDTH;
+import static fh.swf.render.GridRenderer.CELL_HEIGHT;
+import static fh.swf.render.GridRenderer.CELL_WIDTH;
 
 public class NoteView extends Pane {
     private double zoom = 1.0;
 
     private ArrayList<Color> colors;
 
-    @Getter private final NoteEvent noteEvent;
+    @Getter private final Note note;
     private double dragStartX;
     private double dragStartY;
     private double startWidth;
@@ -28,11 +31,11 @@ public class NoteView extends Pane {
     private boolean resizing = false;
     private boolean dragging = false;
 
-    public NoteView(NoteEvent noteEvent) {
+    public NoteView(Note note) {
         initColors();
-        this.noteEvent = noteEvent;
-        setBackground(new Background(new BackgroundFill(colors.get(noteEvent.getChannel()), new CornerRadii(10), null)));
-        double width = noteEvent.getLength() * CELL_WIDTH;
+        this.note = note;
+        setBackground(new Background(new BackgroundFill(colors.get(note.getChannel()), new CornerRadii(10), null)));
+        double width = note.getLength() * CELL_WIDTH;
         setPrefSize(width*zoom, CELL_HEIGHT*zoom);
 
         initDragHandler();
@@ -62,14 +65,12 @@ public class NoteView extends Pane {
                 }
                 event.consume();
             } else if(event.isSecondaryButtonDown()) {
-                PianoGrid parent = (PianoGrid) getParent();
-                parent.getChildren().remove(this);
-                parent.getNoteEvents().remove(noteEvent);
-                if(parent.getNoteEvents().stream().noneMatch(note -> note.getChannel() == noteEvent.getChannel())) {
-                    mainPane.getMenuBar().getInstrumentSelector().removeChannel(noteEvent.getChannel());
+                NoteManager.getInstance().removeNote(this.getNote());
+                if(NoteManager.getInstance().getNotes().stream().noneMatch(note -> note.getChannel() == this.note.getChannel())) {
+                    mainPane.getMenuBar().getInstrumentSelector().removeChannel(note.getChannel());
                 }
-                parent.setCurrentBeat(parent.getCurrentBeatFromPlayhead());
-                parent.updateNotes();
+                PlaybackController.getInstance().setCurrentBeat(PianoGrid.getPlayhead().getCurrentBeat());
+                PlaybackController.getInstance().updateNotes();
             }
         });
 
@@ -77,7 +78,7 @@ public class NoteView extends Pane {
             double zoomedCellWidth = CELL_WIDTH * zoom;
             double zoomedCellHeight = CELL_HEIGHT * zoom;
 
-            double gridWidth = 4.0/mainPane.getPianoPane().getPianoGrid().getGridProperty().get();
+            double gridWidth = 4.0/ GridRenderer.getInstance().getGridProperty().get();
 
             if (resizing) {
                 double deltaX = event.getSceneX() - dragStartX;
@@ -87,7 +88,7 @@ public class NoteView extends Pane {
                 newWidth = beats * zoomedCellWidth;
 
                 setPrefWidth(newWidth);
-                noteEvent.setLength(beats);
+                note.setLength(beats);
                 event.consume();
             } else if (dragging) {
                 double deltaX = event.getSceneX() - dragStartX;
@@ -104,9 +105,9 @@ public class NoteView extends Pane {
 
 
                 double newColumn = (newLayoutX/zoomedCellWidth);
-                noteEvent.setColumn(newColumn);
-                noteEvent.setRow((int) (newLayoutY / zoomedCellHeight));
-                noteEvent.setMidiNote(107 - noteEvent.getRow());
+                note.setColumn(newColumn);
+                note.setRow((int) (newLayoutY / zoomedCellHeight));
+                note.setMidiNote(107 - note.getRow());
 
                 event.consume();
             }
@@ -122,8 +123,8 @@ public class NoteView extends Pane {
             startLayoutX = 0;
             startLayoutY = 0;
 
-            mainPane.getPianoPane().getPianoGrid().setCurrentBeat(mainPane.getPianoPane().getPianoGrid().getCurrentBeatFromPlayhead());
-            mainPane.getPianoPane().getPianoGrid().updateNotes();
+            PlaybackController.getInstance().setCurrentBeat(PianoGrid.getPlayhead().getCurrentBeat());
+            PlaybackController.getInstance().updateNotes();
             event.consume();
         });
     }
@@ -134,9 +135,9 @@ public class NoteView extends Pane {
     }
 
     private void updateNoteSize() {
-        setLayoutX(noteEvent.getColumn() * CELL_WIDTH * zoom);
-        setLayoutY(noteEvent.getRow()* CELL_HEIGHT * zoom);
-        setPrefWidth(CELL_WIDTH * noteEvent.getLength() * zoom);
+        setLayoutX(note.getColumn() * CELL_WIDTH * zoom);
+        setLayoutY(note.getRow()* CELL_HEIGHT * zoom);
+        setPrefWidth(CELL_WIDTH * note.getLength() * zoom);
         setPrefHeight(CELL_HEIGHT * zoom);
     }
 

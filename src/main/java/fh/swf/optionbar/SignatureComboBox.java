@@ -1,9 +1,8 @@
 package fh.swf.optionbar;
 
+import fh.swf.render.GridRenderer;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
-
-import static fh.swf.Main.mainPane;
 
 public class SignatureComboBox extends ComboBox<Integer> {
     public SignatureComboBox() {
@@ -27,7 +26,7 @@ public class SignatureComboBox extends ComboBox<Integer> {
             }
         });
 
-        valueProperty().addListener((_,_,newValue) -> mainPane.getPianoPane().getPianoGrid().getSignatureProperty().set(newValue));
+        valueProperty().addListener((_,_,newValue) -> GridRenderer.getInstance().getSignatureProperty().set(newValue));
     }
 
 

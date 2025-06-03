@@ -1,6 +1,6 @@
 package fh.swf.menubar;
 
-import fh.swf.MidiManager;
+import fh.swf.model.manager.MidiManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Slider;

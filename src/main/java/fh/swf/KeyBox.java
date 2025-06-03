@@ -4,8 +4,8 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
-import static fh.swf.PianoGrid.OCTAVES;
-import static fh.swf.PianoGrid.TONES;
+import static fh.swf.model.manager.NoteManager.OCTAVES;
+import static fh.swf.model.manager.NoteManager.TONES;
 
 public class KeyBox extends Pane {
     protected double zoom = 1.0;
@@ -23,9 +23,8 @@ public class KeyBox extends Pane {
 
 
     protected void drawToneNames() {
-        double y = 0;
         int row = 0;
-        for(int octave = OCTAVES; octave > 1; octave--) {
+        for(int octave = OCTAVES.length+1; octave > 1; octave--) {
             for(String tone : TONES) {
                 KeyButton keyButton = new KeyButton(tone + octave, row);
                 getChildren().add(keyButton);

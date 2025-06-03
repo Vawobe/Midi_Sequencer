@@ -1,9 +1,8 @@
 package fh.swf.optionbar;
 
+import fh.swf.render.GridRenderer;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
-
-import static fh.swf.Main.mainPane;
 
 public class GridComboBox extends ComboBox<Integer> {
     public GridComboBox() {
@@ -27,6 +26,6 @@ public class GridComboBox extends ComboBox<Integer> {
             }
         });
 
-        valueProperty().addListener((_,_,newValue) -> mainPane.getPianoPane().getPianoGrid().getGridProperty().set(newValue));
+        valueProperty().addListener((_,_,newValue) -> GridRenderer.getInstance().getGridProperty().set(newValue));
     }
 }

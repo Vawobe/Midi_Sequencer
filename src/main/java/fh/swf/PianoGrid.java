@@ -1,325 +1,36 @@
 package fh.swf;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
-import javafx.animation.Timeline;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
+import fh.swf.controller.PlaybackController;
+import fh.swf.render.GridRenderer;
+import fh.swf.render.NoteRenderer;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.util.Duration;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import static fh.swf.Main.mainPane;
+import static fh.swf.render.GridRenderer.CELL_WIDTH;
 
 public class PianoGrid extends Pane {
-    private double zoom = 1.0;
-
-    private boolean isDragging = false;
-    private Timeline timeline;
-    @Getter private final SimpleBooleanProperty isPlaying = new SimpleBooleanProperty(false);
-    private final Line playhead;
-    @Setter private int currentBeat = 0;
-    @Getter private final List<NoteEvent> noteEvents = new ArrayList<>();
-
-    public static final String[] TONES = {"B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"};
-    public static final int OCTAVES = 7;
-    @Getter private final SimpleIntegerProperty signatureProperty = new SimpleIntegerProperty(4);
-    @Getter private final SimpleIntegerProperty strokeAmountProperty = new SimpleIntegerProperty(18);
-    @Getter private final SimpleIntegerProperty gridProperty = new SimpleIntegerProperty(4);
-
-    public static final int CELL_WIDTH = 100;
-    public static final int CELL_HEIGHT = 25;
-
-    private final ArrayList<Line> horizontalLines = new ArrayList<>();
-    private final ArrayList<Line> verticalLines = new ArrayList<>();
-
-    private final Pane grid;
+    @Getter private static final Playhead playhead = new Playhead();
 
     public PianoGrid() {
         setFocusTraversable(false);
-        setPrefWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH + 1);
-        setPrefHeight(TONES.length * (OCTAVES-1) * CELL_HEIGHT);
-        grid = new Pane();
-        grid.setPickOnBounds(false);
-        getChildren().add(grid);
-        playhead = new Line();
-        playhead.setStroke(Color.RED);
-        playhead.setStrokeWidth(2);
-        playhead.setStartY(0);
+        prefHeightProperty().bind(GridRenderer.getInstance().prefHeightProperty());
+        prefWidthProperty().bind(GridRenderer.getInstance().prefWidthProperty());
+        NoteRenderer.getInstance().prefHeightProperty().bind(GridRenderer.getInstance().prefHeightProperty());
+        NoteRenderer.getInstance().prefWidthProperty().bind(GridRenderer.getInstance().prefWidthProperty());
+
         playhead.endYProperty().bind(heightProperty());
-        playhead.endXProperty().bind(playhead.startXProperty());
         playhead.setVisible(false);
-        getChildren().add(playhead);
-
-        isPlaying.addListener((_,_,_) -> mainPane.getMenuBar().getPlayButton().changeGraphic());
-        signatureProperty.addListener((_,_,_) -> {
-            drawVerticalLines();
-            buildTimeline();
-        });
-        strokeAmountProperty.addListener((_,_,_) -> drawVerticalLines());
-        gridProperty.addListener((_,_,_) -> drawVerticalLines());
-
-        setOnMouseClicked(this::onMouseClickedEvent);
-        setOnMouseDragged(this::onMouseDraggedEvent);
-        setOnMouseReleased(this::onMouseReleasedEvent);
+        getChildren().addAll(GridRenderer.getInstance(), NoteRenderer.getInstance(), playhead);
     }
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-        drawHorizontalLines();
-        drawVerticalLines();
+        GridRenderer.getInstance().drawGrid();
     }
-
-    private void drawHorizontalLines() {
-        grid.getChildren().removeAll(horizontalLines);
-        horizontalLines.clear();
-
-        double width = getWidth();
-        if (width <= 0) return;
-
-        for (int row = 0; row < TONES.length * (OCTAVES-1); row++) {
-            double y = (row + 1) * CELL_HEIGHT * zoom;
-            Line hLine = new Line(0, y, width, y);
-            hLine.setStroke(Color.GRAY);
-            hLine.setStrokeWidth((row + 1) % 12 == 0 ? 1 : 0.5);
-            horizontalLines.add(hLine);
-        }
-
-        grid.getChildren().addAll(horizontalLines);
-    }
-
-    private void drawVerticalLines() {
-        grid.getChildren().removeAll(verticalLines);
-        verticalLines.clear();
-
-        double height = getHeight();
-        if (height <= 0) return;
-
-        double gridDividers = gridProperty.get()/4.0;
-
-        for (int col = 0; col < signatureProperty.get() * strokeAmountProperty.get() * gridDividers; col++) {
-            double x = ((col + 1) * CELL_WIDTH * zoom) / gridDividers;
-            Line vLine = new Line(x, 0, x, height);
-            vLine.setStroke(Color.GREY);
-            double signatureLength = signatureProperty.get() * gridDividers;
-            double strokeWidth = 0.5;
-            if((col + 1) % signatureLength == 0) strokeWidth = 2;
-            else if((col + 1) % (signatureLength/signatureProperty.get()) == 0) strokeWidth = 1;
-
-            vLine.setStrokeWidth(strokeWidth);
-            verticalLines.add(vLine);
-        }
-
-        grid.getChildren().addAll(verticalLines);
-    }
-
-    private void onMouseDraggedEvent(MouseEvent event) {
-        isDragging = true;
-    }
-    private void onMouseReleasedEvent(MouseEvent event) {
-        isDragging = false;
-    }
-
-    private void onMouseClickedEvent(MouseEvent event) {
-        if (event.getTarget() == this && !isDragging) {
-            double length = 4.0/gridProperty.get();
-
-            int cell = (int) Math.ceil(event.getX()/(length*zoom*100))-1;
-            double col = cell*length;
-            int row = (int) (event.getY() / (CELL_HEIGHT * zoom));
-
-            int channel = mainPane.getMenuBar().getInstrumentSelector().getCurrentInstrumentsChannel();
-
-            if(channel == -1) {
-                channel = mainPane.getMenuBar().getInstrumentSelector().getNextFreeChannel();
-                mainPane.getMenuBar().getInstrumentSelector().addCurrentInstrument(channel);
-            }
-
-            NoteEvent noteEvent = new NoteEvent(col, row, length, channel);
-            noteEvents.add(noteEvent);
-
-
-            double snappedX = col * CELL_WIDTH * (4.0/gridProperty.get()) * zoom;
-            double snappedY = row * CELL_HEIGHT * zoom;
-
-            NoteView note = new NoteView(noteEvent);
-            note.setLayoutX(snappedX);
-            note.setLayoutY(snappedY);
-            note.setZoom(zoom);
-            getChildren().add(note);
-
-            if(!isPlaying.get()) {
-                MidiManager.getInstance().noteOn(noteEvent.getMidiNote(), 100);
-
-                PauseTransition pause = new PauseTransition(Duration.millis(200));
-                pause.setOnFinished(_ -> MidiManager.getInstance().noteOff(noteEvent.getMidiNote()));
-                pause.play();
-            }
-
-            currentBeat = getCurrentBeatFromPlayhead();
-            updateNotes();
-        }
-    }
-
-
-    public void startPlayback() {
-        isPlaying.set(true);
-        playhead.setVisible(true);
-        buildTimeline();
-        playhead.setStartX(currentBeat * CELL_WIDTH * zoom);
-        timeline.play();
-        timeline.jumpTo(Duration.millis(currentBeat * getMsPerBeat()));
-    }
-
-    public void updateNotes() {
-        if(isPlaying.get()) {
-            if(timeline != null) timeline.stop();
-            buildTimeline(0);
-            playhead.setStartX(currentBeat * CELL_WIDTH* zoom);
-            timeline.play();
-            timeline.jumpTo(Duration.millis(currentBeat * getMsPerBeat()));
-        }
-    }
-
-    public void changeBpm() {
-        if(isPlaying.get()) {
-            if (timeline != null) {
-                currentBeat = getCurrentBeatFromPlayhead();
-                timeline.stop();
-            }
-            buildTimeline();
-            playhead.setStartX(currentBeat * CELL_WIDTH * zoom);
-            timeline.play();
-
-            timeline.jumpTo(Duration.millis(currentBeat * getMsPerBeat()));
-        }
-    }
-    private void buildTimeline() {
-        int startBeat = 0;
-        buildTimeline(startBeat);
-    }
-
-
-    private void buildTimeline(int startBeat) {
-        double msPerBeat = getMsPerBeat();
-        timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-
-        record MidiEvent(double time, int midiNote, int channel, boolean isOn) {}
-
-        List<MidiEvent> midiEvents = new ArrayList<>();
-
-        noteEvents.sort(Comparator
-                .comparingDouble(NoteEvent::getColumn));
-
-        int endBeat = signatureProperty.get();
-        if(!noteEvents.isEmpty()) {
-            double lastNoteEnd = noteEvents.getLast().getColumn() + noteEvents.getLast().getLength();
-            if (lastNoteEnd % signatureProperty.get() == 0) endBeat = (int) lastNoteEnd;
-            else endBeat = (int) (lastNoteEnd + signatureProperty.get() - lastNoteEnd % signatureProperty.get());
-        }
-        for (NoteEvent note : noteEvents) {
-            if (note.getColumn() < startBeat || note.getColumn() >= endBeat) continue;
-            double startTime = (note.getColumn() - startBeat) * msPerBeat;
-            double endTime = startTime + note.getLength() * msPerBeat;
-
-            midiEvents.add(new MidiEvent(startTime, note.getMidiNote(), note.getChannel(), true));
-            midiEvents.add(new MidiEvent(endTime, note.getMidiNote(), note.getChannel(), false));
-        }
-
-        for (MidiEvent event : midiEvents) {
-            KeyFrame frame = new KeyFrame(Duration.millis(event.time), _ -> {
-                if (event.isOn)
-                    MidiManager.getInstance().playNote(event.midiNote, 100, event.channel);
-                else
-                    MidiManager.getInstance().stopNote(event.midiNote, event.channel);
-            });
-            timeline.getKeyFrames().add(frame);
-        }
-
-
-        int totalBeats = endBeat - startBeat;
-        double updateInterval = 10;
-        double totalTime = totalBeats * msPerBeat;
-
-        for (double t = 0; t <= totalTime; t += updateInterval) {
-            double progress = t / totalTime;
-            double x = (startBeat * CELL_WIDTH) + (totalBeats * CELL_WIDTH * progress);
-            KeyFrame frame = new KeyFrame(Duration.millis(t), _ -> {
-                playhead.setStartX(x * zoom);
-                currentBeat = (int) Math.round(progress);
-            });
-            timeline.getKeyFrames().add(frame);
-        }
-    }
-
-
-    public int getCurrentBeatFromPlayhead() {
-        double x = playhead.getStartX();
-        return (int) (x / (CELL_WIDTH * zoom));
-    }
-
-    private int getCurrentBpm() {
-        try {
-            return Math.max(30, Integer.parseInt(mainPane.getMenuBar().getBpmField().getText()));
-        } catch (NumberFormatException e) {
-            return 120;
-        }
-    }
-
-    public void pausePlayback() {
-        if (timeline != null) {
-            isPlaying.set(false);
-            timeline.stop();
-            currentBeat = getCurrentBeatFromPlayhead();
-            playhead.setVisible(false);
-            for(NoteEvent note : noteEvents) {
-                MidiManager.getInstance().stopNote(note.getMidiNote(), note.getChannel());
-            }
-        }
-    }
-
-    public void stopPlayback() {
-        if(timeline != null) {
-            isPlaying.set(false);
-            timeline.stop();
-            currentBeat = 0;
-            playhead.setVisible(false);
-            for(NoteEvent note : noteEvents) {
-                MidiManager.getInstance().stopNote(note.getMidiNote(), note.getChannel());
-            }
-        }
-    }
-
-    private double getMsPerBeat() { return 60000.0 / getCurrentBpm(); }
 
     public void setZoom(double zoom) {
-        this.zoom = zoom;
-        updateGridSize();
-    }
-
-    private void updateGridSize() {
-        for(Node n : getChildren()) {
-            if(n instanceof  NoteView note) {
-                note.setZoom(zoom);
-            } else if (n == playhead) {
-                playhead.setStartX(currentBeat * CELL_WIDTH * zoom);
-            }
-        }
-
-        drawVerticalLines();
-        drawHorizontalLines();
-
-        setPrefWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * zoom);
-        setPrefHeight(TONES.length * (OCTAVES-1) * CELL_HEIGHT * zoom);
+        GridRenderer.zoom = zoom;
+        GridRenderer.getInstance().updateGridSize();
+        playhead.setStartX(PlaybackController.getInstance().getCurrentBeat()*CELL_WIDTH*GridRenderer.zoom);
     }
 }

@@ -1,6 +1,7 @@
 package fh.swf;
 
 import fh.swf.enums.Instruments;
+import fh.swf.model.manager.MidiManager;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
@@ -20,8 +21,6 @@ public class InstrumentSelector extends ComboBox<Instruments> {
         freeChannels.removeFirst();
         return nextFreeChannel;
     }
-
-    public int getCurrentChannel() { return instrumentToChannel.getOrDefault(getValue(),0); }
 
     public InstrumentSelector() {
         super();

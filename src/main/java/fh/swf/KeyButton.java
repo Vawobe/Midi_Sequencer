@@ -1,5 +1,6 @@
 package fh.swf;
 
+import fh.swf.model.manager.MidiManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
@@ -60,7 +61,8 @@ public class KeyButton extends Button {
     public void playTone() {
         if(!isPlaying) {
             int midiNote = convertToMidi(key);
-            MidiManager.getInstance().playNote(midiNote, 100, mainPane.getMenuBar().getInstrumentSelector().getCurrentChannel());
+            MidiManager.getInstance().changeDemoChannel(mainPane.getMenuBar().getInstrumentSelector().getValue());
+            MidiManager.getInstance().playDemoTone(midiNote);
             isPlaying = true;
         }
     }
@@ -68,7 +70,7 @@ public class KeyButton extends Button {
     public void stopTone() {
         if(isPlaying) {
             int midiNote = convertToMidi(key);
-            MidiManager.getInstance().stopNote(midiNote, mainPane.getMenuBar().getInstrumentSelector().getCurrentChannel());
+            MidiManager.getInstance().stopDemoTone(midiNote);
             isPlaying = false;
         }
     }
