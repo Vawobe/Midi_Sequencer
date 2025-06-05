@@ -1,6 +1,8 @@
 package fh.swf.menubar;
 
+import fh.swf.model.manager.ModeManager;
 import javafx.geometry.Insets;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
@@ -24,7 +26,19 @@ public class MenuBar extends HBox {
         bpmField = new BPMField();
         instrumentSelector = new InstrumentSelector();
 
-        HBox modeButtons = new HBox(new DrawButton(), new SelectButton(), new EraseButton());
+        ToggleGroup toggleGroup = new ToggleGroup();
+        DrawButton drawButton = new DrawButton();
+        EraseButton eraseButton = new EraseButton();
+        SelectButton selectButton = new SelectButton();
+
+        toggleGroup.getToggles().addAll(drawButton, eraseButton, selectButton);
+        toggleGroup.selectedToggleProperty().addListener((_,_,newValue) -> {
+            if(newValue instanceof ModeButton modeButton)
+                ModeManager.getInstance().changeMode(modeButton.getMode());
+        });
+        drawButton.setSelected(true);
+
+        HBox modeButtons = new HBox(drawButton, selectButton, eraseButton);
 
         getChildren().addAll(
                 playerButtons,
