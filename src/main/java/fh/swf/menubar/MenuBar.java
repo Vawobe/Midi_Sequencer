@@ -1,6 +1,5 @@
 package fh.swf.menubar;
 
-import fh.swf.InstrumentSelector;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -15,20 +14,24 @@ public class MenuBar extends HBox {
     private final InstrumentSelector instrumentSelector;
 
     public MenuBar() {
-        setSpacing(15);
+        setSpacing(5);
         setPadding(new Insets(10));
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
 
         playButton = new PlayButton();
+        HBox playerButtons = new HBox(playButton, new StopButton());
+
         bpmField = new BPMField();
         instrumentSelector = new InstrumentSelector();
 
+        HBox modeButtons = new HBox(new DrawButton(), new SelectButton(), new EraseButton());
+
         getChildren().addAll(
-                playButton,
-                new StopButton(),
+                playerButtons,
                 bpmField,
                 new TitleField(),
                 instrumentSelector,
+                modeButtons,
                 new VolumeBox()
         );
     }

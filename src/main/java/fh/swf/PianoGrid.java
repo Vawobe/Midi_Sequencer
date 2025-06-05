@@ -1,6 +1,8 @@
 package fh.swf;
 
 import fh.swf.controller.PlaybackController;
+import fh.swf.enums.Modes;
+import fh.swf.model.manager.ModeManager;
 import fh.swf.render.GridRenderer;
 import fh.swf.render.NoteRenderer;
 import javafx.scene.layout.*;

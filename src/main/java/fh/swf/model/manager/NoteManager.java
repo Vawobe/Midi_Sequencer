@@ -34,5 +34,4 @@ public class NoteManager {
     public void removeNote(Note note) {
         notes.remove(note);
     }
-
 }

@@ -1,10 +1,15 @@
-package fh.swf;
+package fh.swf.menubar;
 
 import fh.swf.enums.Instruments;
 import fh.swf.model.manager.MidiManager;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import lombok.Getter;
 
 import java.util.*;
@@ -24,6 +29,8 @@ public class InstrumentSelector extends ComboBox<Instruments> {
 
     public InstrumentSelector() {
         super();
+        setBackground(new Background(new BackgroundFill(Color.DARKGRAY,new CornerRadii(5), null)));
+
         freeChannels.add(1);
         freeChannels.add(2);
         freeChannels.add(3);
@@ -48,11 +55,32 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             @Override
             protected void updateItem(Instruments item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) setText(null);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                }
                 else {
                     setText(item.getName());
-                    setDisable(item.getNum() == -1);
-                    setStyle(item.getNum() == -1 ? "-fx-font-weight: bold; -fx-underline: true;" : "");
+                    if(item.getNum() == -1) {
+                        setDisable(true);
+                        setTextFill(Color.WHITE);
+                        SVGPath icon = new SVGPath();
+                        icon.setContent(item.getSvg());
+                        icon.setFill(Color.WHITE);
+                        icon.setStroke(Color.WHITE);
+                        icon.setStrokeWidth(1.0);
+                        setGraphic(icon);
+                        setBackground(new Background(new BackgroundFill(Color.DARKGRAY, null, null)));
+                    } else {
+                        setTextFill(Color.DARKGRAY);
+                        hoverProperty().addListener((_,_,newValue) -> {
+                            setBackground(new Background(new BackgroundFill(newValue ? Color.ORANGE : Color.TRANSPARENT, null, null)));
+                            setTextFill(newValue ? Color.WHITE : Color.DARKGRAY);
+                        });
+                        setDisable(false);
+                        setGraphic(null);
+                        setBackground(null);
+                    }
                 }
             }
         });
@@ -62,7 +90,10 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             protected void updateItem(Instruments item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) setText(null);
-                else setText(item.getName());
+                else {
+                    setText(item.getName());
+                    setTextFill(Color.WHITE);
+                }
             }
         });
 

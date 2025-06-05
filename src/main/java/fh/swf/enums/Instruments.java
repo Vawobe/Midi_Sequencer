@@ -1,7 +1,10 @@
 package fh.swf.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Instruments {
-    TITLE_1("Piano"),
+    TITLE_1("Piano", "M0 0H14V3H0ZM0 3v7H4V9H1V3H3V6H4v4H5V6H6V3H8V6H9V9H5v1h5V6h1V3h2V9H10v1h4V3"),
     ACOUSTIC_GRAND_PIANO("Acoustic Grand Piano", 0),
     BRIGHT_ACOUSTIC_PIANO("Bright Acoustic Piano", 1),
     ELECTRIC_GRAND_PIANO("Electric Grand Piano", 2),
@@ -10,7 +13,7 @@ public enum Instruments {
     ELECTRIC_PIANO_2("Electric Piano 2", 5),
     HARPSICHORD("Harpsichord", 6),
     CLAVI("Clavi", 7),
-    TITLE_2("Chromatic Percussion"),
+    TITLE_2("Chromatic Percussion", "M3 2H4V12H3V2ZM6 3H7V11H6V3ZM9 4H10V10H9V4ZM12 5H13V9H12V5Z"),
     CELESTA("Celesta", 8),
     GLOCKENSPIEL("Glockenspiel", 9),
     MUSIC_BOX("Music Box", 10),
@@ -19,7 +22,7 @@ public enum Instruments {
     XYLOPHONE("Xylophone", 13),
     TUBULAR_BELLS("Tubular Bells", 14),
     DULCIMER("Dulcimer", 15),
-    TITLE_3("Organ"),
+    TITLE_3("Organ", "M3 2H4V12H3V2ZM6 4H7v7H6ZM9 6h1v4H9ZM1 4H0v7H1ZM-2 6H-3v4h1Z"),
     DRAWBAR_ORGAN("Drawbar Organ", 16),
     PERCUSSIVE_ORGAN("Percussive Organ", 17),
     ROCK_ORGAN("Rock Organ", 18),
@@ -28,7 +31,7 @@ public enum Instruments {
     ACCORDION("Accordion", 21),
     HARMONICA("Harmonica", 22),
     TANGO_ACCORDION("Tango Accordion", 23),
-    TITLE_4("Guitar"),
+    TITLE_4("Guitar", "M9.5 5.5h1L11 6c1 0 1-1.5 0-1.5l-.5.5h-1ZM9.5 8h1l.5.5c1 0 1-1.5 0-1.5l-.5.5h-1Zm0-5h1l.5.5c1 0 1-1.5 0-1.5l-.5.5h-1Zm-6 5h-1L2 8.5C1 8.5 1 7 2 7l.5.5h1Zm0-2.5h-1L2 6C1 6 1 4.5 2 4.5l.5.5h1ZM3.5 3h-1L2 3.5C1 3.5 1 2 2 2l.5.5h1Zm0 8 3 1 3-1L9 .5 6.5 1 4 .5Z"),
     ACOUSTIC_GUITAR_NYLON("Acoustic Guitar (nylon)", 24),
     ACOUSTIC_GUITAR_STEEL("Acoustic Guitar (steel)", 25),
     ELECTRIC_GUITAR_JAZZ("Electric Guitar (jazz)", 26),
@@ -37,7 +40,7 @@ public enum Instruments {
     OVERDRIVEN_GUITAR("Overdriven Guitar", 29),
     DISTORTION_GUITAR("Distortion Guitar", 30),
     GUITAR_HARMONICS("Guitar Harmonics", 31),
-    TITLE_5("Bass"),
+    TITLE_5("Bass", "m5.5 3.5-.25.25c-.75 0-.75-1 0-1L5.5 3h.75v.5ZM5 5.25l-.25.25c-.75 0-.75-1 0-1l.25.25h.75v.5ZM4.25 7 4 7.25c-.75 0-.75-1 0-1l.25.25H5V7Zm-.5 1.75L3.5 9c-.75 0-.75-1 0-1l.25.25H4.5v.5Zm1.5 3.5c0-2.25-.25-2-1-2.5L6.75 3c.5-.75 1-2 2.25-2 1.5.25 2 2-.25 3.5C9.5 5.75 10 7.25 10.25 9 8.5 9 7.5 10.75 7.5 12.25H5.25Z"),
     ACOUSTIC_BASS("Acoustic Bass", 32),
     ELECTRIC_BASS_FINGER("Electric Bass (finger)", 33),
     ELECTRIC_BASS_PICK("Electric Bass (pick)", 34),
@@ -46,7 +49,7 @@ public enum Instruments {
     SLAP_BASS_2("Slap Bass 2", 37),
     SYNTH_BASS_1("Synth Bass 1", 38),
     SYNTH_BASS_2("Synth Bass 2", 39),
-    TITLE_6("Strings"),
+    TITLE_6("Strings", ""),
     VIOLIN("Violin", 40),
     VIOLA("Viola", 41),
     CELLO("Cello", 42),
@@ -55,7 +58,7 @@ public enum Instruments {
     PIZZICATO_STRINGS("Pizzicato Strings", 45),
     ORCHESTRAL_HARP("Orchestral Harp", 46),
     TIMPANI("Timpani", 47),
-    TITLE_7("Ensemble"),
+    TITLE_7("Ensemble", ""),
     STRING_ENSEMBLE_1("String Ensemble 1", 48),
     STRING_ENSEMBLE_2("String Ensemble 2", 49),
     SYNTHSTRINGS_1("SynthStrings 1", 50),
@@ -64,7 +67,7 @@ public enum Instruments {
     VOICE_OOHS("Voice Ooohs", 53),
     SYNTH_VOICE("Synth Voice", 54),
     ORCHESTRA_HIT("Orchestra Hit", 55),
-    TITLE_8("Brass"),
+    TITLE_8("Brass", ""),
     TRUMPET("Trumpet", 56),
     TROMBONE("Trombone", 57),
     TUBA("Tuba", 58),
@@ -73,7 +76,7 @@ public enum Instruments {
     BRASS_SECTION("Brass Section", 61),
     SYNTHBRASS_1("SynthBrass 1", 62),
     SYNTHBRASS_2("SynthBrass 2", 63),
-    TITLE_9("Reed"),
+    TITLE_9("Reed", ""),
     SOPRANO_SAX("Soprano Sax", 64),
     ALTO_SAX("Alto Sax", 65),
     TENOR_SAX("Tenor Sax", 66),
@@ -82,7 +85,7 @@ public enum Instruments {
     ENGLISH_HORN("English Horn", 69),
     BASSOON("Bassoon", 70),
     CLARINET("Clarinet", 71),
-    TITLE_10("Pipe"),
+    TITLE_10("Pipe",""),
     PICCOLO("Piccolo", 72),
     FLUTE("Flute", 73),
     RECORDER("Recorder", 74),
@@ -91,7 +94,7 @@ public enum Instruments {
     SHAKUHACHI("Shakuhachi", 77),
     WHISTLE("Whistle", 78),
     OCARINA("Ocarina", 79),
-    TITLE_11("Synth Lead"),
+    TITLE_11("Synth Lead",""),
     LEAD_1_SQUARE("Lead 1 (square)", 80),
     LEAD_2_SAWTOOTH("Lead 2 (sawtooth)", 81),
     LEAD_3_CALLIOPE("Lead 3 (calliope)", 82),
@@ -100,7 +103,7 @@ public enum Instruments {
     LEAD_6_VOICE("Lead 6 (voice)", 85),
     LEAD_7_FIFTHS("Lead 7 (fifths)", 86),
     LEAD_8_BASS_LEAD("Lead 8 (bass + lead)", 87),
-    TITLE_12("Synth Pad"),
+    TITLE_12("Synth Pad",""),
     PAD_1_NEW_AGE("Pad 1 (new age)", 88),
     PAD_2_WARM("Pad 2 (warm)", 89),
     PAD_3_POLYSYNTH("Pad 3 (polysynth)", 90),
@@ -109,7 +112,7 @@ public enum Instruments {
     PAD_6_METALLIC("Pad 6 (metallic)", 93),
     PAD_7_HALO("Pad 7 (halo)", 94),
     PAD_8_SWEEP("Pad 8 (sweep)", 95),
-    TITLE_13("Synth Effects"),
+    TITLE_13("Synth Effects",""),
     FX_1_RAIN("FX 1 (rain)", 96),
     FX_2_SOUNDTRACK("FX 2 (soundtrack)", 97),
     FX_3_CRYSTAL("FX 3 (crystal)", 98),
@@ -118,7 +121,7 @@ public enum Instruments {
     FX_6_GOBLINS("FX 6 (goblins)", 101),
     FX_7_ECHOES("FX 7 (echoes)", 102),
     FX_8_SCI_FI("FX 8 (sci-fi)", 103),
-    TITLE_14("Ethnic"),
+    TITLE_14("Ethnic",""),
     SITAR("Sitar", 104),
     BANJO("Banjo", 105),
     SHAMISEN("Shamisen", 106),
@@ -127,7 +130,7 @@ public enum Instruments {
     BAGPIPE("Bagpipe", 109),
     FIDDLE("Fiddle", 110),
     SHANAI("Shanai", 111),
-    TITLE_15("Percussive"),
+    TITLE_15("Percussive",""),
     TINKLE_BELL("Tinkle Bell", 112),
     AGOGO("Agogo", 113),
     STEEL_DRUM("Steel Drums", 114),
@@ -137,7 +140,7 @@ public enum Instruments {
     SYNTH_DRUM("Synth Drum", 118),
     REVERSE_CYMBAL("Reverse Cymbal", 119),
     GUITAR_FRET_NOISE("Guitar Fret Noise", 120),
-    TITLE_16("Sound Effects"),
+    TITLE_16("Sound Effects",""),
     BREATH_NOISE("Breath Noise", 121),
     SEASHORE("Seashore", 122),
     BIRD_TWEET("Bird Tweet", 123),
@@ -145,25 +148,21 @@ public enum Instruments {
     HELICOPTER("Helicopter", 125),
     APPLAUSE("Applause", 126),
     GUNSHOT("Gunshot", 127),
-    TITLE_17("Drums", -1),
+    TITLE_17("Drums", ""),
     DRUMS("Drums", 200);
 
     private final String name;
     private final int num;
+    private String svg;
 
     Instruments(String name, int num) {
         this.name = name;
         this.num = num;
     }
 
-    Instruments(String name) {
+    Instruments(String name, String svg) {
         this(name, -1);
-    }
+        this.svg = svg;
 
-    public String getName() {
-        return name;
-    }
-    public int getNum() {
-        return num;
     }
 }

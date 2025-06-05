@@ -1,6 +1,7 @@
 package fh.swf.menubar;
 
 import fh.swf.controller.PlaybackController;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -12,6 +13,7 @@ public class PlayButton extends MenuButton {
 
     public PlayButton() {
         super();
+        setTooltip(new Tooltip("Play"));
         playSymbol = new Polygon();
         playSymbol.getPoints().addAll(
                 0.0, 0.0,
@@ -37,7 +39,13 @@ public class PlayButton extends MenuButton {
     }
 
     public void changeGraphic() {
-        if(getGraphic() == playSymbol) setGraphic(pauseSymbol);
-        else setGraphic(playSymbol);
+        if(getGraphic() == playSymbol) {
+            setGraphic(pauseSymbol);
+            setTooltip(new Tooltip("Pause"));
+        }
+        else {
+            setGraphic(playSymbol);
+            setTooltip(new Tooltip("Play"));
+        }
     }
 }
