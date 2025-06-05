@@ -1,8 +1,6 @@
 package fh.swf;
 
 import fh.swf.controller.PlaybackController;
-import fh.swf.enums.Modes;
-import fh.swf.model.manager.ModeManager;
 import fh.swf.render.GridRenderer;
 import fh.swf.render.NoteRenderer;
 import javafx.scene.layout.*;
@@ -12,6 +10,7 @@ import static fh.swf.render.GridRenderer.CELL_WIDTH;
 
 public class PianoGrid extends Pane {
     @Getter private static final Playhead playhead = new Playhead();
+    @Getter private static final SelectionRectangle selectionRectangle = new SelectionRectangle();
 
     public PianoGrid() {
         setFocusTraversable(false);
@@ -22,7 +21,9 @@ public class PianoGrid extends Pane {
 
         playhead.endYProperty().bind(heightProperty());
         playhead.setVisible(false);
-        getChildren().addAll(GridRenderer.getInstance(), NoteRenderer.getInstance(), playhead);
+
+        getChildren().addAll(GridRenderer.getInstance(), NoteRenderer.getInstance(), selectionRectangle, playhead);
+
     }
     @Override
     protected void layoutChildren() {

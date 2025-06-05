@@ -3,6 +3,7 @@ package fh.swf.render;
 import fh.swf.Note;
 import fh.swf.NoteView;
 import fh.swf.PianoGrid;
+import fh.swf.SelectionRectangle;
 import fh.swf.controller.PlaybackController;
 import fh.swf.enums.Modes;
 import fh.swf.model.manager.MidiManager;
@@ -22,7 +23,6 @@ import static fh.swf.render.GridRenderer.CELL_WIDTH;
 
 public class NoteRenderer extends Pane {
     private static NoteRenderer instance;
-    private boolean isDragging;
 
     public static NoteRenderer getInstance() {
         if(instance == null) {
@@ -32,7 +32,6 @@ public class NoteRenderer extends Pane {
     }
 
     private NoteRenderer() {
-        isDragging = false;
         NoteManager.getInstance().getNotes().addListener((ListChangeListener<Note>) change -> {
             while (change.next()) {
                 if(change.wasAdded()) {
@@ -64,47 +63,76 @@ public class NoteRenderer extends Pane {
             }
         });
 
-        setOnMouseClicked(this::onMouseClickedEvent);
+        setOnMousePressed(this::onMousePressed);
         setOnMouseDragged(this::onMouseDraggedEvent);
         setOnMouseReleased(this::onMouseReleasedEvent);
     }
 
     private void onMouseDraggedEvent(MouseEvent event) {
-        isDragging = true;
-    }
-    private void onMouseReleasedEvent(MouseEvent event) {
-        isDragging = false;
-    }
-
-    private void onMouseClickedEvent(MouseEvent event) {
-        if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.DRAW) {
-            if (event.getTarget() == this && !isDragging) {
-                double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
-
-                int cell = (int) Math.ceil(event.getX() / (length * GridRenderer.zoom * 100)) - 1;
-                double col = cell * length;
-                int row = (int) (event.getY() / (CELL_HEIGHT * GridRenderer.zoom));
-
-                int channel = mainPane.getMenuBar().getInstrumentSelector().getCurrentInstrumentsChannel();
-
-                if (channel == -1) {
-                    channel = mainPane.getMenuBar().getInstrumentSelector().getNextFreeChannel();
-                    mainPane.getMenuBar().getInstrumentSelector().addCurrentInstrument(channel);
-                }
-
-                Note note = new Note(col, row, length, channel);
-                NoteManager.getInstance().addNote(note);
-
-                if (!PlaybackController.getInstance().isPlaying()) {
-                    MidiManager.getInstance().playNote(note);
-
-                    PauseTransition pause = new PauseTransition(Duration.millis(200));
-                    pause.setOnFinished(_ -> MidiManager.getInstance().stopNote(note));
-                    pause.play();
-                }
-                PlaybackController.getInstance().setCurrentBeat(PianoGrid.getPlayhead().getCurrentBeat());
-                PlaybackController.getInstance().updateNotes();
+        if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT) {
+            SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
+            if(selectionRectangle.isVisible()) {
+                selectionRectangle.setX(Math.min(selectionRectangle.getClickedX(), event.getX()));
+                selectionRectangle.setY(Math.min(selectionRectangle.getClickedY(), event.getY()));
+                selectionRectangle.setWidth(Math.abs(event.getX() - selectionRectangle.getClickedX()));
+                selectionRectangle.setHeight(Math.abs(event.getY() - selectionRectangle.getClickedY()));
             }
         }
+        event.consume();
+    }
+    private void onMouseReleasedEvent(MouseEvent event) {
+        if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT) {
+            SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
+            selectionRectangle.getAllNotesInRectangle().forEach(noteView -> noteView.getSelectedProperty().set(true));
+            selectionRectangle.setVisible(false);
+        }
+        event.consume();
+    }
+
+    private void onMousePressed(MouseEvent event) {
+        if(!event.isShiftDown()) {
+            getChildren().forEach(node -> {
+                if (node instanceof NoteView note) note.getSelectedProperty().set(false);
+            });
+        }
+        switch (ModeManager.getInstance().getCurrentModeProperty().get()) {
+            case DRAW:
+                if (event.getTarget() == this) addNote(event.getX(), event.getY());
+                break;
+            case SELECT:
+                SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
+                selectionRectangle.setVisible(true);
+                selectionRectangle.setClickedX(event.getX());
+                selectionRectangle.setClickedY(event.getY());
+                break;
+        }
+        event.consume();
+    }
+
+    private void addNote(double x, double y) {
+        double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
+
+        int cell = (int) Math.ceil(x / (length * GridRenderer.zoom * 100)) - 1;
+        double col = cell * length;
+        int row = (int) (y / (CELL_HEIGHT * GridRenderer.zoom));
+
+        int channel = mainPane.getMenuBar().getInstrumentSelector().getCurrentInstrumentsChannel();
+
+        if (channel == -1) {
+            channel = mainPane.getMenuBar().getInstrumentSelector().getNextFreeChannel();
+            mainPane.getMenuBar().getInstrumentSelector().addCurrentInstrument(channel);
+        }
+
+        Note note = new Note(col, row, length, channel);
+        NoteManager.getInstance().addNote(note);
+
+        if (!PlaybackController.getInstance().isPlaying()) {
+            MidiManager.getInstance().playNote(note);
+
+            PauseTransition pause = new PauseTransition(Duration.millis(200));
+            pause.setOnFinished(_ -> MidiManager.getInstance().stopNote(note));
+            pause.play();
+        }
+        PlaybackController.getInstance().updateNotes();
     }
 }

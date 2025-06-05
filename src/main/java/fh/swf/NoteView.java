@@ -1,13 +1,14 @@
 package fh.swf;
 
 import fh.swf.controller.PlaybackController;
+import fh.swf.enums.Modes;
+import fh.swf.model.manager.ModeManager;
 import fh.swf.model.manager.NoteManager;
 import fh.swf.render.GridRenderer;
+import fh.swf.render.NoteRenderer;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Cursor;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 
@@ -30,6 +31,7 @@ public class NoteView extends Pane {
     private double startLayoutY;
     private boolean resizing = false;
     private boolean dragging = false;
+    @Getter private final SimpleBooleanProperty selectedProperty = new SimpleBooleanProperty(false);
 
     public NoteView(Note note) {
         initColors();
@@ -37,6 +39,11 @@ public class NoteView extends Pane {
         setBackground(new Background(new BackgroundFill(colors.get(note.getChannel()), new CornerRadii(10), null)));
         double width = note.getLength() * CELL_WIDTH;
         setPrefSize(width*zoom, CELL_HEIGHT*zoom);
+
+        selectedProperty.addListener((_,_,newValue) -> {
+            if(newValue) setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.DASHED, new CornerRadii(10), null)));
+            else setBorder(null);
+        });
 
         initDragHandler();
     }
@@ -52,12 +59,22 @@ public class NoteView extends Pane {
 
         setOnMousePressed(event -> {
             if(event.isPrimaryButtonDown()) {
+                if(!selectedProperty.get()) {
+                    if(!event.isShiftDown()) {
+                        NoteRenderer.getInstance().getChildren().forEach(node -> {
+                            if (node instanceof NoteView noteView) noteView.getSelectedProperty().set(false);
+                        });
+                    }
+                    selectedProperty.set(true);
+                } else {
+                    if(event.isShiftDown()) selectedProperty.set(false);
+                }
                 if (event.getX() > getWidth() - 5) {
                     resizing = true;
                     dragStartX = event.getSceneX();
                     startWidth = getWidth();
                 } else {
-                    dragging = true;
+//                    dragging = true;
                     dragStartX = event.getSceneX();
                     dragStartY = event.getSceneY();
                     startLayoutX = getLayoutX();
@@ -65,16 +82,13 @@ public class NoteView extends Pane {
                 }
                 event.consume();
             } else if(event.isSecondaryButtonDown()) {
-                NoteManager.getInstance().removeNote(this.getNote());
-                if(NoteManager.getInstance().getNotes().stream().noneMatch(note -> note.getChannel() == this.note.getChannel())) {
-                    mainPane.getMenuBar().getInstrumentSelector().removeChannel(note.getChannel());
-                }
-                PlaybackController.getInstance().setCurrentBeat(PianoGrid.getPlayhead().getCurrentBeat());
-                PlaybackController.getInstance().updateNotes();
+                delete();
             }
         });
 
         setOnMouseDragged(event -> {
+            if(!resizing) dragging = true;
+
             double zoomedCellWidth = CELL_WIDTH * zoom;
             double zoomedCellHeight = CELL_HEIGHT * zoom;
 
@@ -115,15 +129,13 @@ public class NoteView extends Pane {
 
 
         setOnMouseReleased(event -> {
-            resizing = false;
-            dragging = false;
-            dragStartX = 0;
-            dragStartY = 0;
-            startWidth = 0;
-            startLayoutX = 0;
-            startLayoutY = 0;
+            if(!dragging) {
+                if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.ERASE) {
+                    delete();
+                }
+            }
+            resetAttributes();
 
-            PlaybackController.getInstance().setCurrentBeat(PianoGrid.getPlayhead().getCurrentBeat());
             PlaybackController.getInstance().updateNotes();
             event.consume();
         });
@@ -150,5 +162,23 @@ public class NoteView extends Pane {
         colors.add(Color.BLACK);
         colors.add(Color.BEIGE);
 
+    }
+
+    private void delete() {
+        NoteManager.getInstance().removeNote(this.getNote());
+        if(NoteManager.getInstance().getNotes().stream().noneMatch(note -> note.getChannel() == this.note.getChannel())) {
+            mainPane.getMenuBar().getInstrumentSelector().removeChannel(note.getChannel());
+        }
+        PlaybackController.getInstance().updateNotes();
+    }
+
+    private void resetAttributes() {
+        resizing = false;
+        dragging = false;
+        dragStartX = 0;
+        dragStartY = 0;
+        startWidth = 0;
+        startLayoutX = 0;
+        startLayoutY = 0;
     }
 }

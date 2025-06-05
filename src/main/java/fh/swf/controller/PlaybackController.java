@@ -145,6 +145,7 @@ public class PlaybackController {
     }
 
     public void updateNotes() {
+        currentBeat = PianoGrid.getPlayhead().getCurrentBeat();
         if(isPlaying()) {
             if(timeline != null) timeline.stop();
             buildTimeline();
