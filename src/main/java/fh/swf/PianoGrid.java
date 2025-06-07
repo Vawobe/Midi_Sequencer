@@ -26,9 +26,4 @@ public class PianoGrid extends Pane {
         super.layoutChildren();
         GridRenderer.getInstance().drawGrid();
     }
-
-    public void setZoom(double zoom) {
-        GridRenderer.zoom = zoom;
-        GridRenderer.getInstance().updateGridSize();
-    }
 }

@@ -1,5 +1,6 @@
 package fh.swf;
 
+import fh.swf.render.GridRenderer;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import lombok.Getter;
@@ -8,9 +9,12 @@ import static fh.swf.KeyBox.WIDTH;
 import static javafx.scene.input.ScrollEvent.SCROLL;
 
 public class PianoPane extends ScrollPane {
-    private double zoom = 1.0;
-    private final double MIN_ZOOM = 0.4;
-    private final double MAX_ZOOM = 3.0;
+//    public static double zoom = 1.0;
+    public static double zoomX = 1.0;
+    public static double zoomY = 1.0;
+    public static final double MIN_X_ZOOM = 0.1;
+    public static final double MIN_Y_ZOOM = 0.4;
+    public static final double MAX_ZOOM = 3.0;
 
     private final ScrollPane gridScrollPane;
     private final KeyBox keyBox;
@@ -73,7 +77,8 @@ public class PianoPane extends ScrollPane {
                 if(event.getDeltaY() < 0) {
                     zoomFactor = 1/zoomFactor;
                 }
-                zoom = Math.clamp(zoom * zoomFactor, MIN_ZOOM, MAX_ZOOM);
+                zoomX = Math.clamp(zoomX * zoomFactor, MIN_X_ZOOM, MAX_ZOOM);
+                zoomY = Math.clamp(zoomX * zoomFactor, MIN_Y_ZOOM, MAX_ZOOM);
                 applyZoom();
 
                 event.consume();
@@ -90,9 +95,12 @@ public class PianoPane extends ScrollPane {
     }
 
     private void applyZoom() {
-        pianoGrid.setZoom(zoom);
-        keyBox.setZoom(zoom);
-        drumBox.setZoom(zoom);
+//        pianoGrid.setZoom(zoom);
+//        keyBox.setZoom(zoom);
+//        drumBox.setZoom(zoom);
+        GridRenderer.getInstance().updateGridSize();
+        keyBox.updateBox();
+        drumBox.updateBox();
 
         pianoGrid.requestLayout();
         keyBox.requestLayout();

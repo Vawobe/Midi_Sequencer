@@ -2,6 +2,7 @@ package fh.swf.controller;
 
 import fh.swf.Note;
 import fh.swf.PianoGrid;
+import fh.swf.PianoPane;
 import fh.swf.model.manager.MidiManager;
 import fh.swf.model.manager.NoteManager;
 import fh.swf.render.GridRenderer;
@@ -21,7 +22,7 @@ public class PlaybackController {
 
 
     private Timeline timeline;
-    private Duration pauseTime;
+    private double pausedBeats;
     @Getter private final SimpleBooleanProperty isPlayingProperty;
     @Getter private final SimpleIntegerProperty bpmProperty;
 
@@ -36,7 +37,7 @@ public class PlaybackController {
     private PlaybackController() {
         isPlayingProperty = new SimpleBooleanProperty(false);
         bpmProperty = new SimpleIntegerProperty(120);
-        pauseTime = new Duration(0);
+        pausedBeats = 0;
     }
 
     public void startPlayback() {
@@ -63,7 +64,7 @@ public class PlaybackController {
 
     public void stopPlayback() {
         pausePlayback();
-        pauseTime = Duration.millis(0);
+        pausedBeats = 0;
     }
 
     public void buildTimeline() {
@@ -107,8 +108,8 @@ public class PlaybackController {
             double x = (trackLength*CELL_WIDTH*progress);
 
             KeyFrame frame = new KeyFrame(Duration.millis(t), _ -> {
-                PianoGrid.getPlayhead().setStartX(x * GridRenderer.zoom);
-                pauseTime = timeline.getCurrentTime();
+                PianoGrid.getPlayhead().setStartX(x * PianoPane.zoomX);
+                pausedBeats = timeline.getCurrentTime().toMillis() / getMsPerBeat();
             });
             timeline.getKeyFrames().add(frame);
         }
@@ -123,7 +124,7 @@ public class PlaybackController {
             if(timeline != null) timeline.stop();
             buildTimeline();
             timeline.play();
-            timeline.jumpTo(pauseTime);
+            timeline.jumpTo(Duration.millis(pausedBeats * getMsPerBeat()));
         }
     }
 }

@@ -15,8 +15,6 @@ import static fh.swf.render.GridRenderer.CELL_HEIGHT;
 import static fh.swf.render.GridRenderer.CELL_WIDTH;
 
 public class NoteView extends Pane {
-    private double zoom = 1.0;
-
     @Getter private final NoteViewModel viewModel;
     private double dragStartX;
     private double dragStartY;
@@ -32,7 +30,7 @@ public class NoteView extends Pane {
         setBackground(new Background(new BackgroundFill(note.getInstrument().getColor(), new CornerRadii(10), null)));
         setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(10), null)));
         double width = note.getLength() * CELL_WIDTH;
-        setPrefSize(width*zoom, CELL_HEIGHT*zoom);
+        setPrefSize(width*PianoPane.zoomX, CELL_HEIGHT*PianoPane.zoomY);
 
         selectedProperty.addListener((_,_,newValue) ->
                 setBorder(new Border(new BorderStroke(Color.DARKGRAY, newValue ? BorderStrokeStyle.DASHED :
@@ -84,8 +82,8 @@ public class NoteView extends Pane {
         setOnMouseDragged(event -> {
             if(!resizing) dragging = true;
 
-            double zoomedCellWidth = CELL_WIDTH * zoom;
-            double zoomedCellHeight = CELL_HEIGHT * zoom;
+            double zoomedCellWidth = CELL_WIDTH * PianoPane.zoomX;
+            double zoomedCellHeight = CELL_HEIGHT * PianoPane.zoomY;
 
             double gridWidth = 4.0/ GridRenderer.getInstance().getGridProperty().get();
 
@@ -138,16 +136,11 @@ public class NoteView extends Pane {
         });
     }
 
-    public void setZoom(double zoom) {
-        this.zoom = zoom;
-        updateNoteSize();
-    }
-
-    private void updateNoteSize() {
-        setLayoutX(viewModel.getColumnProperty().get() * CELL_WIDTH * zoom);
-        setLayoutY(viewModel.getRowProperty().get() * CELL_HEIGHT * zoom);
-        setPrefWidth(CELL_WIDTH * viewModel.getLengthProperty().get() * zoom);
-        setPrefHeight(CELL_HEIGHT * zoom);
+    public void updateNoteSize() {
+        setLayoutX(viewModel.getColumnProperty().get() * CELL_WIDTH * PianoPane.zoomX);
+        setLayoutY(viewModel.getRowProperty().get() * CELL_HEIGHT * PianoPane.zoomY);
+        setPrefWidth(CELL_WIDTH * viewModel.getLengthProperty().get() * PianoPane.zoomX);
+        setPrefHeight(CELL_HEIGHT * PianoPane.zoomY);
     }
 
     private void resetAttributes() {

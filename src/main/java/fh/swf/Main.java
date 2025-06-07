@@ -15,8 +15,6 @@ import javafx.stage.Stage;
  * Takt Markierung
  * gemeinsame verschieben/löschen/kopieren/einfügen
  * Zoom anpassen -> ab bestimmten Punkt nur horizontal Zoomen
- * BPM kaputt
- * Hö zwei Playhead?
  */
 public class Main extends Application {
     public static MainPane mainPane;

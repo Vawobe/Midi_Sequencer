@@ -75,9 +75,9 @@ public class KeyButton extends Button {
         }
     }
 
-    public void zoom(double zoom) {
-        setFont(Font.font(12*zoom));
-        setPrefHeight(25*zoom);
-        setLayoutY(row*25*zoom);
+    public void zoom() {
+        setFont(Font.font(12*PianoPane.zoomY));
+        setPrefHeight(25*PianoPane.zoomY);
+        setLayoutY(row*25*PianoPane.zoomY);
     }
 }

@@ -1,7 +1,10 @@
 package fh.swf.render;
 
+import fh.swf.Note;
 import fh.swf.NoteView;
+import fh.swf.PianoPane;
 import fh.swf.controller.PlaybackController;
+import fh.swf.model.manager.NoteManager;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -20,7 +23,6 @@ public class GridRenderer extends Pane {
     private final ArrayList<Line> horizontalLines;
     private final ArrayList<Line> verticalLines;
 
-    public static double zoom = 1.0;
     public static final int CELL_WIDTH = 100;
     public static final int CELL_HEIGHT = 25;
     private final Color gridColor = Color.GRAY;
@@ -43,22 +45,21 @@ public class GridRenderer extends Pane {
         verticalLines = new ArrayList<>();
 
         signatureProperty = new SimpleIntegerProperty(4);
-        strokeAmountProperty = new SimpleIntegerProperty(18);
+        strokeAmountProperty = new SimpleIntegerProperty(0);
         gridProperty = new SimpleIntegerProperty(4);
         updateGridSize();
 
         signatureProperty.addListener((_,_,_) -> {
             drawVerticalLines();
-            // TODO Funktioniert nicht?
-            PlaybackController.getInstance().buildTimeline();
+            PlaybackController.getInstance().updateNotes();
         });
-        strokeAmountProperty.addListener((_,_,_) -> drawVerticalLines());
+        strokeAmountProperty.addListener((_,_,_) -> drawHorizontalLines());
         gridProperty.addListener((_,_,_) -> drawVerticalLines());
     }
 
     public void drawGrid() {
-        drawHorizontalLines();
         drawVerticalLines();
+        drawHorizontalLines();
     }
 
     private void drawHorizontalLines() {
@@ -67,7 +68,7 @@ public class GridRenderer extends Pane {
 
         if(getWidth() > 0) {
             for(int row = 1; row <= (TONES.length* OCTAVES.length); row++) {
-                double y = row * CELL_HEIGHT * zoom;
+                double y = row * CELL_HEIGHT * PianoPane.zoomY;
                 Line hLine = new Line(0,y,getWidth(),y);
                 hLine.setStroke(gridColor);
                 hLine.setStrokeWidth(row % 12 == 0 ? 1 : 0.5);
@@ -78,6 +79,19 @@ public class GridRenderer extends Pane {
     }
 
     private void drawVerticalLines() {
+        int visibleCells = 0;
+        if(getParent() != null) {
+            double visibleWidth = ((Pane)getParent().getParent()).getWidth();
+            visibleCells = (int) Math.ceil(visibleWidth / (CELL_WIDTH * PianoPane.zoomX));
+        }
+        if(!NoteManager.getInstance().getNotes().isEmpty()) {
+            Note lastNote = NoteManager.getInstance().getNotes().getLast();
+            int lastCell = (int) Math.ceil(lastNote.getColumn()+lastNote.getLength() / CELL_WIDTH * PianoPane.zoomX);
+            if(lastCell > visibleCells) visibleCells = lastCell;
+        }
+        strokeAmountProperty.set(visibleCells/signatureProperty.get()+1);
+        changeWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * PianoPane.zoomX);
+
         getChildren().removeAll(verticalLines);
         verticalLines.clear();
 
@@ -86,7 +100,7 @@ public class GridRenderer extends Pane {
             double colAmount = signatureProperty.get()*strokeAmountProperty.get()*cellsPerQuarter;
 
             for(int col = 1; col <= colAmount; col++) {
-                double x = (col * CELL_WIDTH * zoom) / cellsPerQuarter;
+                double x = (col * CELL_WIDTH * PianoPane.zoomX) / cellsPerQuarter;
                 Line vLine = new Line(x,0,x,getHeight());
                 vLine.setStroke(gridColor);
 
@@ -103,16 +117,19 @@ public class GridRenderer extends Pane {
     }
 
     public void updateGridSize() {
-        setPrefWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * zoom);
-        setPrefHeight(TONES.length * (OCTAVES.length) * CELL_HEIGHT * zoom);
+        changeWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * PianoPane.zoomX);
+        setPrefHeight(TONES.length * (OCTAVES.length) * CELL_HEIGHT * PianoPane.zoomY);
 
         for(Node node : NoteRenderer.getInstance().getChildren()) {
             if(node instanceof NoteView noteView) {
-                noteView.setZoom(zoom);
+                noteView.updateNoteSize();
             }
         }
-
         drawGrid();
+    }
 
+    private void changeWidth(double width) {
+        setPrefWidth(width);
+        setWidth(width);
     }
 }

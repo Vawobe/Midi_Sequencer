@@ -8,8 +8,6 @@ import static fh.swf.model.manager.NoteManager.OCTAVES;
 import static fh.swf.model.manager.NoteManager.TONES;
 
 public class KeyBox extends Pane {
-    protected double zoom = 1.0;
-
     private KeyButton lastActiveButton = null;
     public static double WIDTH = 120;
 
@@ -28,7 +26,7 @@ public class KeyBox extends Pane {
             for(String tone : TONES) {
                 KeyButton keyButton = new KeyButton(tone + octave, row);
                 getChildren().add(keyButton);
-                keyButton.setLayoutY(row * 25*zoom);
+                keyButton.setLayoutY(row * 25*PianoPane.zoomX);
                 row++;
             }
         }
@@ -70,15 +68,15 @@ public class KeyBox extends Pane {
         return null;
     }
 
-    public void setZoom(double zoom) {
-        this.zoom = zoom;
-        updateBox();
-    }
+//    public void setZoom(double zoom) {
+//        this.zoom = zoom;
+//        updateBox();
+//    }
 
-    protected void updateBox() {
+    public void updateBox() {
         for(Node n : getChildren()) {
             if(n instanceof KeyButton btn) {
-                btn.zoom(zoom);
+                btn.zoom();
 
             }
         }
