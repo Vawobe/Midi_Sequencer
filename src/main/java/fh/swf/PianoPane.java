@@ -9,7 +9,7 @@ import static javafx.scene.input.ScrollEvent.SCROLL;
 
 public class PianoPane extends ScrollPane {
     private double zoom = 1.0;
-    private final double MIN_ZOOM = 0.415;
+    private final double MIN_ZOOM = 0.4;
     private final double MAX_ZOOM = 3.0;
 
     private final ScrollPane gridScrollPane;

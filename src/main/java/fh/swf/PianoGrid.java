@@ -13,7 +13,6 @@ public class PianoGrid extends Pane {
     @Getter private static final SelectionRectangle selectionRectangle = new SelectionRectangle();
 
     public PianoGrid() {
-        setFocusTraversable(false);
         prefHeightProperty().bind(GridRenderer.getInstance().prefHeightProperty());
         prefWidthProperty().bind(GridRenderer.getInstance().prefWidthProperty());
         NoteRenderer.getInstance().prefHeightProperty().bind(GridRenderer.getInstance().prefHeightProperty());

@@ -1,9 +1,6 @@
 package fh.swf.render;
 
-import fh.swf.Note;
-import fh.swf.NoteView;
-import fh.swf.PianoGrid;
-import fh.swf.SelectionRectangle;
+import fh.swf.*;
 import fh.swf.controller.PlaybackController;
 import fh.swf.enums.Modes;
 import fh.swf.model.manager.MidiManager;
@@ -11,6 +8,8 @@ import fh.swf.model.manager.ModeManager;
 import fh.swf.model.manager.NoteManager;
 import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
@@ -107,6 +106,15 @@ public class NoteRenderer extends Pane {
                 break;
         }
         event.consume();
+    }
+
+    public void onKeyPressedEvent(KeyEvent event) {
+        if (event.isControlDown() && event.getCode() == KeyCode.A) {
+            getChildren().forEach(node -> {
+                if(node instanceof NoteView noteView) noteView.getSelectedProperty().set(true);
+            });
+            event.consume();
+        }
     }
 
     private void addNote(double x, double y) {
