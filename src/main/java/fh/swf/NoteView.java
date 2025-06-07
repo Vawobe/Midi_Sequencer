@@ -3,7 +3,6 @@ package fh.swf;
 import fh.swf.controller.PlaybackController;
 import fh.swf.enums.Modes;
 import fh.swf.model.manager.ModeManager;
-import fh.swf.model.manager.NoteManager;
 import fh.swf.render.GridRenderer;
 import fh.swf.render.NoteRenderer;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -12,18 +11,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 
-import java.util.ArrayList;
-
-import static fh.swf.Main.mainPane;
 import static fh.swf.render.GridRenderer.CELL_HEIGHT;
 import static fh.swf.render.GridRenderer.CELL_WIDTH;
 
 public class NoteView extends Pane {
     private double zoom = 1.0;
 
-    private ArrayList<Color> colors;
-
-    @Getter private final Note note;
+    @Getter private final NoteViewModel viewModel;
     private double dragStartX;
     private double dragStartY;
     private double startWidth;
@@ -34,16 +28,18 @@ public class NoteView extends Pane {
     @Getter private final SimpleBooleanProperty selectedProperty = new SimpleBooleanProperty(false);
 
     public NoteView(Note note) {
-        initColors();
-        this.note = note;
-        setBackground(new Background(new BackgroundFill(colors.get(note.getChannel()), new CornerRadii(10), null)));
+        this.viewModel = new NoteViewModel(note);
+        setBackground(new Background(new BackgroundFill(note.getInstrument().getColor(), new CornerRadii(10), null)));
+        setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(10), null)));
         double width = note.getLength() * CELL_WIDTH;
         setPrefSize(width*zoom, CELL_HEIGHT*zoom);
 
-        selectedProperty.addListener((_,_,newValue) -> {
-            if(newValue) setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.DASHED, new CornerRadii(10), null)));
-            else setBorder(null);
-        });
+        selectedProperty.addListener((_,_,newValue) ->
+                setBorder(new Border(new BorderStroke(Color.DARKGRAY, newValue ? BorderStrokeStyle.DASHED :
+                        BorderStrokeStyle.SOLID, new CornerRadii(10), null))));
+
+        viewModel.getInstrumentProperty().addListener((_,_,newValue) ->
+                setBackground(new Background(new BackgroundFill(newValue.getColor(), new CornerRadii(10), null))));
 
         initDragHandler();
     }
@@ -74,7 +70,6 @@ public class NoteView extends Pane {
                     dragStartX = event.getSceneX();
                     startWidth = getWidth();
                 } else {
-//                    dragging = true;
                     dragStartX = event.getSceneX();
                     dragStartY = event.getSceneY();
                     startLayoutX = getLayoutX();
@@ -82,7 +77,7 @@ public class NoteView extends Pane {
                 }
                 event.consume();
             } else if(event.isSecondaryButtonDown()) {
-                delete();
+                viewModel.deleteNote();
             }
         });
 
@@ -102,7 +97,8 @@ public class NoteView extends Pane {
                 newWidth = beats * zoomedCellWidth;
 
                 setPrefWidth(newWidth);
-                note.setLength(beats);
+                viewModel.getLengthProperty().set(beats);
+                viewModel.updateNote();
                 event.consume();
             } else if (dragging) {
                 double deltaX = event.getSceneX() - dragStartX;
@@ -119,9 +115,10 @@ public class NoteView extends Pane {
 
 
                 double newColumn = (newLayoutX/zoomedCellWidth);
-                note.setColumn(newColumn);
-                note.setRow((int) (newLayoutY / zoomedCellHeight));
-                note.setMidiNote(107 - note.getRow());
+                viewModel.getColumnProperty().set(newColumn);
+                viewModel.getRowProperty().set((int) (newLayoutY / zoomedCellHeight));
+                viewModel.calculateMidiNote();
+                viewModel.updateNote();
 
                 event.consume();
             }
@@ -131,7 +128,7 @@ public class NoteView extends Pane {
         setOnMouseReleased(event -> {
             if(!dragging) {
                 if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.ERASE) {
-                    delete();
+                    viewModel.deleteNote();
                 }
             }
             resetAttributes();
@@ -147,29 +144,10 @@ public class NoteView extends Pane {
     }
 
     private void updateNoteSize() {
-        setLayoutX(note.getColumn() * CELL_WIDTH * zoom);
-        setLayoutY(note.getRow()* CELL_HEIGHT * zoom);
-        setPrefWidth(CELL_WIDTH * note.getLength() * zoom);
+        setLayoutX(viewModel.getColumnProperty().get() * CELL_WIDTH * zoom);
+        setLayoutY(viewModel.getRowProperty().get() * CELL_HEIGHT * zoom);
+        setPrefWidth(CELL_WIDTH * viewModel.getLengthProperty().get() * zoom);
         setPrefHeight(CELL_HEIGHT * zoom);
-    }
-
-    private void initColors() {
-        colors = new ArrayList<>();
-        colors.add(Color.BLUE);
-        colors.add(Color.RED);
-        colors.add(Color.GREEN);
-        colors.add(Color.VIOLET);
-        colors.add(Color.BLACK);
-        colors.add(Color.BEIGE);
-
-    }
-
-    private void delete() {
-        NoteManager.getInstance().removeNote(this.getNote());
-        if(NoteManager.getInstance().getNotes().stream().noneMatch(note -> note.getChannel() == this.note.getChannel())) {
-            mainPane.getMenuBar().getInstrumentSelector().removeChannel(note.getChannel());
-        }
-        PlaybackController.getInstance().updateNotes();
     }
 
     private void resetAttributes() {

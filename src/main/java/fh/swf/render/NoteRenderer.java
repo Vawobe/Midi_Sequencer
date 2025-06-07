@@ -51,7 +51,7 @@ public class NoteRenderer extends Pane {
                         ArrayList<NoteView> noteViewsToRemove = new ArrayList<>();
                         getChildren().forEach(node -> {
                             if(node instanceof NoteView noteView) {
-                                if(noteView.getNote() == note) {
+                                if(noteView.getViewModel().getNote() == note) {
                                     noteViewsToRemove.add(noteView);
                                 }
                             }
@@ -131,7 +131,7 @@ public class NoteRenderer extends Pane {
             mainPane.getMenuBar().getInstrumentSelector().addCurrentInstrument(channel);
         }
 
-        Note note = new Note(col, row, length, channel);
+        Note note = new Note(col, row, length, channel, mainPane.getMenuBar().getInstrumentSelector().getValue());
         NoteManager.getInstance().addNote(note);
 
         if (!PlaybackController.getInstance().isPlaying()) {

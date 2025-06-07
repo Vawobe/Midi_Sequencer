@@ -2,6 +2,7 @@ package fh.swf.model.manager;
 
 import fh.swf.Note;
 import fh.swf.enums.Instruments;
+import lombok.Getter;
 
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -11,7 +12,7 @@ public class MidiManager {
     private static MidiManager instance;
 
     private Synthesizer synth;
-    private MidiChannel[] channels;
+    @Getter private MidiChannel[] channels;
 
     private MidiManager() {
         try {

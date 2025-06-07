@@ -1,7 +1,10 @@
 package fh.swf.menubar;
 
+import fh.swf.NoteView;
 import fh.swf.enums.Instruments;
 import fh.swf.model.manager.MidiManager;
+import fh.swf.render.NoteRenderer;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
@@ -9,6 +12,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
 import lombok.Getter;
 
@@ -78,7 +82,13 @@ public class InstrumentSelector extends ComboBox<Instruments> {
                             setTextFill(newValue ? Color.WHITE : Color.DARKGRAY);
                         });
                         setDisable(false);
-                        setGraphic(null);
+                        if (item.getColor() != null) {
+                            Circle colorCircle = new Circle(5, item.getColor());
+                            colorCircle.setStroke(Color.DARKGRAY);
+                            setGraphic(colorCircle);
+                        } else {
+                            setGraphic(null);
+                        }
                         setBackground(null);
                     }
                 }
@@ -103,6 +113,21 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             }
             if (newValue == Instruments.DRUMS || oldValue == Instruments.DRUMS) {
                 mainPane.getPianoPane().changeKeyBox();
+            }
+            for(Node node : NoteRenderer.getInstance().getChildren()) {
+                if(node instanceof NoteView note) {
+                    if(note.getSelectedProperty().get()) {
+                        note.getViewModel().getInstrumentProperty().set(newValue);
+                        int newChannel = getCurrentInstrumentsChannel();
+                        if (newChannel == -1) {
+                            newChannel = getNextFreeChannel();
+                            addCurrentInstrument(newChannel);
+                        }
+                        note.getViewModel().getChannelProperty().set(newChannel);
+
+                        note.getViewModel().updateNote();
+                    }
+                }
             }
             setTooltip(new Tooltip(newValue.getName()));
         });

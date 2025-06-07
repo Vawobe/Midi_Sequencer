@@ -11,7 +11,11 @@ public class BPMField extends TextField {
     public BPMField() {
         setPromptText("BPM");
         setPrefWidth(60);
-        setText("120");setOnAction(_ -> PlaybackController.getInstance().changeBpm());
+        setText(String.valueOf(PlaybackController.getInstance().getBpmProperty().get()));
+        setOnAction(_ -> {
+            PlaybackController.getInstance().getBpmProperty().set(Integer.parseInt(getText()));
+            PlaybackController.getInstance().updateNotes();
+        });
 
         setStyle("-fx-text-fill: white; -fx-prompt-text-fill: white;") ;
 
