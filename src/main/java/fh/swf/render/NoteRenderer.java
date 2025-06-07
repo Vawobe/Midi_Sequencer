@@ -109,11 +109,25 @@ public class NoteRenderer extends Pane {
     }
 
     public void onKeyPressedEvent(KeyEvent event) {
-        if (event.isControlDown() && event.getCode() == KeyCode.A) {
-            getChildren().forEach(node -> {
-                if(node instanceof NoteView noteView) noteView.getSelectedProperty().set(true);
-            });
-            event.consume();
+        if (event.isControlDown()) {
+            if(event.getCode() == KeyCode.A) {
+                getChildren().forEach(node -> {
+                    if (node instanceof NoteView noteView) noteView.getSelectedProperty().set(true);
+                });
+                event.consume();
+            }
+        } else {
+            if(event.getCode() == KeyCode.DELETE) {
+                ArrayList<NoteViewModel> notesToDelete = new ArrayList<>();
+                getChildren().forEach(node -> {
+                    if (node instanceof NoteView noteView) {
+                        if(noteView.getSelectedProperty().get()) {
+                            notesToDelete.add(noteView.getViewModel());
+                        }
+                    }
+                });
+                for(NoteViewModel note : notesToDelete) note.deleteNote();
+            }
         }
     }
 
