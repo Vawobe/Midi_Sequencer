@@ -37,8 +37,8 @@ public class NoteRenderer extends Pane {
                     for(Note note : change.getAddedSubList()) {
                         NoteView noteView = new NoteView(note);
 
-                        double snappedX = note.getColumn() * CELL_WIDTH * (4.0/GridRenderer.getInstance().getGridProperty().get()) * PianoPane.zoomX;
-                        double snappedY = note.getRow() * CELL_HEIGHT * PianoPane.zoomY;
+                        double snappedX = note.getColumn() * CELL_WIDTH * (4.0/GridRenderer.getInstance().getGridProperty().get()) * PianoGridPane.zoomX;
+                        double snappedY = note.getRow() * CELL_HEIGHT * PianoGridPane.zoomY;
 
                         noteView.setLayoutX(snappedX);
                         noteView.setLayoutY(snappedY);
@@ -120,9 +120,9 @@ public class NoteRenderer extends Pane {
     private void addNote(double x, double y) {
         double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
 
-        int cell = (int) Math.ceil(x / (length * PianoPane.zoomX * 100)) - 1;
+        int cell = (int) Math.ceil(x / (length * PianoGridPane.zoomX * 100)) - 1;
         double col = cell * length;
-        int row = (int) (y / (CELL_HEIGHT * PianoPane.zoomY));
+        int row = (int) (y / (CELL_HEIGHT * PianoGridPane.zoomY));
 
         int channel = mainPane.getMenuBar().getInstrumentSelector().getCurrentInstrumentsChannel();
 

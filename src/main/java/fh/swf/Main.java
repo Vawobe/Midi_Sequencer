@@ -11,10 +11,7 @@ import javafx.stage.Stage;
  * Schlagzeug??
  * Speichern
  * Laden
- * Automatisches Grid verlängern
- * Takt Markierung
  * gemeinsame verschieben/löschen/kopieren/einfügen
- * Zoom anpassen -> ab bestimmten Punkt nur horizontal Zoomen
  */
 public class Main extends Application {
     public static MainPane mainPane;

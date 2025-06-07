@@ -2,6 +2,7 @@ package fh.swf;
 
 import fh.swf.controller.PlaybackController;
 import fh.swf.enums.Modes;
+import fh.swf.model.manager.MidiManager;
 import fh.swf.model.manager.ModeManager;
 import fh.swf.render.GridRenderer;
 import fh.swf.render.NoteRenderer;
@@ -30,7 +31,7 @@ public class NoteView extends Pane {
         setBackground(new Background(new BackgroundFill(note.getInstrument().getColor(), new CornerRadii(10), null)));
         setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(10), null)));
         double width = note.getLength() * CELL_WIDTH;
-        setPrefSize(width*PianoPane.zoomX, CELL_HEIGHT*PianoPane.zoomY);
+        setPrefSize(width*PianoGridPane.zoomX, CELL_HEIGHT*PianoGridPane.zoomY);
 
         selectedProperty.addListener((_,_,newValue) ->
                 setBorder(new Border(new BorderStroke(Color.DARKGRAY, newValue ? BorderStrokeStyle.DASHED :
@@ -82,8 +83,8 @@ public class NoteView extends Pane {
         setOnMouseDragged(event -> {
             if(!resizing) dragging = true;
 
-            double zoomedCellWidth = CELL_WIDTH * PianoPane.zoomX;
-            double zoomedCellHeight = CELL_HEIGHT * PianoPane.zoomY;
+            double zoomedCellWidth = CELL_WIDTH * PianoGridPane.zoomX;
+            double zoomedCellHeight = CELL_HEIGHT * PianoGridPane.zoomY;
 
             double gridWidth = 4.0/ GridRenderer.getInstance().getGridProperty().get();
 
@@ -96,7 +97,6 @@ public class NoteView extends Pane {
 
                 setPrefWidth(newWidth);
                 viewModel.getLengthProperty().set(beats);
-                viewModel.updateNote();
                 event.consume();
             } else if (dragging) {
                 double deltaX = event.getSceneX() - dragStartX;
@@ -116,7 +116,6 @@ public class NoteView extends Pane {
                 viewModel.getColumnProperty().set(newColumn);
                 viewModel.getRowProperty().set((int) (newLayoutY / zoomedCellHeight));
                 viewModel.calculateMidiNote();
-                viewModel.updateNote();
 
                 event.consume();
             }
@@ -124,6 +123,8 @@ public class NoteView extends Pane {
 
 
         setOnMouseReleased(event -> {
+            MidiManager.getInstance().stopNote(viewModel.getNote());
+            viewModel.updateNote();
             if(!dragging) {
                 if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.ERASE) {
                     viewModel.deleteNote();
@@ -137,10 +138,10 @@ public class NoteView extends Pane {
     }
 
     public void updateNoteSize() {
-        setLayoutX(viewModel.getColumnProperty().get() * CELL_WIDTH * PianoPane.zoomX);
-        setLayoutY(viewModel.getRowProperty().get() * CELL_HEIGHT * PianoPane.zoomY);
-        setPrefWidth(CELL_WIDTH * viewModel.getLengthProperty().get() * PianoPane.zoomX);
-        setPrefHeight(CELL_HEIGHT * PianoPane.zoomY);
+        setLayoutX(viewModel.getColumnProperty().get() * CELL_WIDTH * PianoGridPane.zoomX);
+        setLayoutY(viewModel.getRowProperty().get() * CELL_HEIGHT * PianoGridPane.zoomY);
+        setPrefWidth(CELL_WIDTH * viewModel.getLengthProperty().get() * PianoGridPane.zoomX);
+        setPrefHeight(CELL_HEIGHT * PianoGridPane.zoomY);
     }
 
     private void resetAttributes() {

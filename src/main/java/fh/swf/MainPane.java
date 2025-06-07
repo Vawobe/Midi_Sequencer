@@ -2,25 +2,24 @@ package fh.swf;
 
 import fh.swf.menubar.MenuBar;
 import fh.swf.optionbar.OptionBar;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 
 @Getter
 public class MainPane extends BorderPane {
-    private final PianoPane pianoPane;
     private final MenuBar menuBar;
     private final OptionBar optionBar;
+    private final PianoGridPane pianoGridPane;
 
     public MainPane() {
-        setBackground(new Background(new BackgroundFill(Color.GREEN, null, null)));
-        pianoPane = new PianoPane();
+        setBackground(new Background(new BackgroundFill(Color.DARKGRAY, null, null)));
         menuBar = new MenuBar();
         optionBar = new OptionBar();
+        pianoGridPane = new PianoGridPane();
+
         setTop(menuBar);
-        setCenter(pianoPane);
         setBottom(optionBar);
+        setCenter(pianoGridPane);
     }
 }

@@ -1,8 +1,6 @@
 package fh.swf.render;
 
-import fh.swf.Note;
-import fh.swf.NoteView;
-import fh.swf.PianoPane;
+import fh.swf.*;
 import fh.swf.controller.PlaybackController;
 import fh.swf.model.manager.NoteManager;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -25,7 +23,7 @@ public class GridRenderer extends Pane {
 
     public static final int CELL_WIDTH = 100;
     public static final int CELL_HEIGHT = 25;
-    private final Color gridColor = Color.GRAY;
+    private final Color gridColor = Color.LIGHTGRAY;
 
     @Getter private final SimpleIntegerProperty signatureProperty;
     @Getter private final SimpleIntegerProperty strokeAmountProperty;
@@ -68,7 +66,7 @@ public class GridRenderer extends Pane {
 
         if(getWidth() > 0) {
             for(int row = 1; row <= (TONES.length* OCTAVES.length); row++) {
-                double y = row * CELL_HEIGHT * PianoPane.zoomY;
+                double y = row * CELL_HEIGHT * PianoGridPane.zoomY;
                 Line hLine = new Line(0,y,getWidth(),y);
                 hLine.setStroke(gridColor);
                 hLine.setStrokeWidth(row % 12 == 0 ? 1 : 0.5);
@@ -82,15 +80,15 @@ public class GridRenderer extends Pane {
         int visibleCells = 0;
         if(getParent() != null) {
             double visibleWidth = ((Pane)getParent().getParent()).getWidth();
-            visibleCells = (int) Math.ceil(visibleWidth / (CELL_WIDTH * PianoPane.zoomX));
+            visibleCells = (int) Math.ceil(visibleWidth / (CELL_WIDTH * PianoGridPane.zoomX));
         }
         if(!NoteManager.getInstance().getNotes().isEmpty()) {
             Note lastNote = NoteManager.getInstance().getNotes().getLast();
-            int lastCell = (int) Math.ceil(lastNote.getColumn()+lastNote.getLength() / CELL_WIDTH * PianoPane.zoomX);
+            int lastCell = (int) Math.ceil(lastNote.getColumn()+lastNote.getLength() / CELL_WIDTH * PianoGridPane.zoomX);
             if(lastCell > visibleCells) visibleCells = lastCell;
         }
         strokeAmountProperty.set(visibleCells/signatureProperty.get()+1);
-        changeWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * PianoPane.zoomX);
+        changeWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * PianoGridPane.zoomX);
 
         getChildren().removeAll(verticalLines);
         verticalLines.clear();
@@ -100,7 +98,7 @@ public class GridRenderer extends Pane {
             double colAmount = signatureProperty.get()*strokeAmountProperty.get()*cellsPerQuarter;
 
             for(int col = 1; col <= colAmount; col++) {
-                double x = (col * CELL_WIDTH * PianoPane.zoomX) / cellsPerQuarter;
+                double x = (col * CELL_WIDTH * PianoGridPane.zoomX) / cellsPerQuarter;
                 Line vLine = new Line(x,0,x,getHeight());
                 vLine.setStroke(gridColor);
 
@@ -117,8 +115,8 @@ public class GridRenderer extends Pane {
     }
 
     public void updateGridSize() {
-        changeWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * PianoPane.zoomX);
-        setPrefHeight(TONES.length * (OCTAVES.length) * CELL_HEIGHT * PianoPane.zoomY);
+        changeWidth(signatureProperty.get() * strokeAmountProperty.get() * CELL_WIDTH * PianoGridPane.zoomX);
+        setPrefHeight(TONES.length * (OCTAVES.length) * CELL_HEIGHT * PianoGridPane.zoomY);
 
         for(Node node : NoteRenderer.getInstance().getChildren()) {
             if(node instanceof NoteView noteView) {

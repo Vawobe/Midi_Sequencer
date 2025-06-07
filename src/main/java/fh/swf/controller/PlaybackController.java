@@ -2,7 +2,7 @@ package fh.swf.controller;
 
 import fh.swf.Note;
 import fh.swf.PianoGrid;
-import fh.swf.PianoPane;
+import fh.swf.PianoGridPane;
 import fh.swf.model.manager.MidiManager;
 import fh.swf.model.manager.NoteManager;
 import fh.swf.render.GridRenderer;
@@ -108,7 +108,7 @@ public class PlaybackController {
             double x = (trackLength*CELL_WIDTH*progress);
 
             KeyFrame frame = new KeyFrame(Duration.millis(t), _ -> {
-                PianoGrid.getPlayhead().setStartX(x * PianoPane.zoomX);
+                PianoGrid.getPlayhead().setStartX(x * PianoGridPane.zoomX);
                 pausedBeats = timeline.getCurrentTime().toMillis() / getMsPerBeat();
             });
             timeline.getKeyFrames().add(frame);

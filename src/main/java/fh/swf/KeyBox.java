@@ -26,7 +26,7 @@ public class KeyBox extends Pane {
             for(String tone : TONES) {
                 KeyButton keyButton = new KeyButton(tone + octave, row);
                 getChildren().add(keyButton);
-                keyButton.setLayoutY(row * 25*PianoPane.zoomX);
+                keyButton.setLayoutY(row * 25*PianoGridPane.zoomX);
                 row++;
             }
         }

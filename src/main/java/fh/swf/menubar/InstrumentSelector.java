@@ -112,11 +112,12 @@ public class InstrumentSelector extends ComboBox<Instruments> {
                 MidiManager.getInstance().changeDemoChannel(newValue);
             }
             if (newValue == Instruments.DRUMS || oldValue == Instruments.DRUMS) {
-                mainPane.getPianoPane().changeKeyBox();
+                mainPane.getPianoGridPane().changeKeyBox();
             }
             for(Node node : NoteRenderer.getInstance().getChildren()) {
                 if(node instanceof NoteView note) {
                     if(note.getSelectedProperty().get()) {
+                        MidiManager.getInstance().stopNote(note.getViewModel().getNote());
                         note.getViewModel().getInstrumentProperty().set(newValue);
                         int newChannel = getCurrentInstrumentsChannel();
                         if (newChannel == -1) {

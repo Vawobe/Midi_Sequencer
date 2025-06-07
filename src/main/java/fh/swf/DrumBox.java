@@ -16,7 +16,7 @@ public class DrumBox extends KeyBox{
 
             DrumButton drumButton = new DrumButton(drum, isBlack ? Color.BLACK : Color.WHITE, row);
             getChildren().add(drumButton);
-            drumButton.setLayoutY(row * 25 * PianoPane.zoomX);
+            drumButton.setLayoutY(row * 25 * PianoGridPane.zoomX);
             row++;
         }
     }
