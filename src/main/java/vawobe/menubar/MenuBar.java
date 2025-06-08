@@ -7,6 +7,7 @@ import vawobe.menubar.other.BPMField;
 import vawobe.menubar.other.TitleBox;
 import vawobe.menubar.other.VolumeBox;
 import vawobe.menubar.player.PlayerButtonBox;
+import vawobe.menubar.saveload.LoadButton;
 import vawobe.menubar.saveload.SaveButton;
 import vawobe.menubar.zoom.ZoomBox;
 import javafx.geometry.Insets;
@@ -37,6 +38,7 @@ public class MenuBar extends HBox {
                 new CopyPasteButtonBox(),
                 new ZoomBox(),
                 new SaveButton(),
+                new LoadButton(),
                 spacer,
                 new VolumeBox()
         );

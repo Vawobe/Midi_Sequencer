@@ -10,9 +10,7 @@ import javafx.stage.Stage;
 /**
  * TODO:
  * Schlagzeug??
- * Speichern -> .midfx
  * Export -> .wav, .mp3, .mid?
- * Laden -> .midifx
  * Import -> .mid
  * Redo und Undo
  * Funktionen für copy, paste, cut

@@ -4,8 +4,10 @@ import vawobe.enums.Instruments;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Setter @Getter
-public class Note {
+public class Note implements Serializable {
     private double column;
     private int row;
     private int midiNote;
