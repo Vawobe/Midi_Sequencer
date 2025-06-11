@@ -8,7 +8,7 @@ import vawobe.menubar.other.TitleBox;
 import vawobe.menubar.other.VolumeBox;
 import vawobe.menubar.player.PlayerButtonBox;
 import vawobe.menubar.saveload.LoadButton;
-import vawobe.menubar.saveload.SaveButton;
+import vawobe.menubar.saveload.SaveSplitButton;
 import vawobe.menubar.zoom.ZoomBox;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
@@ -19,11 +19,14 @@ import static vawobe.Main.mainColor;
 @Getter
 public class MenuBar extends HBox {
     private final InstrumentBox instrumentBox;
+    private final TitleBox titleBox;
 
     public MenuBar() {
         setSpacing(5);
         setPadding(new Insets(10));
         setBackground(new Background(new BackgroundFill(mainColor, null, null)));
+
+        titleBox = new TitleBox();
 
         instrumentBox = new InstrumentBox();
         Region spacer = new Region();
@@ -32,12 +35,12 @@ public class MenuBar extends HBox {
         getChildren().addAll(
                 new PlayerButtonBox(),
                 new BPMField(),
-                new TitleBox(),
+                titleBox,
                 new ModeButtonBox(),
                 instrumentBox,
                 new CopyPasteButtonBox(),
                 new ZoomBox(),
-                new SaveButton(),
+                new SaveSplitButton(),
                 new LoadButton(),
                 spacer,
                 new VolumeBox()

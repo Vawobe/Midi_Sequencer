@@ -19,7 +19,7 @@ public class Note implements Serializable {
     public Note(double column, int row, double length, int channel, Instruments instrument) {
         this.column = column;
         this.row = row;
-        this.midiNote = 107 - row;
+        this.midiNote = 107 - row - 12;
         this.length = length;
         this.channel = channel;
         this.velocity = 100;

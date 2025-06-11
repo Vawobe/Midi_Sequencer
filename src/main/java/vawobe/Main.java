@@ -11,17 +11,17 @@ import javafx.stage.Stage;
  * TODO:
  * Schlagzeug??
  * Export -> .wav, .mp3, .mid?
- * Import -> .mid
  * Redo und Undo
  * Funktionen für copy, paste, cut
- * gemeinsame verschieben/löschen/kopieren/einfügen
+ * gemeinsame kopieren/einfügen
  * Noten Lautstärke
  * Show measure number/Show time für den Takt
- * Bei hover über SignatureLine -> Zeit als Tooltip (zb: 00:06.000)
  * Info Button
  * (Auto scroll und key guide)?
- * Metronom?
  * Performance beim weit rauszoomen und Note einfügen?
+ * Channel nicht freigeben?
+ * beim laden die channel programme setzen
+ * laden mit richtigem Instrument
  */
 public class Main extends Application {
     public static MainPane mainPane;

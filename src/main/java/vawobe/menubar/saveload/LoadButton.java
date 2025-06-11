@@ -3,6 +3,7 @@ package vawobe.menubar.saveload;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import vawobe.ImportMidiPane;
 import vawobe.Note;
 import vawobe.controller.PlaybackController;
 import vawobe.menubar.MenuButton;
@@ -10,6 +11,11 @@ import vawobe.model.manager.NoteManager;
 import vawobe.render.GridRenderer;
 import vawobe.save.ProjectData;
 import vawobe.save.ProjectIO;
+
+import java.util.List;
+import java.util.Map;
+
+import static vawobe.Main.mainPane;
 
 
 public class LoadButton extends MenuButton {
@@ -24,11 +30,21 @@ public class LoadButton extends MenuButton {
         setTooltip(new Tooltip("Load"));
 
         setOnAction(_ -> {
-            ProjectData data = ProjectIO.loadProject(getScene().getWindow());
-            PlaybackController.getInstance().getBpmProperty().set(data.getBpm());
-            GridRenderer.getInstance().getSignatureProperty().set(data.getSignature());
-            for(Note note : data.getNotes()) {
-                NoteManager.getInstance().addNote(note);
+            PlaybackController.getInstance().stopPlayback();
+            Object[] data = ProjectIO.loadProject();
+            if(data != null) {
+                String name = (String) data[0];
+                NoteManager.getInstance().getNotes().clear();
+                mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(name);
+                if (data[1] instanceof ProjectData projectData) {
+                    PlaybackController.getInstance().getBpmProperty().set(projectData.getBpm());
+                    GridRenderer.getInstance().getSignatureProperty().set(projectData.getSignature());
+                    for (Note note : projectData.getNotes()) {
+                        NoteManager.getInstance().addNote(note);
+                    }
+                } else {
+                    ImportMidiPane.open((Map<Integer,List<Note>>) data[1]);
+                }
             }
         });
 

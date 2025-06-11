@@ -1,14 +1,11 @@
 package vawobe;
 
-import vawobe.controller.PlaybackController;
 import vawobe.enums.Instruments;
 import vawobe.model.manager.NoteManager;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import lombok.Getter;
-
-import static vawobe.Main.mainPane;
 
 @Getter
 public class NoteViewModel {
@@ -44,14 +41,10 @@ public class NoteViewModel {
     }
 
     public void calculateMidiNote() {
-        midiNoteProperty.set(107 - getRowProperty().get());
+        midiNoteProperty.set(107 - getRowProperty().get() - 12);
     }
 
     public void deleteNote() {
         NoteManager.getInstance().removeNote(note);
-        if(NoteManager.getInstance().getNotes().stream().noneMatch(note -> note.getChannel() == this.note.getChannel())) {
-            mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().removeChannel(note.getChannel());
-        }
-        PlaybackController.getInstance().updateNotes();
     }
 }

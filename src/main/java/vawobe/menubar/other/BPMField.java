@@ -23,6 +23,11 @@ public class BPMField extends HBox {
         label.setTextFill(Color.LIGHTGRAY);
 
         bpmTextField = new TextField(String.valueOf(PlaybackController.getInstance().getBpmProperty().get()));
+        PlaybackController.getInstance().getBpmProperty().addListener((_,_,newValue) -> {
+            if(!newValue.toString().equals(bpmTextField.getText())) {
+                bpmTextField.setText(newValue.toString());
+            }
+        });
         bpmTextField.setPrefWidth(35);
         bpmTextField.setBackground(new Background(new BackgroundFill(mainColor, new CornerRadii(5), null)));
         bpmTextField.setStyle("-fx-text-fill: white;") ;
@@ -47,10 +52,8 @@ public class BPMField extends HBox {
 
     private void action(ActionEvent event) {
         if(!bpmTextField.getText().isEmpty() && Integer.parseInt(bpmTextField.getText()) >= 10) {
-            System.out.println("Ja");
             PlaybackController.getInstance().getBpmProperty().set(Integer.parseInt(bpmTextField.getText()));
             PlaybackController.getInstance().updateNotes();
-
         } else
             bpmTextField.setText(String.valueOf(PlaybackController.getInstance().getBpmProperty().get()));
         bpmTextField.getParent().requestFocus();

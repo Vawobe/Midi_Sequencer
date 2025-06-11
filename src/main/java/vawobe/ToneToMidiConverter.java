@@ -21,7 +21,7 @@ public class ToneToMidiConverter {
             default -> throw new IllegalArgumentException("Unbekannter Ton: " + toneName);
         };
 
-        return 12 * (octave + 1) + base; // MIDI-Standard: C4 = 60
+        return 12 * (octave + 1) + base - 12;
     }
 
 }

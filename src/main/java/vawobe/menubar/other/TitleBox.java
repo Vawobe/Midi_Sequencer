@@ -6,11 +6,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import lombok.Getter;
 
 import static vawobe.Main.mainColor;
 
+@Getter
 public class TitleBox extends HBox {
     private final TextField titleTextField;
+
     public TitleBox() {
         Label label = new Label("Title");
         label.setTextFill(Color.LIGHTGRAY);

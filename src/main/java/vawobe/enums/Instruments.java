@@ -3,6 +3,9 @@ package vawobe.enums;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import static javafx.scene.paint.Color.*;
 
 @Getter
@@ -167,5 +170,12 @@ public enum Instruments {
     Instruments(String name, String svg) {
         this(name, -1, null);
         this.svg = svg;
+    }
+
+    public static Instruments getInstrumentByNum(int number) {
+        return Arrays.stream(values()).filter(instruments -> instruments.getNum() == number).findFirst().orElse(ACOUSTIC_GRAND_PIANO);
+    }
+    public static Instruments getInstrumentByName(String name) {
+        return Arrays.stream(values()).filter(instruments -> Objects.equals(instruments.getName(), name)).findFirst().orElse(ACOUSTIC_GRAND_PIANO);
     }
 }

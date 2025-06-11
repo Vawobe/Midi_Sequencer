@@ -16,6 +16,7 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
+import static vawobe.Main.main;
 import static vawobe.Main.mainPane;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
 import static vawobe.render.GridRenderer.CELL_WIDTH;
@@ -132,29 +133,29 @@ public class NoteRenderer extends Pane {
     }
 
     private void addNote(double x, double y) {
-        double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
-
-        int cell = (int) Math.ceil(x / (length * PianoGridPane.zoomX.get() * 100)) - 1;
-        double col = cell * length;
-        int row = (int) (y / (CELL_HEIGHT * PianoGridPane.zoomY.get()));
-
         int channel = mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getCurrentInstrumentsChannel();
+        if(channel == -1) channel = mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().addCurrentInstrument();
 
-        if (channel == -1) {
-            channel = mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getNextFreeChannel();
-            mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().addCurrentInstrument(channel);
+        if(channel != -1) {
+            double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
+
+            int cell = (int) Math.ceil(x / (length * PianoGridPane.zoomX.get() * 100)) - 1;
+            double col = cell * length;
+            int row = (int) (y / (CELL_HEIGHT * PianoGridPane.zoomY.get()));
+
+            Note note = new Note(col, row, length, channel, mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
+            NoteManager.getInstance().addNote(note);
+
+            if (!PlaybackController.getInstance().isPlaying()) {
+                MidiManager.getInstance().playNote(note);
+
+                PauseTransition pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(_ -> MidiManager.getInstance().stopNote(note));
+                pause.play();
+            }
+            PlaybackController.getInstance().updateNotes();
+        } else {
+            System.err.println("Keine freien Kanäle");
         }
-
-        Note note = new Note(col, row, length, channel, mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
-        NoteManager.getInstance().addNote(note);
-
-        if (!PlaybackController.getInstance().isPlaying()) {
-            MidiManager.getInstance().playNote(note);
-
-            PauseTransition pause = new PauseTransition(Duration.millis(200));
-            pause.setOnFinished(_ -> MidiManager.getInstance().stopNote(note));
-            pause.play();
-        }
-        PlaybackController.getInstance().updateNotes();
     }
 }
