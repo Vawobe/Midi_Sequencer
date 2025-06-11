@@ -34,7 +34,7 @@ public class LoadButton extends MenuButton {
             Object[] data = ProjectIO.loadProject();
             if(data != null) {
                 String name = (String) data[0];
-                NoteManager.getInstance().getNotes().clear();
+                NoteManager.getInstance().getNotesList().clear();
                 mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(name);
                 if (data[1] instanceof ProjectData projectData) {
                     PlaybackController.getInstance().getBpmProperty().set(projectData.getBpm());

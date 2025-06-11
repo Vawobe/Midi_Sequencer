@@ -87,8 +87,8 @@ public class GridRenderer extends Pane {
             double visibleWidth = ((Pane)getParent().getParent()).getWidth();
             visibleCells = (int) Math.ceil(visibleWidth / (CELL_WIDTH * PianoGridPane.zoomX.get()));
         }
-        if(!NoteManager.getInstance().getNotes().isEmpty()) {
-            Note lastNote = NoteManager.getInstance().getNotes().getLast();
+        if(!NoteManager.getInstance().getNotesList().isEmpty()) {
+            Note lastNote = NoteManager.getInstance().getNotesList().getLast();
             int lastCell = (int) Math.ceil(lastNote.getColumn()+lastNote.getLength() / CELL_WIDTH * PianoGridPane.zoomX.get());
             if(lastCell > visibleCells) visibleCells = lastCell;
         }

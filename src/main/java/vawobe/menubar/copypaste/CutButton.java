@@ -1,15 +1,11 @@
 package vawobe.menubar.copypaste;
 
-import vawobe.NoteView;
+import vawobe.controller.ClipboardController;
 import vawobe.menubar.MenuButton;
-import vawobe.render.NoteRenderer;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-
-import java.util.ArrayList;
 
 
 public class CutButton extends MenuButton {
@@ -27,21 +23,6 @@ public class CutButton extends MenuButton {
     }
 
     private void cutAction(ActionEvent actionEvent) {
-        ArrayList<NoteView> selectedNotes = new ArrayList<>();
-        for(Node node : NoteRenderer.getInstance().getChildren()) {
-            if(node instanceof NoteView note) {
-                if(note.getSelectedProperty().get()) {
-                    selectedNotes.add(note);
-                }
-            }
-        }
-        if(selectedNotes.isEmpty()) {
-            // TODO Message Select some Notes
-        } else {
-            for(NoteView noteView : selectedNotes) {
-                noteView.getViewModel().deleteNote();
-                // TODO in Ablage
-            }
-        }
+        ClipboardController.getInstance().cutSelectedNotes();
     }
 }

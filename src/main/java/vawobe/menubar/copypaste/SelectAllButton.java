@@ -1,15 +1,11 @@
 package vawobe.menubar.copypaste;
 
-import vawobe.NoteView;
 import vawobe.menubar.MenuButton;
 import vawobe.render.NoteRenderer;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.ArrayList;
 
 public class SelectAllButton extends MenuButton {
     public SelectAllButton() {
@@ -25,19 +21,6 @@ public class SelectAllButton extends MenuButton {
         setOnAction(this::selectAllAction);
     }
     private void selectAllAction(ActionEvent actionEvent) {
-        ArrayList<NoteView> notesToSelect = new ArrayList<>();
-        ArrayList<NoteView> selectedNotes = new ArrayList<>();
-        for(Node node : NoteRenderer.getInstance().getChildren()) {
-            if(node instanceof NoteView note) {
-                notesToSelect.add(note);
-                if(note.getSelectedProperty().get())
-                    selectedNotes.add(note);
-            }
-        }
-        if(notesToSelect.size() == selectedNotes.size()) {
-            for(NoteView noteView : notesToSelect) noteView.getSelectedProperty().set(false);
-        } else {
-            for(NoteView noteView : notesToSelect) noteView.getSelectedProperty().set(true);
-        }
+        NoteRenderer.getInstance().selectAll();
     }
 }

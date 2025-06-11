@@ -4,7 +4,6 @@ import vawobe.NoteView;
 import vawobe.enums.Instruments;
 import vawobe.model.manager.MidiManager;
 import vawobe.render.NoteRenderer;
-import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
@@ -14,6 +13,10 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static vawobe.Main.mainColor;
 import static vawobe.Main.mainPane;
@@ -84,21 +87,21 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             if (newValue == Instruments.DRUMS || oldValue == Instruments.DRUMS) {
                 mainPane.getPianoGridPane().changeKeyBox();
             }
-            for(Node node : NoteRenderer.getInstance().getChildren()) {
-                if(node instanceof NoteView note) {
-                    if(note.getSelectedProperty().get()) {
-                        MidiManager.getInstance().stopNote(note.getViewModel().getNote());
-                        note.getViewModel().getInstrumentProperty().set(newValue);
-                        int newChannel = getCurrentInstrumentsChannel();
-                        if (newChannel == -1) {
-                            addCurrentInstrument();
-                        }
-                        note.getViewModel().getChannelProperty().set(newChannel);
+            HashSet<Instruments> oldInstruments = new HashSet<>();
+            for(NoteView note : NoteRenderer.getInstance().getSelectedNotes()) {
+                oldInstruments.add(note.getViewModel().getInstrumentProperty().get());
 
-                        note.getViewModel().updateNote();
-                    }
+                MidiManager.getInstance().stopNote(note.getViewModel().getNote());
+                int newChannel = getCurrentInstrumentsChannel();
+                if (newChannel == -1) {
+                    newChannel = addCurrentInstrument();
                 }
+                note.getViewModel().getInstrumentProperty().set(newValue);
+                note.getViewModel().getChannelProperty().set(newChannel);
+
+                note.getViewModel().updateNote();
             }
+            oldInstruments.forEach(instrument -> MidiManager.getInstance().removeInstrumentIfNecessary(instrument));
             setTooltip(new Tooltip(newValue.getName()));
         });
     }

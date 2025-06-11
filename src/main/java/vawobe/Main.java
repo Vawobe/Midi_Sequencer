@@ -19,6 +19,7 @@ import javafx.stage.Stage;
  * Info Button
  * (Auto scroll und key guide)?
  * Performance beim weit rauszoomen und Note einfügen?
+ * Zeitsprung beim Klicken auf den Takt Streifen
  */
 public class Main extends Application {
     public static MainPane mainPane;

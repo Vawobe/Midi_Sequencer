@@ -116,5 +116,12 @@ public class MidiManager {
     public void stopDemoTone(int note) {
         synth.getChannels()[0].noteOff(note);
     }
+
+    public void removeInstrumentIfNecessary(Instruments instrument) {
+        for(Note note : NoteManager.getInstance().getNotesList()) {
+            if(note.getInstrument() == instrument) return;
+        }
+        removeInstrument(instrument);
+    }
 }
 

@@ -5,10 +5,11 @@ import vawobe.Note;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import vawobe.NoteView;
 import vawobe.controller.PlaybackController;
 import vawobe.enums.Instruments;
+import vawobe.render.NoteRenderer;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
@@ -17,7 +18,7 @@ public class NoteManager {
     public static final String[] TONES = {"B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"};
     public static final int[] OCTAVES = {7,6,5,4,3,2};
 
-    @Getter private final ObservableList<Note> notes;
+    @Getter private final ObservableList<Note> notesList;
 
     public static NoteManager getInstance() {
         if(instance == null) {
@@ -27,14 +28,14 @@ public class NoteManager {
     }
 
     private NoteManager() {
-        notes = FXCollections.observableArrayList();
+        notesList = FXCollections.observableArrayList();
 
-        notes.addListener((ListChangeListener<Note>) change -> {
+        notesList.addListener((ListChangeListener<Note>) change -> {
             HashSet<Instruments> deletedNotesInstruments = new HashSet<>();
             while (change.next()) {
                 if(change.wasRemoved()) {
                     change.getRemoved().forEach(note -> deletedNotesInstruments.add(note.getInstrument()));
-                    notes.forEach(note -> deletedNotesInstruments.remove(note.getInstrument()));
+                    notesList.forEach(note -> deletedNotesInstruments.remove(note.getInstrument()));
                     deletedNotesInstruments.forEach(instrument -> MidiManager.getInstance().removeInstrument(instrument));
                 }
             }
@@ -47,12 +48,12 @@ public class NoteManager {
         if(channel == -1) channel = MidiManager.getInstance().addInstrument(note.getInstrument());
         if(channel != -1) {
             note.setChannel(channel);
-            notes.add(note);
-            notes.sort(Comparator.comparingDouble(Note::getColumn));
+            notesList.add(note);
+            notesList.sort(Comparator.comparingDouble(Note::getColumn));
         }
     }
 
     public void removeNote(Note note) {
-        notes.remove(note);
+        notesList.remove(note);
     }
 }

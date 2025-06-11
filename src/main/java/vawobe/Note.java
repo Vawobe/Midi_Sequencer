@@ -25,4 +25,14 @@ public class Note implements Serializable {
         this.velocity = 100;
         this.instrument = instrument;
     }
+
+    public Note(Note original) {
+        this.column = original.getColumn();
+        this.row = original.getRow();
+        this.midiNote = original.getMidiNote();
+        this.length = original.getLength();
+        this.channel = original.getChannel();
+        this.velocity = original.getVelocity();
+        this.instrument = original.getInstrument();
+    }
 }

@@ -13,7 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static vawobe.Main.mainPane;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
@@ -37,12 +37,9 @@ public class NoteView extends Pane {
         double width = note.getLength() * CELL_WIDTH;
         setPrefSize(width*PianoGridPane.zoomX.get(), CELL_HEIGHT*PianoGridPane.zoomY.get());
 
-        selectedProperty.addListener((_,_,newValue) -> {
-            setBorder(new Border(new BorderStroke(Color.DARKGRAY, newValue ? BorderStrokeStyle.DASHED :
-                    BorderStrokeStyle.SOLID, new CornerRadii(10), null)));
-            if(newValue) NoteRenderer.getInstance().getSelectedNotes().add(this);
-            else NoteRenderer.getInstance().getSelectedNotes().remove(this);
-        });
+        selectedProperty.addListener((_,_,newValue) ->
+                setBorder(new Border(new BorderStroke(Color.DARKGRAY, newValue ? BorderStrokeStyle.DASHED :
+                        BorderStrokeStyle.SOLID, new CornerRadii(10), null))));
 
         viewModel.getInstrumentProperty().addListener((_,_,newValue) ->
                 setBackground(new Background(new BackgroundFill(newValue.getColor(), new CornerRadii(10), null))));
@@ -63,29 +60,24 @@ public class NoteView extends Pane {
             if(event.isPrimaryButtonDown()) {
                 if(event.isControlDown()) {
                     mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().setValue(getViewModel().getInstrumentProperty().getValue());
-                } else if(event.isShiftDown()){
+                } else if(event.isAltDown() && event.isShiftDown()){
                     NoteRenderer.getInstance().selectAllNotesWithInstrument(viewModel.getInstrumentProperty().get());
                 } else {
-                    if (!selectedProperty.get()) {
-                        if (!event.isShiftDown()) {
-                            NoteRenderer.getInstance().getChildren().forEach(node -> {
-                                if (node instanceof NoteView noteView) noteView.getSelectedProperty().set(false);
-                            });
-                        }
-                        selectedProperty.set(true);
-                    } else {
-                        if (event.isShiftDown()) selectedProperty.set(false);
-                    }
+                    List<NoteView> selected = NoteRenderer.getInstance().getSelectedNotes();
+                    if(!selected.contains(this)) {
+                        if(!event.isShiftDown()) selected.clear();
+                        selected.add(this);
+                    } else if(event.isShiftDown()) selected.remove(this);
+
                     if (event.getX() > getWidth() - 5) {
                         resizing = true;
                         dragStartX = event.getSceneX();
                         startWidth = getWidth();
                     } else {
-                        ArrayList<NoteView> selectedNotes = NoteRenderer.getInstance().getSelectedNotes();
                         if (!NoteRenderer.getInstance().getSelectedNotes().isEmpty()) {
                             dragStartX = event.getSceneX();
                             dragStartY = event.getSceneY();
-                            for (NoteView noteView : selectedNotes) {
+                            for (NoteView noteView : NoteRenderer.getInstance().getSelectedNotes()) {
                                 noteView.setStartLayoutX(noteView.getLayoutX());
                                 noteView.setStartLayoutY(noteView.getLayoutY());
                             }
@@ -117,9 +109,8 @@ public class NoteView extends Pane {
                 viewModel.getLengthProperty().set(beats);
                 event.consume();
             } else if (dragging) {
-                ArrayList<NoteView> selectedNotes = NoteRenderer.getInstance().getSelectedNotes();
-                if(!selectedNotes.isEmpty()) {
-                    for(NoteView noteView : selectedNotes) {
+                if(!NoteRenderer.getInstance().getSelectedNotes().isEmpty()) {
+                    for(NoteView noteView : NoteRenderer.getInstance().getSelectedNotes()) {
                         double deltaX = event.getSceneX() - dragStartX;
                         double deltaY = event.getSceneY() - dragStartY;
 
@@ -146,9 +137,8 @@ public class NoteView extends Pane {
 
 
         setOnMouseReleased(event -> {
-            ArrayList<NoteView> selectedNotes = NoteRenderer.getInstance().getSelectedNotes();
-            if(!selectedNotes.isEmpty()) {
-                for(NoteView noteView : selectedNotes) {
+            if(!NoteRenderer.getInstance().getSelectedNotes().isEmpty()) {
+                for(NoteView noteView : NoteRenderer.getInstance().getSelectedNotes()) {
                     MidiManager.getInstance().stopNote(noteView.getViewModel().getNote());
                     noteView.getViewModel().updateNote();
                     if(!dragging) {

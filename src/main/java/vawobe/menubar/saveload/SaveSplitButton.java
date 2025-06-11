@@ -34,7 +34,7 @@ public class SaveSplitButton extends DropDownButton {
     }
 
     private void save() {
-        List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotes());
+        List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
         if(!notes.isEmpty()) {
             int bpm = PlaybackController.getInstance().getBpmProperty().get();
             int signature = GridRenderer.getInstance().getSignatureProperty().get();
@@ -49,7 +49,7 @@ public class SaveSplitButton extends DropDownButton {
     }
 
     private void exportMidi() {
-        List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotes());
+        List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
         if(!notes.isEmpty()) {
             ProjectIO.exportMidi(notes);
         }

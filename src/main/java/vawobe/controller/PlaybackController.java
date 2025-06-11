@@ -54,7 +54,7 @@ public class PlaybackController {
             isPlayingProperty.set(false);
             if (timeline != null) {
                 timeline.stop();
-                for (Note note : NoteManager.getInstance().getNotes())
+                for (Note note : NoteManager.getInstance().getNotesList())
                     MidiManager.getInstance().stopNote(note);
 
                 PianoGrid.getPlayhead().setVisible(false);
@@ -74,7 +74,7 @@ public class PlaybackController {
         record MidiEvent(double time, Note note, boolean isOn) {}
         ArrayList<MidiEvent> midiEvents = new ArrayList<>();
 
-        ArrayList<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotes());
+        ArrayList<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
         int trackLength = GridRenderer.getInstance().getSignatureProperty().get();
 
         if(!notes.isEmpty()) {
