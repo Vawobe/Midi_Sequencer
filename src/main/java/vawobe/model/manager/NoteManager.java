@@ -5,7 +5,6 @@ import vawobe.Note;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
-import vawobe.NoteView;
 import vawobe.controller.PlaybackController;
 import vawobe.enums.Instruments;
 
@@ -19,7 +18,6 @@ public class NoteManager {
     public static final int[] OCTAVES = {7,6,5,4,3,2};
 
     @Getter private final ObservableList<Note> notes;
-    @Getter private final ArrayList<NoteView> selectedNotes;
 
     public static NoteManager getInstance() {
         if(instance == null) {
@@ -29,7 +27,6 @@ public class NoteManager {
     }
 
     private NoteManager() {
-        selectedNotes = new ArrayList<>();
         notes = FXCollections.observableArrayList();
 
         notes.addListener((ListChangeListener<Note>) change -> {

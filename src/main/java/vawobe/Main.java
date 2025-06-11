@@ -19,9 +19,6 @@ import javafx.stage.Stage;
  * Info Button
  * (Auto scroll und key guide)?
  * Performance beim weit rauszoomen und Note einfügen?
- * Channel nicht freigeben?
- * beim laden die channel programme setzen
- * laden mit richtigem Instrument
  */
 public class Main extends Application {
     public static MainPane mainPane;

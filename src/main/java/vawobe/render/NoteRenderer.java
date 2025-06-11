@@ -1,7 +1,10 @@
 package vawobe.render;
 
+import javafx.scene.Node;
+import lombok.Getter;
 import vawobe.*;
 import vawobe.controller.PlaybackController;
+import vawobe.enums.Instruments;
 import vawobe.enums.Modes;
 import vawobe.model.manager.MidiManager;
 import vawobe.model.manager.ModeManager;
@@ -16,13 +19,13 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
-import static vawobe.Main.main;
 import static vawobe.Main.mainPane;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
 import static vawobe.render.GridRenderer.CELL_WIDTH;
 
 public class NoteRenderer extends Pane {
     private static NoteRenderer instance;
+    @Getter private final ArrayList<NoteView> selectedNotes;
 
     public static NoteRenderer getInstance() {
         if(instance == null) {
@@ -32,6 +35,8 @@ public class NoteRenderer extends Pane {
     }
 
     private NoteRenderer() {
+        selectedNotes = new ArrayList<>();
+
         NoteManager.getInstance().getNotes().addListener((ListChangeListener<Note>) change -> {
             while (change.next()) {
                 if(change.wasAdded()) {
@@ -156,6 +161,20 @@ public class NoteRenderer extends Pane {
             PlaybackController.getInstance().updateNotes();
         } else {
             System.err.println("Keine freien Kanäle");
+        }
+    }
+
+    public void selectAllNotesWithInstrument(Instruments instrument) {
+        selectedNotes.clear();
+        for(Node node : getChildren()) {
+            if(node instanceof NoteView noteView) {
+                if(noteView.getViewModel().getInstrumentProperty().get() == instrument) {
+                    selectedNotes.add(noteView);
+                    noteView.getSelectedProperty().set(true);
+                } else {
+                    noteView.getSelectedProperty().set(false);
+                }
+            }
         }
     }
 }
