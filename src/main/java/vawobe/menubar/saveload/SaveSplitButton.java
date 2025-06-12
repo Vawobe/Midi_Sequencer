@@ -24,9 +24,7 @@ public class SaveSplitButton extends DropDownButton {
         Button saveMidiFX = new Button("Save File");
         saveMidiFX.setOnAction(_ -> save());
         Button exportMP3 = new Button("Export MP3");
-        exportMP3.setOnAction(_ -> exportMP3());
         Button exportWav = new Button("Export WAV");
-        exportWav.setOnAction(_ -> exportWav());
         Button exportMidi = new Button("Export MIDI");
         exportMidi.setOnAction(_ -> exportMidi());
 
@@ -40,12 +38,6 @@ public class SaveSplitButton extends DropDownButton {
             int signature = GridRenderer.getInstance().getSignatureProperty().get();
             ProjectIO.saveProject(bpm, signature, notes);
         }
-    }
-
-    private void exportMP3() {
-    }
-
-    private void exportWav() {
     }
 
     private void exportMidi() {

@@ -1,7 +1,6 @@
 package vawobe.menubar.zoom;
 
 import vawobe.menubar.MenuButton;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
@@ -19,10 +18,10 @@ public class ZoomInButton extends MenuButton {
 
         hoverProperty().addListener((_,_,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Zoom in"));
-        setOnAction(this::zoomInAction);
+        setOnAction(_ -> zoomInAction());
     }
 
-    private void zoomInAction(ActionEvent event) {
+    private void zoomInAction() {
         double zoomFactor = 1.1;
         zoomX.set(Math.clamp(zoomX.get() * zoomFactor, MIN_X_ZOOM, MAX_ZOOM));
         zoomY.set(Math.clamp(zoomX.get() * zoomFactor, MIN_Y_ZOOM, MAX_ZOOM));

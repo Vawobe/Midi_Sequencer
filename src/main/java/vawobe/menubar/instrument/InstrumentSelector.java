@@ -14,9 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
 import static vawobe.Main.mainColor;
 import static vawobe.Main.mainPane;

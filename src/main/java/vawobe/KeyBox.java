@@ -9,14 +9,14 @@ import static vawobe.model.manager.NoteManager.TONES;
 
 public class KeyBox extends Pane {
     private KeyButton lastActiveButton = null;
-    public static double WIDTH = 120;
+    public final static double WIDTH = 120;
 
     public KeyBox() {
         drawToneNames();
         setPrefWidth(WIDTH);
 
         setOnMouseDragged(this::onMouseDraggedEvent);
-        setOnMouseReleased(this::onMouseReleasedEvent);
+        setOnMouseReleased(_ -> onMouseReleasedEvent());
     }
 
 
@@ -49,7 +49,7 @@ public class KeyBox extends Pane {
             }
         }
     }
-    private void onMouseReleasedEvent(MouseEvent event) {
+    private void onMouseReleasedEvent() {
         if(lastActiveButton != null) {
             lastActiveButton.stopTone();
             lastActiveButton = null;
@@ -67,11 +67,6 @@ public class KeyBox extends Pane {
         }
         return null;
     }
-
-//    public void setZoom(double zoom) {
-//        this.zoom = zoom;
-//        updateBox();
-//    }
 
     public void updateBox() {
         for(Node n : getChildren()) {

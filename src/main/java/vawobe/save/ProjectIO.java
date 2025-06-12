@@ -22,7 +22,8 @@ public class ProjectIO {
                 ProjectData projectData = new ProjectData(bpm, signature, notes);
                 out.writeObject(projectData);
             } catch (IOException e) {
-                e.printStackTrace();
+                // TODO
+                System.err.println("Fehler beim Speichern.\n" + e.getMessage());
             }
         }
     }
@@ -43,14 +44,16 @@ public class ProjectIO {
                     ret[1] = in.readObject();
                     return ret;
                 } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
+                    // TODO
+                    System.err.println("Fehler beim Laden einer MIDFX-Datei.\n" + e.getMessage());
                 }
             } else if(name.toLowerCase().endsWith(".mid")) {
                 try {
                     ret[1] = MidiIO.importMidi(file);
                     return ret;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // TODO
+                    System.err.println("Fehler beim Laden einer MID-Datei.\n" + e.getMessage());
                 }
             }
         }
@@ -68,7 +71,8 @@ public class ProjectIO {
             try {
                 MidiIO.exportMidi(notes, file.getAbsolutePath());
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO
+                System.err.println("Fehler beim Export einer MID-Datei.\n" + e.getMessage());
             }
         }
     }

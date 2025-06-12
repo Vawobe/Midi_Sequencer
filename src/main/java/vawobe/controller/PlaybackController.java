@@ -40,6 +40,13 @@ public class PlaybackController {
         pausedBeats = 0;
     }
 
+    public void startPlaybackAtSeconds(double timeInSeconds) {
+        stopPlayback();
+        pausedBeats = timeInSeconds * (bpmProperty.get() / 60.0);
+        startPlayback();
+    }
+
+
     public void startPlayback() {
         if(!isPlaying()) {
             isPlayingProperty.set(true);

@@ -41,12 +41,15 @@ public class MidiManager {
     }
 
     public void playNote(Note note){
-        if(note.getChannel() > 0 && note.getChannel() < 15)
+        if(channelIsValid(note.getChannel()))
             channels[note.getChannel()].noteOn(note.getMidiNote(), note.getVelocity());
+
     }
 
     public void stopNote(Note note) {
-        channels[note.getChannel()].noteOff(note.getMidiNote());
+        if(channelIsValid(note.getChannel()))
+            channels[note.getChannel()].noteOff(note.getMidiNote());
+
     }
 
     public void close() {
@@ -58,10 +61,13 @@ public class MidiManager {
     public int addInstrument(Instruments instrument) {
         int channel = (instrumentToChannel.getOrDefault(instrument, -1));
         if(channel == -1) {
-            channel = getNextFreeChannel();
+            if(instrument == Instruments.DRUMS) channel = 9;
+            else {
+                channel = getNextFreeChannel();
+                changeInstrument(instrument, channel);
+            }
             if(channel != -1) {
                 instrumentToChannel.put(instrument, channel);
-                changeInstrument(instrument, channel);
             }
         }
         return channel;
@@ -77,9 +83,8 @@ public class MidiManager {
     }
 
     private void changeInstrument(Instruments instrument, int channel) {
-        if(channel >= 0 && channel < 16) {
+        if(channelIsValid(channel))
             channels[channel].programChange(instrument.getNum());
-        }
     }
 
     public int getInstrumentChannel(Instruments instrument) {
@@ -92,9 +97,11 @@ public class MidiManager {
     }
 
     public void removeInstrument(Instruments instrument) {
-        int channel = instrumentToChannel.get(instrument);
-        instrumentToChannel.remove(instrument);
-        freeChannels.add(channel);
+        if(instrumentToChannel.get(instrument) != null) {
+            int channel = instrumentToChannel.get(instrument);
+            instrumentToChannel.remove(instrument);
+            freeChannels.add(channel);
+        }
     }
 
     public void changeDemoChannel(Instruments instrument) {
@@ -107,6 +114,13 @@ public class MidiManager {
                 channel.controlChange(7, volume);
             }
         }
+    }
+
+    public void playDemoDrumTone(int note) {
+        synth.getChannels()[9].noteOn(note,100);
+    }
+    public void stopDemoDrumTone(int note) {
+        synth.getChannels()[9].noteOff(note);
     }
 
     public void playDemoTone(int note) {
@@ -122,6 +136,10 @@ public class MidiManager {
             if(note.getInstrument() == instrument) return;
         }
         removeInstrument(instrument);
+    }
+
+    private boolean channelIsValid(int channel) {
+        return channel >= 0 && channel <= 15;
     }
 }
 

@@ -83,52 +83,13 @@ public class ClipboardController {
 
             noteView.setLayoutX(snappedX);
             noteView.setLayoutY(snappedY);
-            noteView.updateNoteSize();
 
             NoteRenderer.getInstance().getChildren().add(noteView);
             NoteRenderer.getInstance().getSelectedNotes().add(noteView);
 
-            PlaybackController.getInstance().updateNotes();
             NoteManager.getInstance().addNote(note);
 
         }
         PlaybackController.getInstance().updateNotes();
     }
-
-
-//    public void pasteNotes(boolean preserveColumn, double targetMouseX) {
-//        if(clipboard.isEmpty()) return;
-//
-//        double zoomedCellWidth = CELL_WIDTH * PianoGridPane.zoomX.get();
-//        double gridWidth = 4.0 / GridRenderer.getInstance().getGridProperty().get();
-//
-//        double minCol = clipboard.stream()
-//                .mapToDouble(n -> n.getViewModel().getColumnProperty().get())
-//                .min().orElse(0);
-//
-//        double targetColumn = preserveColumn ?
-//                minCol : Math.max(0, Math.floor(targetMouseX / (zoomedCellWidth * gridWidth)));
-//
-//        targetColumn = targetColumn * gridWidth;
-//
-//        NoteRenderer.getInstance().getSelectedNotes().clear();
-//        for(NoteView original : clipboard) {
-//            NoteView copy = new NoteView(new Note(original.getViewModel().getNote()));
-//            double column = copy.getViewModel().getColumnProperty().get();
-//
-//            if(!preserveColumn) {
-//                double delta = column - minCol;
-//                column = targetColumn + delta - 1;
-//                System.out.println(column);
-//            }
-//
-//            copy.getViewModel().getColumnProperty().set(column);
-//            copy.getViewModel().updateNote();
-//            copy.updateNoteSize();
-//
-//            NoteManager.getInstance().getNotesList().add(copy.getViewModel().getNote());
-//            NoteRenderer.getInstance().getSelectedNotes().add(copy);
-//        }
-//        PlaybackController.getInstance().updateNotes();
-//    }
 }

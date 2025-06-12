@@ -5,10 +5,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import vawobe.ImportMidiPane;
 import vawobe.Note;
+import vawobe.NoteView;
 import vawobe.controller.PlaybackController;
 import vawobe.menubar.MenuButton;
 import vawobe.model.manager.NoteManager;
 import vawobe.render.GridRenderer;
+import vawobe.render.NoteRenderer;
 import vawobe.save.ProjectData;
 import vawobe.save.ProjectIO;
 
@@ -37,16 +39,39 @@ public class LoadButton extends MenuButton {
                 NoteManager.getInstance().getNotesList().clear();
                 mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(name);
                 if (data[1] instanceof ProjectData projectData) {
-                    PlaybackController.getInstance().getBpmProperty().set(projectData.getBpm());
-                    GridRenderer.getInstance().getSignatureProperty().set(projectData.getSignature());
-                    for (Note note : projectData.getNotes()) {
+                    PlaybackController.getInstance().getBpmProperty().set(projectData.bpm());
+                    GridRenderer.getInstance().getSignatureProperty().set(projectData.signature());
+                    for (Note note : projectData.notes()) {
+                        // TODO
+                        NoteView noteView = new NoteView(note);
+                        NoteRenderer.getInstance().getChildren().add(noteView);
+
                         NoteManager.getInstance().addNote(note);
                     }
+                    PlaybackController.getInstance().updateNotes();
                 } else {
-                    ImportMidiPane.open((Map<Integer,List<Note>>) data[1]);
+                    Map<Integer, List<Note>> notes = isRightMap(data[1]);
+                    if(notes != null)
+                        ImportMidiPane.open(notes);
                 }
             }
         });
+    }
 
+    public Map<Integer, List<Note>> isRightMap(Object data) {
+        if(data instanceof Map<?,?> map) {
+            for(Map.Entry<?, ?> entry : map.entrySet()) {
+                if(entry.getKey() instanceof Integer && entry.getValue() instanceof List<?> list) {
+                    for (Object note : list) {
+                        if(note instanceof Note){
+                            @SuppressWarnings("unchecked")
+                            Map<Integer, List<Note>> notes = (Map<Integer, List<Note>>) data;
+                            return notes;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

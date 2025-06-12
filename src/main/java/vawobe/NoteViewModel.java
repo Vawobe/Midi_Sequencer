@@ -41,7 +41,8 @@ public class NoteViewModel {
     }
 
     public void calculateMidiNote() {
-        midiNoteProperty.set(107 - getRowProperty().get() - 12);
+        if(instrumentProperty.get() == Instruments.DRUMS) midiNoteProperty.set(rowProperty.get() + 35);
+        else midiNoteProperty.set(107 - getRowProperty().get() - 12);
     }
 
     public void deleteNote() {

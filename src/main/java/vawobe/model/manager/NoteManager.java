@@ -5,10 +5,8 @@ import vawobe.Note;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
-import vawobe.NoteView;
 import vawobe.controller.PlaybackController;
 import vawobe.enums.Instruments;
-import vawobe.render.NoteRenderer;
 
 import java.util.Comparator;
 import java.util.HashSet;

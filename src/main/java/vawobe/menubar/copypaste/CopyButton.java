@@ -2,7 +2,6 @@ package vawobe.menubar.copypaste;
 
 import vawobe.controller.ClipboardController;
 import vawobe.menubar.MenuButton;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
@@ -18,10 +17,10 @@ public class CopyButton extends MenuButton {
         hoverProperty().addListener((_,_,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Copy"));
 
-        setOnAction(this::copyAction);
+        setOnAction(_ -> copyAction());
     }
 
-    private void copyAction(ActionEvent actionEvent) {
+    private void copyAction() {
         ClipboardController.getInstance().copySelectedNotes();
     }
 }

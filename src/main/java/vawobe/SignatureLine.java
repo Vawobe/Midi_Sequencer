@@ -1,6 +1,7 @@
 package vawobe;
 
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import vawobe.controller.PlaybackController;
 import vawobe.render.GridRenderer;
 import javafx.scene.layout.Background;
@@ -56,6 +57,8 @@ public class SignatureLine extends BasicScrollPane {
         });
 
         content.setOnMouseExited(_ -> getTooltip().hide());
+
+        content.setOnMousePressed(this::onMousePressedEvent);
     }
 
     public void drawLines() {
@@ -99,5 +102,13 @@ public class SignatureLine extends BasicScrollPane {
         int secs = totalSeconds % 60;
         int millis = (int) ((seconds - totalSeconds) * 1000);
         return String.format("%02d:%02d.%03d", minutes, secs, millis);
+    }
+
+    private void onMousePressedEvent(MouseEvent event) {
+        double x = event.getX();
+        double timeInSeconds = calculateTimeAtX(x);
+
+        PlaybackController playback = PlaybackController.getInstance();
+        playback.startPlaybackAtSeconds(timeInSeconds);
     }
 }

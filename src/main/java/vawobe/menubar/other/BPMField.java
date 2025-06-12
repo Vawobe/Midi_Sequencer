@@ -1,7 +1,6 @@
 package vawobe.menubar.other;
 
 import vawobe.controller.PlaybackController;
-import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -31,7 +30,7 @@ public class BPMField extends HBox {
         bpmTextField.setPrefWidth(35);
         bpmTextField.setBackground(new Background(new BackgroundFill(mainColor, new CornerRadii(5), null)));
         bpmTextField.setStyle("-fx-text-fill: white;") ;
-        bpmTextField.setOnAction(this::action);
+        bpmTextField.setOnAction(_ -> action());
 
         UnaryOperator<TextFormatter.Change> filter = change -> {
             String newText = change.getControlNewText();
@@ -50,7 +49,7 @@ public class BPMField extends HBox {
         )));
     }
 
-    private void action(ActionEvent event) {
+    private void action() {
         if(!bpmTextField.getText().isEmpty() && Integer.parseInt(bpmTextField.getText()) >= 10) {
             PlaybackController.getInstance().getBpmProperty().set(Integer.parseInt(bpmTextField.getText()));
             PlaybackController.getInstance().updateNotes();

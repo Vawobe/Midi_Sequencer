@@ -9,22 +9,18 @@ import javafx.stage.Stage;
 
 /**
  * TODO:
- * Schlagzeug??
- * Export -> .wav, .mp3, .mid?
+ * Taste in Instrument Farbe blinken lassen, solange der Ton gespielt wird?
+ * Export -> .wav.mp3???
  * Redo und Undo
- * Funktionen für copy, paste, cut
- * gemeinsame kopieren/einfügen
  * Noten Lautstärke
- * Show measure number/Show time für den Takt
  * Info Button
  * (Auto scroll und key guide)?
  * Performance beim weit rauszoomen und Note einfügen?
- * Zeitsprung beim Klicken auf den Takt Streifen
  */
 public class Main extends Application {
     public static MainPane mainPane;
-    public static Color mainColor = Color.web("#35363a");
-    public static Color gridLineColor = Color.web("#2b2c2f");
+    public static final Color mainColor = Color.web("#35363a");
+    public static final Color gridLineColor = Color.web("#2b2c2f");
 
     public static void main(String[] args) {
         launch(args);

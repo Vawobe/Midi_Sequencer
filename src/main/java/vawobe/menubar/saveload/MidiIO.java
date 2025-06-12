@@ -40,8 +40,7 @@ public class MidiIO {
                         MidiEvent onEvent = activesNotes.remove(key);
                         if (onEvent != null) {
                             long startTick = onEvent.getTick();
-                            long endTick = tick;
-                            double length = (endTick - startTick) / resolution;
+                            double length = (tick - startTick) / resolution;
                             double column = startTick / resolution;
                             int row = 107 - key - 12;
 

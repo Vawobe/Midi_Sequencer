@@ -5,10 +5,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import vawobe.controller.PlaybackController;
 import vawobe.enums.Instruments;
 import vawobe.menubar.instrument.InstrumentSelector;
 import vawobe.model.manager.MidiManager;
 import vawobe.model.manager.NoteManager;
+import vawobe.render.GridRenderer;
+import vawobe.render.NoteRenderer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,8 +63,14 @@ public class ImportMidiPane extends GridPane {
                 List<Note> notes = entry.getValue();
                 for (Note note : notes) {
                     note.setInstrument(selectedInstrument);
+
+                    NoteView noteView = new NoteView(note);
+                    NoteRenderer.getInstance().getChildren().add(noteView);
+
                     NoteManager.getInstance().addNote(note);
                 }
+                PlaybackController.getInstance().updateNotes();
+                GridRenderer.getInstance().updateGridSize();
             }
         }
         stage.close();

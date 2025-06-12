@@ -1,13 +1,10 @@
 package vawobe.menubar.copypaste;
 
-import vawobe.NoteView;
+import vawobe.controller.ClipboardController;
 import vawobe.menubar.MenuButton;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-
-import java.util.ArrayList;
 
 public class PasteButton extends MenuButton {
     public PasteButton() {
@@ -20,18 +17,10 @@ public class PasteButton extends MenuButton {
         hoverProperty().addListener((_,_,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Paste"));
 
-        setOnAction(this::pasteAction);
+        setOnAction(_ -> pasteAction());
     }
 
-    private void pasteAction(ActionEvent actionEvent) {
-        ArrayList<NoteView> notesToPaste = new ArrayList<>();
-        // TODO aus Ablage
-        if(notesToPaste.isEmpty()) {
-            // TODO Message Keine Notes in Ablage
-        } else {
-            for(NoteView noteView : notesToPaste) {
-                // TODO Einfügen aus Ablage
-            }
-        }
+    private void pasteAction() {
+        ClipboardController.getInstance().pasteNotes(true);
     }
 }

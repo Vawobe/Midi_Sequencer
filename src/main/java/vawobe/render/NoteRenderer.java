@@ -20,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 import static vawobe.Main.mainPane;
@@ -119,9 +118,6 @@ public class NoteRenderer extends Pane {
                 case X -> ClipboardController.getInstance().cutSelectedNotes();
                 case V -> {
                     boolean altPressed = event.isAltDown();
-                    double mouseSceneX = MouseInfo.getPointerInfo().getLocation().getX();
-                    double localX = mainPane.screenToLocal(mouseSceneX, 0).getX();
-
                     ClipboardController.getInstance().pasteNotes(!altPressed);
                 }
             }
@@ -136,12 +132,14 @@ public class NoteRenderer extends Pane {
                         }
                     }
                 });
-                for(NoteViewModel note : notesToDelete) note.deleteNote();
+                for(NoteViewModel note : notesToDelete) {
+                    note.deleteNote();
+                }
             }
         }
     }
 
-    public Note addNote(double x, double y) {
+    public void addNote(double x, double y) {
         int channel = mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getCurrentInstrumentsChannel();
         if(channel == -1) channel = mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().addCurrentInstrument();
 
@@ -175,10 +173,8 @@ public class NoteRenderer extends Pane {
             selectedNotes.add(noteView);
 
             PlaybackController.getInstance().updateNotes();
-            return note;
         } else {
             System.err.println("Keine freien Kanäle");
-            return null;
         }
     }
 

@@ -2,7 +2,6 @@ package vawobe.menubar.copypaste;
 
 import vawobe.menubar.MenuButton;
 import vawobe.render.NoteRenderer;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -18,9 +17,9 @@ public class SelectAllButton extends MenuButton {
 
         setGraphic(icon);
         hoverProperty().addListener((_,_,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
-        setOnAction(this::selectAllAction);
+        setOnAction(_ -> selectAllAction());
     }
-    private void selectAllAction(ActionEvent actionEvent) {
+    private void selectAllAction() {
         NoteRenderer.getInstance().selectAll();
     }
 }

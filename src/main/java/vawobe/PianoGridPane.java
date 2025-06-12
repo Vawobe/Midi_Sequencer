@@ -8,8 +8,8 @@ import lombok.Getter;
 import static javafx.scene.input.ScrollEvent.SCROLL;
 
 public class PianoGridPane extends GridPane {
-    public static SimpleDoubleProperty zoomX = new SimpleDoubleProperty(1.0);
-    public static SimpleDoubleProperty zoomY = new SimpleDoubleProperty(1.0);
+    public static final SimpleDoubleProperty zoomX = new SimpleDoubleProperty(1.0);
+    public static final SimpleDoubleProperty zoomY = new SimpleDoubleProperty(1.0);
     public static final double MIN_X_ZOOM = 0.05;
     public static final double MIN_Y_ZOOM = 0.38;
     public static final double MAX_ZOOM = 3.0;
@@ -86,7 +86,6 @@ public class PianoGridPane extends GridPane {
                 }
                 zoomX.set(Math.clamp(zoomX.get() * zoomFactor, MIN_X_ZOOM, MAX_ZOOM));
                 zoomY.set(Math.clamp(zoomX.get() * zoomFactor, MIN_Y_ZOOM, MAX_ZOOM));
-//                applyZoom();
 
                 event.consume();
             }

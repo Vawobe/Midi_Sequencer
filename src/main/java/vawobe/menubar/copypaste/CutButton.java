@@ -2,7 +2,6 @@ package vawobe.menubar.copypaste;
 
 import vawobe.controller.ClipboardController;
 import vawobe.menubar.MenuButton;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
@@ -19,10 +18,10 @@ public class CutButton extends MenuButton {
         hoverProperty().addListener((_,_,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Cut"));
 
-        setOnAction(this::cutAction);
+        setOnAction(_ -> cutAction());
     }
 
-    private void cutAction(ActionEvent actionEvent) {
+    private void cutAction() {
         ClipboardController.getInstance().cutSelectedNotes();
     }
 }

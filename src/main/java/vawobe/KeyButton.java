@@ -38,23 +38,25 @@ public class KeyButton extends Button {
             hoverBackground = new Background(new BackgroundFill(key.contains("#") ? Color.DARKGRAY : Color.LIGHTGRAY, null, null));
             setBackground(normalBackground);
             setTextFill(key.contains("#") ? Color.WHITE : Color.BLACK);
-            hoverProperty().addListener((_, _, newValue) -> setBackground(newValue ? hoverBackground : normalBackground));
-
-            setOnMousePressed(this::onMousePressedEvent);
-            setOnDragDetected(this::onDragDetectedEvent);
-            setOnMouseReleased(this::onMouseReleasedEvent);
-            setOnMouseDragEntered(this::onMouseDragEnteredEvent);
-            setOnMouseDragExited(this::onMouseDragExitedEvent);
         }
+        hoverProperty().addListener((_, _, newValue) -> setBackground(newValue ? hoverBackground : normalBackground));
+
+        setOnMousePressed(this::onMousePressedEvent);
+        setOnDragDetected(this::onDragDetectedEvent);
+        setOnMouseReleased(this::onMouseReleasedEvent);
+        setOnMouseDragEntered(this::onMouseDragEnteredEvent);
+        setOnMouseDragExited(this::onMouseDragExitedEvent);
     }
 
     public void playTone() {
         if(!isPlaying) {
             setBackground(new Background(new BackgroundFill(mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue().getColor(), null, null)));
-            int midiNote = convertToMidi(key);
-            MidiManager.getInstance().changeDemoChannel(mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
-            MidiManager.getInstance().playDemoTone(midiNote);
-            isPlaying = true;
+            if(key != null) {
+                int midiNote = convertToMidi(key);
+                MidiManager.getInstance().changeDemoChannel(mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
+                MidiManager.getInstance().playDemoTone(midiNote);
+                isPlaying = true;
+            }
         }
     }
 
@@ -62,9 +64,11 @@ public class KeyButton extends Button {
         if(isPlaying) {
             if(isHover()) setBackground(hoverBackground);
             else setBackground(normalBackground);
-            int midiNote = convertToMidi(key);
-            MidiManager.getInstance().stopDemoTone(midiNote);
-            isPlaying = false;
+            if(key != null) {
+                int midiNote = convertToMidi(key);
+                MidiManager.getInstance().stopDemoTone(midiNote);
+                isPlaying = false;
+            }
         }
     }
 
