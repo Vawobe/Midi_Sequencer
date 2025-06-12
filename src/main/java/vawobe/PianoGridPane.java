@@ -10,7 +10,7 @@ import static javafx.scene.input.ScrollEvent.SCROLL;
 public class PianoGridPane extends GridPane {
     public static final SimpleDoubleProperty zoomX = new SimpleDoubleProperty(1.0);
     public static final SimpleDoubleProperty zoomY = new SimpleDoubleProperty(1.0);
-    public static final double MIN_X_ZOOM = 0.05;
+    public static final double MIN_X_ZOOM = 0.04;
     public static final double MIN_Y_ZOOM = 0.38;
     public static final double MAX_ZOOM = 3.0;
 

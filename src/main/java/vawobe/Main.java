@@ -1,5 +1,6 @@
 package vawobe;
 
+import javafx.scene.input.KeyEvent;
 import vawobe.model.manager.MidiManager;
 import vawobe.render.NoteRenderer;
 import javafx.application.Application;
@@ -29,11 +30,14 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         mainPane = new MainPane();
         Scene scene = new Scene(mainPane);
-        scene.setOnKeyPressed(event -> NoteRenderer.getInstance().onKeyPressedEvent(event));
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            NoteRenderer.getInstance().onKeyPressedEvent(event);
+            event.consume();
+        });
+
         primaryStage.setScene(scene);
         primaryStage.setTitle("MIDI Sequencer");
         primaryStage.show();
-
     }
 
     @Override

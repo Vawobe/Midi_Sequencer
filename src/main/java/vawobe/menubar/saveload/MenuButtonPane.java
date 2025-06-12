@@ -13,10 +13,6 @@ public class MenuButtonPane extends VBox {
     public MenuButtonPane() {
         setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
     }
-    public MenuButtonPane(List<Button> menuItems) {
-        this();
-        addAll(menuItems);
-    }
 
     public void addAll(List<Button> menuItems) {
         for(Button menuItem : menuItems) add(menuItem);

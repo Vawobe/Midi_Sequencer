@@ -1,6 +1,7 @@
 package vawobe.render;
 
 import javafx.collections.SetChangeListener;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import vawobe.*;
 import vawobe.commands.AddNotesCommand;
@@ -13,7 +14,6 @@ import vawobe.enums.Modes;
 import vawobe.model.manager.*;
 import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.lang.Math.clamp;
 import static vawobe.Main.mainPane;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
 import static vawobe.render.GridRenderer.CELL_WIDTH;
@@ -76,7 +77,18 @@ public class NoteRenderer extends Pane {
                 selectionRectangle.setHeight(Math.abs(event.getY() - selectionRectangle.getClickedY()));
             }
         }
-        event.consume();
+        else if (ModeManager.getInstance().getCurrentModeProperty().get() == Modes.DRAG_TO_SCROLL) {
+            Point2D lastPoint = (Point2D) getUserData();
+            if (lastPoint != null) {
+                double dx = event.getSceneX() - lastPoint.getX();
+                double dy = event.getSceneY() - lastPoint.getY();
+
+
+                scrollBy(dx, dy);
+                setUserData(new Point2D(event.getSceneX(), event.getSceneY()));
+            }
+        }
+        
     }
     private void onMouseReleasedEvent(MouseEvent event) {
         if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT) {
@@ -87,7 +99,7 @@ public class NoteRenderer extends Pane {
             CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelect, newSelect));
             selectionRectangle.setVisible(false);
         }
-        event.consume();
+        
     }
 
     private void onMousePressed(MouseEvent event) {
@@ -96,17 +108,16 @@ public class NoteRenderer extends Pane {
             CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, new HashSet<>()));
         }
         switch (ModeManager.getInstance().getCurrentModeProperty().get()) {
-            case DRAW:
-                if (event.getTarget() == this) addNote(event.getX(), event.getY());
-                break;
-            case SELECT:
+            case DRAW -> { if (event.getTarget() == this) addNote(event.getX(), event.getY()); }
+            case SELECT -> {
                 SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
                 selectionRectangle.setVisible(true);
                 selectionRectangle.setClickedX(event.getX());
                 selectionRectangle.setClickedY(event.getY());
-                break;
+            }
+            case DRAG_TO_SCROLL -> setUserData(new Point2D(event.getSceneX(), event.getSceneY()));
         }
-        event.consume();
+        
     }
 
     public void onKeyPressedEvent(KeyEvent event) {
@@ -122,19 +133,37 @@ public class NoteRenderer extends Pane {
                 case Z -> CommandManager.getInstance().undo();
                 case Y -> CommandManager.getInstance().redo();
             }
-            event.consume();
+            
         } else {
-            if(event.getCode() == KeyCode.DELETE || event.getCode() == KeyCode.BACK_SPACE) {
-                ArrayList<NoteView> notesToDelete = new ArrayList<>();
-                getChildren().forEach(node -> {
-                    if (node instanceof NoteView noteView) {
-                        if(noteView.getSelectedProperty().get()) {
-                            notesToDelete.add(noteView);
+            switch (event.getCode()) {
+                case DELETE:
+                case BACK_SPACE:
+                    ArrayList<NoteView> notesToDelete = new ArrayList<>();
+                    getChildren().forEach(node -> {
+                        if (node instanceof NoteView noteView) {
+                            if(noteView.getSelectedProperty().get()) {
+                                notesToDelete.add(noteView);
+                            }
                         }
-                    }
-                });
-                CommandManager.getInstance().executeCommand(new RemoveNotesCommand(notesToDelete));
+                    });
+                    CommandManager.getInstance().executeCommand(new RemoveNotesCommand(notesToDelete));
+                    break;
+                case SPACE:
+                    if(PlaybackController.getInstance().isPlaying()) PlaybackController.getInstance().pausePlayback();
+                    else PlaybackController.getInstance().startPlayback();
+                    break;
+                case ESCAPE:
+                    PlaybackController.getInstance().stopPlayback();
+                    break;
+                case UP: scrollBy(0, 10); break;
+                case DOWN: scrollBy(0, -10); break;
+                case LEFT: scrollBy(20, 0);  break;
+                case RIGHT: scrollBy(-20, 0);  break;
+                case TAB:
+                    mainPane.getMenuBar().getModeButtonBox().toggleNextButton();
+                    break;
             }
+            
         }
     }
 
@@ -210,5 +239,18 @@ public class NoteRenderer extends Pane {
     public void removeNoteView(NoteView noteView) {
         getChildren().remove(noteView);
         NoteManager.getInstance().removeNote(noteView.getViewModel().getNote());
+    }
+
+    private void scrollBy(double dx, double dy) {
+        BasicScrollPane scroll = mainPane.getPianoGridPane().getPianoGridScrollPane();
+
+        double vScrollSpeed = 0.0005;
+        double hScrollSpeed = 0.01;
+
+        double h = scroll.getHvalue() - dx * hScrollSpeed;
+        double v = scroll.getVvalue() - dy * vScrollSpeed;
+
+        scroll.setHvalue(clamp(h, 0, 1));
+        scroll.setVvalue(clamp(v, 0, 1));
     }
 }

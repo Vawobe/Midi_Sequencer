@@ -66,80 +66,83 @@ public class NoteView extends Pane {
     private void initDragHandler() {
         setOnMouseMoved(event -> {
             if(event.getX() > getWidth() - 5) {
-                setCursor(Cursor.E_RESIZE);
+                if(ModeManager.getInstance().getCurrentModeProperty().get() != Modes.ERASE) setCursor(Cursor.E_RESIZE);
             } else {
                 setCursor(Cursor.DEFAULT);
             }
         });
 
         setOnMousePressed(event -> {
-            if(event.isPrimaryButtonDown()) {
-                if(event.isControlDown()) {
-                    mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().setValue(getViewModel().getInstrumentProperty().getValue());
-                } else if(event.isAltDown() && event.isShiftDown()){
-                    NoteRenderer.getInstance().selectAllNotesWithInstrument(viewModel.getInstrumentProperty().get());
-                } else {
-                    if (event.getX() > getWidth() - 5) {
-                        resizing = true;
-                        dragStartX = event.getSceneX();
-                        startWidth = getWidth();
+            if(ModeManager.getInstance().getCurrentModeProperty().get() != Modes.ERASE) {
+                if (event.isPrimaryButtonDown()) {
+                    if (event.isControlDown()) {
+                        mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().setValue(getViewModel().getInstrumentProperty().getValue());
+                    } else if (event.isAltDown() && event.isShiftDown()) {
+                        NoteRenderer.getInstance().selectAllNotesWithInstrument(viewModel.getInstrumentProperty().get());
                     } else {
-                        if (!SelectionManager.getInstance().getSelectedNotes().isEmpty()) {
+                        if (event.getX() > getWidth() - 5) {
+                            resizing = true;
                             dragStartX = event.getSceneX();
-                            dragStartY = event.getSceneY();
-                            for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
-                                noteView.startRow = noteView.getViewModel().getRowProperty().get();
-                                noteView.startColumn = noteView.getViewModel().getColumnProperty().get();
+                            startWidth = getWidth();
+                        } else {
+                            if (!SelectionManager.getInstance().getSelectedNotes().isEmpty()) {
+                                dragStartX = event.getSceneX();
+                                dragStartY = event.getSceneY();
+                                for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
+                                    noteView.startRow = noteView.getViewModel().getRowProperty().get();
+                                    noteView.startColumn = noteView.getViewModel().getColumnProperty().get();
+                                }
                             }
                         }
                     }
+                } else if (event.isSecondaryButtonDown()) {
+                    ArrayList<NoteView> noteViews = new ArrayList<>();
+                    noteViews.add(this);
+                    CommandManager.getInstance().executeCommand(new RemoveNotesCommand(noteViews));
                 }
-                event.consume();
-            } else if(event.isSecondaryButtonDown()) {
-                ArrayList<NoteView> noteViews = new ArrayList<>();
-                noteViews.add(this);
-                CommandManager.getInstance().executeCommand(new RemoveNotesCommand(noteViews));
             }
+            event.consume();
         });
 
         setOnMouseDragged(event -> {
-            if(!resizing) dragging = true;
+            if(ModeManager.getInstance().getCurrentModeProperty().get() != Modes.ERASE) {
+                if (!resizing) dragging = true;
 
-            double zoomedCellWidth = CELL_WIDTH * PianoGridPane.zoomX.get();
-            double zoomedCellHeight = CELL_HEIGHT * PianoGridPane.zoomY.get();
+                double zoomedCellWidth = CELL_WIDTH * PianoGridPane.zoomX.get();
+                double zoomedCellHeight = CELL_HEIGHT * PianoGridPane.zoomY.get();
 
-            double gridWidth = 4.0/ GridRenderer.getInstance().getGridProperty().get();
+                double gridWidth = 4.0 / GridRenderer.getInstance().getGridProperty().get();
 
-            if (resizing) {
-                double deltaX = event.getSceneX() - dragStartX;
-                double newWidth = Math.max(zoomedCellWidth*gridWidth, startWidth + deltaX);
-                double snappedCells = Math.round(newWidth / (zoomedCellWidth*gridWidth));
-                double beats = snappedCells * gridWidth;
-                newWidth = beats * zoomedCellWidth;
-
-                setPrefWidth(newWidth);
-                viewModel.getLengthProperty().set(beats);
-                event.consume();
-            } else if (dragging) {
-                if(!SelectionManager.getInstance().getSelectedNotes().isEmpty()) {
+                if (resizing) {
                     double deltaX = event.getSceneX() - dragStartX;
-                    double deltaY = event.getSceneY() - dragStartY;
+                    double newWidth = Math.max(zoomedCellWidth * gridWidth, startWidth + deltaX);
+                    double snappedCells = Math.round(newWidth / (zoomedCellWidth * gridWidth));
+                    double beats = snappedCells * gridWidth;
+                    newWidth = beats * zoomedCellWidth;
 
-                    int deltaCellsX = (int) Math.round(deltaX / (zoomedCellWidth * gridWidth));
-                    int deltaCellsY = (int) Math.round(deltaY / zoomedCellHeight);
+                    setPrefWidth(newWidth);
+                    viewModel.getLengthProperty().set(beats);
+                } else if (dragging) {
+                    if (!SelectionManager.getInstance().getSelectedNotes().isEmpty()) {
+                        double deltaX = event.getSceneX() - dragStartX;
+                        double deltaY = event.getSceneY() - dragStartY;
 
-                    for(NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
-                        int newRow = noteView.startRow + deltaCellsY;
-                        double newColumn = noteView.startColumn + deltaCellsX*gridWidth;
+                        int deltaCellsX = (int) Math.round(deltaX / (zoomedCellWidth * gridWidth));
+                        int deltaCellsY = (int) Math.round(deltaY / zoomedCellHeight);
 
-                        double newLayoutX = Math.max(0, newColumn*zoomedCellWidth);
-                        double newLayoutY = Math.max(0, newRow * zoomedCellHeight);
+                        for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
+                            int newRow = noteView.startRow + deltaCellsY;
+                            double newColumn = noteView.startColumn + deltaCellsX * gridWidth;
 
-                        noteView.setNewLayout(newLayoutX, newLayoutY);
+                            double newLayoutX = Math.max(0, newColumn * zoomedCellWidth);
+                            double newLayoutY = Math.max(0, newRow * zoomedCellHeight);
+
+                            noteView.setNewLayout(newLayoutX, newLayoutY);
+                        }
                     }
                 }
-                event.consume();
             }
+            event.consume();
         });
 
 

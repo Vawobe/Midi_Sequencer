@@ -49,6 +49,7 @@ public class BPMField extends HBox {
                 null,
                 new BorderWidths(0, 0, 0.5, 0)
         )));
+
     }
 
     private void action() {

@@ -20,6 +20,7 @@ import static vawobe.Main.mainColor;
 public class MenuBar extends HBox {
     private final InstrumentBox instrumentBox;
     private final TitleBox titleBox;
+    private final ModeButtonBox modeButtonBox;
 
     public MenuBar() {
         setSpacing(5);
@@ -32,11 +33,13 @@ public class MenuBar extends HBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
+        modeButtonBox = new ModeButtonBox();
+
         getChildren().addAll(
                 new PlayerButtonBox(),
                 new BPMField(),
                 titleBox,
-                new ModeButtonBox(),
+                modeButtonBox,
                 instrumentBox,
                 new CopyPasteButtonBox(),
                 new ZoomBox(),

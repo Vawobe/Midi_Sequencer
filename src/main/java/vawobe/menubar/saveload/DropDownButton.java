@@ -31,9 +31,7 @@ public class DropDownButton extends HBox {
         button.setMinWidth(Region.USE_PREF_SIZE);
         button.setPrefWidth(20);
 
-        ArrayList<Button> menuItems = new ArrayList<>();
-        menuItems.add(new Button("Test"));
-        contextMenu = new MenuButtonPane(menuItems);
+        contextMenu = new MenuButtonPane();
 
         Polygon arrow = new Polygon();
         arrow.getPoints().addAll(
