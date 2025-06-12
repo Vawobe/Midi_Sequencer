@@ -1,9 +1,11 @@
 package vawobe.menubar.instrument;
 
 import vawobe.NoteView;
+import vawobe.commands.ChangeInstrumentCommand;
 import vawobe.enums.Instruments;
+import vawobe.model.manager.CommandManager;
 import vawobe.model.manager.MidiManager;
-import vawobe.render.NoteRenderer;
+import vawobe.model.manager.SelectionManager;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
@@ -14,7 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
 
-import java.util.HashSet;
+import java.util.HashMap;
 
 import static vawobe.Main.mainColor;
 import static vawobe.Main.mainPane;
@@ -85,21 +87,11 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             if (newValue == Instruments.DRUMS || oldValue == Instruments.DRUMS) {
                 mainPane.getPianoGridPane().changeKeyBox();
             }
-            HashSet<Instruments> oldInstruments = new HashSet<>();
-            for(NoteView note : NoteRenderer.getInstance().getSelectedNotes()) {
-                oldInstruments.add(note.getViewModel().getInstrumentProperty().get());
-
-                MidiManager.getInstance().stopNote(note.getViewModel().getNote());
-                int newChannel = getCurrentInstrumentsChannel();
-                if (newChannel == -1) {
-                    newChannel = addCurrentInstrument();
-                }
-                note.getViewModel().getInstrumentProperty().set(newValue);
-                note.getViewModel().getChannelProperty().set(newChannel);
-
-                note.getViewModel().updateNote();
+            HashMap<NoteView, Instruments> oldInstruments = new HashMap<>();
+            for(NoteView note : SelectionManager.getInstance().getSelectedNotes()) {
+                oldInstruments.put(note, note.getViewModel().getInstrumentProperty().get());
             }
-            oldInstruments.forEach(instrument -> MidiManager.getInstance().removeInstrumentIfNecessary(instrument));
+            CommandManager.getInstance().executeCommand(new ChangeInstrumentCommand(oldInstruments, getValue()));
             setTooltip(new Tooltip(newValue.getName()));
         });
     }

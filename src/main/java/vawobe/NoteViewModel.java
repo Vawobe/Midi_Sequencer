@@ -1,7 +1,6 @@
 package vawobe;
 
 import vawobe.enums.Instruments;
-import vawobe.model.manager.NoteManager;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -43,9 +42,5 @@ public class NoteViewModel {
     public void calculateMidiNote() {
         if(instrumentProperty.get() == Instruments.DRUMS) midiNoteProperty.set(rowProperty.get() + 35);
         else midiNoteProperty.set(107 - getRowProperty().get() - 12);
-    }
-
-    public void deleteNote() {
-        NoteManager.getInstance().removeNote(note);
     }
 }

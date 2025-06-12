@@ -61,9 +61,7 @@ public class PlaybackController {
             isPlayingProperty.set(false);
             if (timeline != null) {
                 timeline.stop();
-                for (Note note : NoteManager.getInstance().getNotesList())
-                    MidiManager.getInstance().stopNote(note);
-
+                MidiManager.getInstance().allNotesOff();
                 PianoGrid.getPlayhead().setVisible(false);
             }
         }

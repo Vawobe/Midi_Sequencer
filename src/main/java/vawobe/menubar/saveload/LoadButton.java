@@ -1,19 +1,22 @@
 package vawobe.menubar.saveload;
 
+import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import vawobe.ImportMidiPane;
 import vawobe.Note;
 import vawobe.NoteView;
+import vawobe.commands.LoadCommand;
 import vawobe.controller.PlaybackController;
 import vawobe.menubar.MenuButton;
-import vawobe.model.manager.NoteManager;
+import vawobe.model.manager.CommandManager;
 import vawobe.render.GridRenderer;
 import vawobe.render.NoteRenderer;
 import vawobe.save.ProjectData;
 import vawobe.save.ProjectIO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,20 +38,28 @@ public class LoadButton extends MenuButton {
             PlaybackController.getInstance().stopPlayback();
             Object[] data = ProjectIO.loadProject();
             if(data != null) {
-                String name = (String) data[0];
-                NoteManager.getInstance().getNotesList().clear();
-                mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(name);
+                String oldName = mainPane.getMenuBar().getTitleBox().getTitleTextField().getText();
+                String newName = (String) data[0];
+                mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(newName);
                 if (data[1] instanceof ProjectData projectData) {
-                    PlaybackController.getInstance().getBpmProperty().set(projectData.bpm());
-                    GridRenderer.getInstance().getSignatureProperty().set(projectData.signature());
-                    for (Note note : projectData.notes()) {
-                        // TODO
-                        NoteView noteView = new NoteView(note);
-                        NoteRenderer.getInstance().getChildren().add(noteView);
+                    int oldBPM = PlaybackController.getInstance().getBpmProperty().get();
+                    int oldSignature = GridRenderer.getInstance().getSignatureProperty().get();
 
-                        NoteManager.getInstance().addNote(note);
-                    }
-                    PlaybackController.getInstance().updateNotes();
+                    List<NoteView> oldNotes = new ArrayList<>();
+                    for(Node child : NoteRenderer.getInstance().getChildren())
+                        if(child instanceof NoteView noteView) oldNotes.add(noteView);
+
+                    int newBPM = projectData.bpm();
+                    int newSignature = projectData.signature();
+
+                    List<NoteView> loadedNotes = new ArrayList<>();
+                    for (Note note : projectData.notes()) loadedNotes.add(new NoteView(note));
+
+                    CommandManager.getInstance().executeCommand(
+                            new LoadCommand(loadedNotes, oldNotes,
+                                    newBPM, oldBPM,
+                                    newSignature, oldSignature,
+                                    newName, oldName));
                 } else {
                     Map<Integer, List<Note>> notes = isRightMap(data[1]);
                     if(notes != null)

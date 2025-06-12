@@ -1,5 +1,6 @@
 package vawobe.menubar.other;
 
+import vawobe.commands.ChangeBPMCommand;
 import vawobe.controller.PlaybackController;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -8,6 +9,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+import vawobe.model.manager.CommandManager;
 
 import java.util.function.UnaryOperator;
 
@@ -51,8 +53,11 @@ public class BPMField extends HBox {
 
     private void action() {
         if(!bpmTextField.getText().isEmpty() && Integer.parseInt(bpmTextField.getText()) >= 10) {
-            PlaybackController.getInstance().getBpmProperty().set(Integer.parseInt(bpmTextField.getText()));
-            PlaybackController.getInstance().updateNotes();
+
+
+            CommandManager.getInstance().executeCommand(
+                    new ChangeBPMCommand(PlaybackController.getInstance().getBpmProperty().get(),
+                            Integer.parseInt(bpmTextField.getText())));
         } else
             bpmTextField.setText(String.valueOf(PlaybackController.getInstance().getBpmProperty().get()));
         bpmTextField.getParent().requestFocus();

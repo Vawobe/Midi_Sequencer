@@ -5,8 +5,11 @@ import vawobe.CopiedNote;
 import vawobe.Note;
 import vawobe.NoteView;
 import vawobe.PianoGridPane;
+import vawobe.commands.AddNotesCommand;
+import vawobe.commands.RemoveNotesCommand;
+import vawobe.model.manager.CommandManager;
 import vawobe.model.manager.MidiManager;
-import vawobe.model.manager.NoteManager;
+import vawobe.model.manager.SelectionManager;
 import vawobe.render.GridRenderer;
 import vawobe.render.NoteRenderer;
 
@@ -36,13 +39,13 @@ public class ClipboardController {
 
     public void copySelectedNotes() {
         clipboard.clear();
-        NoteRenderer.getInstance().getSelectedNotes().forEach(noteView ->
+        SelectionManager.getInstance().getSelectedNotes().forEach(noteView ->
                 clipboard.add(new CopiedNote(noteView)));
     }
 
     public void cutSelectedNotes() {
         copySelectedNotes();
-        NoteRenderer.getInstance().getSelectedNotes().forEach(noteView -> noteView.getViewModel().deleteNote());
+        CommandManager.getInstance().executeCommand(new RemoveNotesCommand(new ArrayList<>(SelectionManager.getInstance().getSelectedNotes())));
     }
 
     public void pasteNotes(boolean preserveColumn) {
@@ -58,8 +61,9 @@ public class ClipboardController {
         if(minNoteView.isPresent())
             xShift = minNoteView.get().getLayoutX() - xInPane;
 
-        NoteRenderer.getInstance().getSelectedNotes().clear();
+        SelectionManager.getInstance().getSelectedNotes().clear();
 
+        List<NoteView> noteViews = new ArrayList<>();
         for (CopiedNote original : clipboard) {
             double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
 
@@ -83,13 +87,11 @@ public class ClipboardController {
 
             noteView.setLayoutX(snappedX);
             noteView.setLayoutY(snappedY);
+            noteViews.add(noteView);
 
-            NoteRenderer.getInstance().getChildren().add(noteView);
-            NoteRenderer.getInstance().getSelectedNotes().add(noteView);
-
-            NoteManager.getInstance().addNote(note);
-
+            SelectionManager.getInstance().getSelectedNotes().add(noteView);
         }
+        CommandManager.getInstance().executeCommand(new AddNotesCommand(noteViews));
         PlaybackController.getInstance().updateNotes();
     }
 }

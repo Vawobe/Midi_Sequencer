@@ -1,17 +1,16 @@
 package vawobe.render;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.SetChangeListener;
 import javafx.scene.Node;
-import lombok.Getter;
 import vawobe.*;
+import vawobe.commands.AddNotesCommand;
+import vawobe.commands.RemoveNotesCommand;
+import vawobe.commands.SelectNotesCommand;
 import vawobe.controller.ClipboardController;
 import vawobe.controller.PlaybackController;
 import vawobe.enums.Instruments;
 import vawobe.enums.Modes;
-import vawobe.model.manager.MidiManager;
-import vawobe.model.manager.ModeManager;
-import vawobe.model.manager.NoteManager;
+import vawobe.model.manager.*;
 import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.scene.input.KeyCode;
@@ -21,6 +20,8 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static vawobe.Main.mainPane;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
@@ -28,7 +29,6 @@ import static vawobe.render.GridRenderer.CELL_WIDTH;
 
 public class NoteRenderer extends Pane {
     private static NoteRenderer instance;
-    @Getter private final ObservableList<NoteView> selectedNotes;
 
     public static NoteRenderer getInstance() {
         if(instance == null) {
@@ -38,12 +38,9 @@ public class NoteRenderer extends Pane {
     }
 
     private NoteRenderer() {
-        selectedNotes = FXCollections.observableArrayList();
-        selectedNotes.addListener((ListChangeListener<NoteView>) change -> {
-            while (change.next()) {
-                change.getRemoved().forEach(noteView -> noteView.getSelectedProperty().set(false));
-                change.getAddedSubList().forEach(noteView -> noteView.getSelectedProperty().set(true));
-            }
+        SelectionManager.getInstance().getSelectedNotes().addListener((SetChangeListener<NoteView>) change -> {
+            if(change.wasRemoved()) change.getElementRemoved().getSelectedProperty().set(false);
+            if(change.wasAdded()) change.getElementAdded().getSelectedProperty().set(true);
         });
 
         NoteManager.getInstance().getNotesList().addListener((ListChangeListener<Note>) change -> {
@@ -84,7 +81,10 @@ public class NoteRenderer extends Pane {
     private void onMouseReleasedEvent(MouseEvent event) {
         if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT) {
             SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
-            selectionRectangle.getAllNotesInRectangle().forEach(noteView -> NoteRenderer.getInstance().getSelectedNotes().add(noteView));
+            Set<NoteView> oldSelect = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
+            Set<NoteView> newSelect = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
+            newSelect.addAll(selectionRectangle.getAllNotesInRectangle());
+            CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelect, newSelect));
             selectionRectangle.setVisible(false);
         }
         event.consume();
@@ -92,9 +92,8 @@ public class NoteRenderer extends Pane {
 
     private void onMousePressed(MouseEvent event) {
         if(!event.isShiftDown()) {
-            getChildren().forEach(node -> {
-                if (node instanceof NoteView note) selectedNotes.remove(note);
-            });
+            Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
+            CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, new HashSet<>()));
         }
         switch (ModeManager.getInstance().getCurrentModeProperty().get()) {
             case DRAW:
@@ -120,21 +119,21 @@ public class NoteRenderer extends Pane {
                     boolean altPressed = event.isAltDown();
                     ClipboardController.getInstance().pasteNotes(!altPressed);
                 }
+                case Z -> CommandManager.getInstance().undo();
+                case Y -> CommandManager.getInstance().redo();
             }
             event.consume();
         } else {
             if(event.getCode() == KeyCode.DELETE || event.getCode() == KeyCode.BACK_SPACE) {
-                ArrayList<NoteViewModel> notesToDelete = new ArrayList<>();
+                ArrayList<NoteView> notesToDelete = new ArrayList<>();
                 getChildren().forEach(node -> {
                     if (node instanceof NoteView noteView) {
                         if(noteView.getSelectedProperty().get()) {
-                            notesToDelete.add(noteView.getViewModel());
+                            notesToDelete.add(noteView);
                         }
                     }
                 });
-                for(NoteViewModel note : notesToDelete) {
-                    note.deleteNote();
-                }
+                CommandManager.getInstance().executeCommand(new RemoveNotesCommand(notesToDelete));
             }
         }
     }
@@ -151,7 +150,6 @@ public class NoteRenderer extends Pane {
             int row = (int) (y / (CELL_HEIGHT * PianoGridPane.zoomY.get()));
 
             Note note = new Note(col, row, length, channel, mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
-            NoteManager.getInstance().addNote(note);
 
             if (!PlaybackController.getInstance().isPlaying()) {
                 MidiManager.getInstance().playNote(note);
@@ -168,9 +166,11 @@ public class NoteRenderer extends Pane {
             noteView.setLayoutX(snappedX);
             noteView.setLayoutY(snappedY);
             noteView.updateNoteSize();
+            ArrayList<NoteView> noteViews = new ArrayList<>();
+            noteViews.add(noteView);
 
-            getChildren().add(noteView);
-            selectedNotes.add(noteView);
+            CommandManager.getInstance().executeCommand(new AddNotesCommand(noteViews));
+            SelectionManager.getInstance().getSelectedNotes().add(noteView);
 
             PlaybackController.getInstance().updateNotes();
         } else {
@@ -179,22 +179,36 @@ public class NoteRenderer extends Pane {
     }
 
     public void selectAllNotesWithInstrument(Instruments instrument) {
-        selectedNotes.clear();
+        Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
+        Set<NoteView> newSelection = new HashSet<>();
         for(Node node : getChildren()) {
             if(node instanceof NoteView noteView) {
                 if(noteView.getViewModel().getInstrumentProperty().get() == instrument) {
-                    selectedNotes.add(noteView);
+                    newSelection.add(noteView);
                 }
             }
         }
+        CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
     }
 
     public void selectAll() {
-        selectedNotes.clear();
+        Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
+        Set<NoteView> newSelection = new HashSet<>();
         for(Node node : getChildren()) {
             if(node instanceof NoteView noteView) {
-                selectedNotes.add(noteView);
+                newSelection.add(noteView);
             }
         }
+        CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
+    }
+
+    public void addNoteView(NoteView noteView) {
+        getChildren().add(noteView);
+        NoteManager.getInstance().addNote(noteView.getViewModel().getNote());
+    }
+
+    public void removeNoteView(NoteView noteView) {
+        getChildren().remove(noteView);
+        NoteManager.getInstance().removeNote(noteView.getViewModel().getNote());
     }
 }

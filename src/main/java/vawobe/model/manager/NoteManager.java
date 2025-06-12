@@ -10,6 +10,8 @@ import vawobe.enums.Instruments;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NoteManager {
     private static NoteManager instance;
@@ -30,12 +32,21 @@ public class NoteManager {
 
         notesList.addListener((ListChangeListener<Note>) change -> {
             HashSet<Instruments> deletedNotesInstruments = new HashSet<>();
+
             while (change.next()) {
                 if(change.wasRemoved()) {
                     change.getRemoved().forEach(note -> deletedNotesInstruments.add(note.getInstrument()));
-                    notesList.forEach(note -> deletedNotesInstruments.remove(note.getInstrument()));
-                    deletedNotesInstruments.forEach(instrument -> MidiManager.getInstance().removeInstrument(instrument));
                 }
+            }
+
+            if(!deletedNotesInstruments.isEmpty()) {
+                Set<Instruments> remaining = notesList.stream()
+                        .map(Note::getInstrument)
+                        .collect(Collectors.toSet());
+                deletedNotesInstruments.removeAll(remaining);
+                deletedNotesInstruments.forEach(instrument ->
+                        MidiManager.getInstance().removeInstrument(instrument));
+
             }
             PlaybackController.getInstance().updateNotes();
         });

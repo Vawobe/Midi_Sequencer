@@ -7,18 +7,17 @@ import lombok.Getter;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Synthesizer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MidiManager {
     private static MidiManager instance;
 
+    private final Set<Note> activeNotes = ConcurrentHashMap.newKeySet();
     private Synthesizer synth;
     @Getter private MidiChannel[] channels;
     @Getter private static final ArrayList<Integer> freeChannels = new ArrayList<>();
     @Getter private static final HashMap<Instruments, Integer> instrumentToChannel = new HashMap<>();
-
 
     private MidiManager() {
         try {
@@ -41,15 +40,17 @@ public class MidiManager {
     }
 
     public void playNote(Note note){
-        if(channelIsValid(note.getChannel()))
+        if(channelIsValid(note.getChannel())) {
             channels[note.getChannel()].noteOn(note.getMidiNote(), note.getVelocity());
-
+            activeNotes.add(note);
+        }
     }
 
     public void stopNote(Note note) {
-        if(channelIsValid(note.getChannel()))
+        if(channelIsValid(note.getChannel())) {
             channels[note.getChannel()].noteOff(note.getMidiNote());
-
+            activeNotes.remove(note);
+        }
     }
 
     public void close() {
@@ -140,6 +141,12 @@ public class MidiManager {
 
     private boolean channelIsValid(int channel) {
         return channel >= 0 && channel <= 15;
+    }
+
+    public void allNotesOff() {
+        for(Note note : activeNotes) {
+            stopNote(note);
+        }
     }
 }
 

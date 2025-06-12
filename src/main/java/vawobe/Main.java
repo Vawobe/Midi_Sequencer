@@ -11,11 +11,10 @@ import javafx.stage.Stage;
  * TODO:
  * Taste in Instrument Farbe blinken lassen, solange der Ton gespielt wird?
  * Export -> .wav.mp3???
- * Redo und Undo
  * Noten Lautstärke
  * Info Button
  * (Auto scroll und key guide)?
- * Performance beim weit rauszoomen und Note einfügen?
+ * Performance?
  */
 public class Main extends Application {
     public static MainPane mainPane;
