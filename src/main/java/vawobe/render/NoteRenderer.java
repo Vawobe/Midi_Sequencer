@@ -3,22 +3,23 @@ package vawobe.render;
 import javafx.collections.SetChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import vawobe.*;
 import vawobe.commands.AddNotesCommand;
 import vawobe.commands.RemoveNotesCommand;
 import vawobe.commands.SelectNotesCommand;
-import vawobe.controller.ClipboardController;
-import vawobe.controller.PlaybackController;
+import vawobe.manager.*;
 import vawobe.enums.Instruments;
 import vawobe.enums.Modes;
-import vawobe.model.manager.*;
 import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
+import vawobe.menubar.other.TitleBox;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -124,11 +125,11 @@ public class NoteRenderer extends Pane {
         if (event.isControlDown()) {
             switch (event.getCode()) {
                 case A -> selectAll();
-                case C -> ClipboardController.getInstance().copySelectedNotes();
-                case X -> ClipboardController.getInstance().cutSelectedNotes();
+                case C -> ClipboardManager.getInstance().copySelectedNotes();
+                case X -> ClipboardManager.getInstance().cutSelectedNotes();
                 case V -> {
                     boolean altPressed = event.isAltDown();
-                    ClipboardController.getInstance().pasteNotes(!altPressed);
+                    ClipboardManager.getInstance().pasteNotes(!altPressed);
                 }
                 case Z -> CommandManager.getInstance().undo();
                 case Y -> CommandManager.getInstance().redo();
@@ -136,32 +137,27 @@ public class NoteRenderer extends Pane {
             
         } else {
             switch (event.getCode()) {
-                case DELETE:
-                case BACK_SPACE:
+                case DELETE, BACK_SPACE -> {
                     ArrayList<NoteView> notesToDelete = new ArrayList<>();
                     getChildren().forEach(node -> {
                         if (node instanceof NoteView noteView) {
-                            if(noteView.getSelectedProperty().get()) {
+                            if (noteView.getSelectedProperty().get()) {
                                 notesToDelete.add(noteView);
                             }
                         }
                     });
                     CommandManager.getInstance().executeCommand(new RemoveNotesCommand(notesToDelete));
-                    break;
-                case SPACE:
-                    if(PlaybackController.getInstance().isPlaying()) PlaybackController.getInstance().pausePlayback();
-                    else PlaybackController.getInstance().startPlayback();
-                    break;
-                case ESCAPE:
-                    PlaybackController.getInstance().stopPlayback();
-                    break;
-                case UP: scrollBy(0, 10); break;
-                case DOWN: scrollBy(0, -10); break;
-                case LEFT: scrollBy(20, 0);  break;
-                case RIGHT: scrollBy(-20, 0);  break;
-                case TAB:
-                    mainPane.getMenuBar().getModeButtonBox().toggleNextButton();
-                    break;
+                }
+                case SPACE, ENTER -> {
+                    if (PlaybackManager.getInstance().isPlaying()) PlaybackManager.getInstance().pausePlayback();
+                    else PlaybackManager.getInstance().startPlayback();
+                }
+                case ESCAPE -> PlaybackManager.getInstance().stopPlayback();
+                case UP -> scrollBy(0, 10);
+                case DOWN -> scrollBy(0, -10);
+                case LEFT -> scrollBy(20, 0);
+                case RIGHT -> scrollBy(-20, 0);
+                case TAB -> mainPane.getMenuBar().getModeButtonBox().toggleNextButton();
             }
             
         }
@@ -180,7 +176,7 @@ public class NoteRenderer extends Pane {
 
             Note note = new Note(col, row, length, channel, mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
 
-            if (!PlaybackController.getInstance().isPlaying()) {
+            if (!PlaybackManager.getInstance().isPlaying()) {
                 MidiManager.getInstance().playNote(note);
 
                 PauseTransition pause = new PauseTransition(Duration.millis(200));
@@ -201,7 +197,7 @@ public class NoteRenderer extends Pane {
             CommandManager.getInstance().executeCommand(new AddNotesCommand(noteViews));
             SelectionManager.getInstance().getSelectedNotes().add(noteView);
 
-            PlaybackController.getInstance().updateNotes();
+            PlaybackManager.getInstance().updateNotes();
         } else {
             System.err.println("Keine freien Kanäle");
         }

@@ -1,7 +1,6 @@
-package vawobe.model.manager;
+package vawobe.manager;
 
 import vawobe.commands.SequencerCommand;
-import vawobe.controller.PlaybackController;
 
 import java.util.Stack;
 
@@ -23,33 +22,38 @@ public class CommandManager {
     }
 
     public void executeCommand(SequencerCommand command) {
-        boolean isPlaying = PlaybackController.getInstance().isPlaying();
-        if(isPlaying) PlaybackController.getInstance().pausePlayback();
+        boolean isPlaying = PlaybackManager.getInstance().isPlaying();
+        if(isPlaying) PlaybackManager.getInstance().pausePlayback();
         command.execute();
         undoStack.push(command);
         redoStack.clear();
-        if(isPlaying) PlaybackController.getInstance().startPlayback();
+        if(isPlaying) PlaybackManager.getInstance().startPlayback();
     }
 
     public void undo() {
         if(!undoStack.isEmpty()) {
-            boolean isPlaying = PlaybackController.getInstance().isPlaying();
-            if(isPlaying) PlaybackController.getInstance().pausePlayback();
+            boolean isPlaying = PlaybackManager.getInstance().isPlaying();
+            if(isPlaying) PlaybackManager.getInstance().pausePlayback();
             SequencerCommand command = undoStack.pop();
             command.undo();
             redoStack.push(command);
-            if(isPlaying) PlaybackController.getInstance().startPlayback();
+            if(isPlaying) PlaybackManager.getInstance().startPlayback();
         }
     }
 
     public void redo() {
         if(!redoStack.isEmpty()) {
-            boolean isPlaying = PlaybackController.getInstance().isPlaying();
-            if(isPlaying) PlaybackController.getInstance().pausePlayback();
+            boolean isPlaying = PlaybackManager.getInstance().isPlaying();
+            if(isPlaying) PlaybackManager.getInstance().pausePlayback();
             SequencerCommand command = redoStack.pop();
             command.execute();
             undoStack.push(command);
-            if(isPlaying) PlaybackController.getInstance().startPlayback();
+            if(isPlaying) PlaybackManager.getInstance().startPlayback();
         }
+    }
+
+    public void clear() {
+        undoStack.clear();
+        redoStack.clear();
     }
 }

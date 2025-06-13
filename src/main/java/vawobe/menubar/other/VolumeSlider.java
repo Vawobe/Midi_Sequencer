@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import lombok.Getter;
-import vawobe.model.manager.MidiManager;
+import vawobe.manager.MidiManager;
 
 public class VolumeSlider extends Pane {
     private final Rectangle track;

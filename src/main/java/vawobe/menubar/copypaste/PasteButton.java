@@ -1,6 +1,6 @@
 package vawobe.menubar.copypaste;
 
-import vawobe.controller.ClipboardController;
+import vawobe.manager.ClipboardManager;
 import vawobe.menubar.MenuButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
@@ -21,6 +21,6 @@ public class PasteButton extends MenuButton {
     }
 
     private void pasteAction() {
-        ClipboardController.getInstance().pasteNotes(true);
+        ClipboardManager.getInstance().pasteNotes(true);
     }
 }

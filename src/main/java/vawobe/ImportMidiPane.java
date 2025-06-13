@@ -6,11 +6,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import vawobe.commands.AddNotesCommand;
-import vawobe.controller.PlaybackController;
+import vawobe.manager.PlaybackManager;
 import vawobe.enums.Instruments;
 import vawobe.menubar.instrument.InstrumentSelector;
-import vawobe.model.manager.CommandManager;
-import vawobe.model.manager.MidiManager;
+import vawobe.manager.CommandManager;
+import vawobe.manager.MidiManager;
 import vawobe.render.GridRenderer;
 
 import java.util.ArrayList;
@@ -68,10 +68,11 @@ public class ImportMidiPane extends GridPane {
                     noteViews.add(new NoteView(note));
                 }
                 CommandManager.getInstance().executeCommand(new AddNotesCommand(noteViews));
-                PlaybackController.getInstance().updateNotes();
+                PlaybackManager.getInstance().updateNotes();
                 GridRenderer.getInstance().updateGridSize();
             }
         }
+        CommandManager.getInstance().clear();
         stage.close();
     }
 }

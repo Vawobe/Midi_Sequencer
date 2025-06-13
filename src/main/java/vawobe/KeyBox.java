@@ -4,8 +4,8 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
-import static vawobe.model.manager.NoteManager.OCTAVES;
-import static vawobe.model.manager.NoteManager.TONES;
+import static vawobe.manager.NoteManager.OCTAVES;
+import static vawobe.manager.NoteManager.TONES;
 
 public class KeyBox extends Pane {
     private KeyButton lastActiveButton = null;

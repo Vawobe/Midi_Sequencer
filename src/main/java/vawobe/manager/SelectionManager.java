@@ -1,4 +1,4 @@
-package vawobe.model.manager;
+package vawobe.manager;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;

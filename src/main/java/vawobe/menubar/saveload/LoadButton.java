@@ -8,9 +8,9 @@ import vawobe.ImportMidiPane;
 import vawobe.Note;
 import vawobe.NoteView;
 import vawobe.commands.LoadCommand;
-import vawobe.controller.PlaybackController;
+import vawobe.manager.PlaybackManager;
 import vawobe.menubar.MenuButton;
-import vawobe.model.manager.CommandManager;
+import vawobe.manager.CommandManager;
 import vawobe.render.GridRenderer;
 import vawobe.render.NoteRenderer;
 import vawobe.save.ProjectData;
@@ -35,14 +35,14 @@ public class LoadButton extends MenuButton {
         setTooltip(new Tooltip("Load"));
 
         setOnAction(_ -> {
-            PlaybackController.getInstance().stopPlayback();
+            PlaybackManager.getInstance().stopPlayback();
             Object[] data = ProjectIO.loadProject();
             if(data != null) {
                 String oldName = mainPane.getMenuBar().getTitleBox().getTitleTextField().getText();
                 String newName = (String) data[0];
                 mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(newName);
                 if (data[1] instanceof ProjectData projectData) {
-                    int oldBPM = PlaybackController.getInstance().getBpmProperty().get();
+                    int oldBPM = PlaybackManager.getInstance().getBpmProperty().get();
                     int oldSignature = GridRenderer.getInstance().getSignatureProperty().get();
 
                     List<NoteView> oldNotes = new ArrayList<>();

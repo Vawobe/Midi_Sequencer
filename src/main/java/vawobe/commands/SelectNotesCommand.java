@@ -1,7 +1,7 @@
 package vawobe.commands;
 
 import vawobe.NoteView;
-import vawobe.model.manager.SelectionManager;
+import vawobe.manager.SelectionManager;
 
 import java.util.Set;
 

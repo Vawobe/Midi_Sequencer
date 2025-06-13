@@ -1,6 +1,6 @@
 package vawobe.commands;
 
-import vawobe.controller.PlaybackController;
+import vawobe.manager.PlaybackManager;
 
 public class ChangeBPMCommand implements SequencerCommand{
     private final int oldBPM;
@@ -13,13 +13,13 @@ public class ChangeBPMCommand implements SequencerCommand{
 
     @Override
     public void execute() {
-        PlaybackController.getInstance().getBpmProperty().set(newBPM);
-        PlaybackController.getInstance().updateNotes();
+        PlaybackManager.getInstance().getBpmProperty().set(newBPM);
+        PlaybackManager.getInstance().updateNotes();
     }
 
     @Override
     public void undo() {
-        PlaybackController.getInstance().getBpmProperty().set(oldBPM);
-        PlaybackController.getInstance().updateNotes();
+        PlaybackManager.getInstance().getBpmProperty().set(oldBPM);
+        PlaybackManager.getInstance().updateNotes();
     }
 }

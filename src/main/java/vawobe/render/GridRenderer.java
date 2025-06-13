@@ -3,8 +3,8 @@ package vawobe.render;
 import vawobe.Note;
 import vawobe.NoteView;
 import vawobe.PianoGridPane;
-import vawobe.controller.PlaybackController;
-import vawobe.model.manager.NoteManager;
+import vawobe.manager.PlaybackManager;
+import vawobe.manager.NoteManager;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.Background;
@@ -17,8 +17,8 @@ import lombok.Getter;
 import java.util.ArrayList;
 
 import static vawobe.Main.gridLineColor;
-import static vawobe.model.manager.NoteManager.OCTAVES;
-import static vawobe.model.manager.NoteManager.TONES;
+import static vawobe.manager.NoteManager.OCTAVES;
+import static vawobe.manager.NoteManager.TONES;
 
 public class GridRenderer extends Pane {
     private static GridRenderer instance;
@@ -54,7 +54,7 @@ public class GridRenderer extends Pane {
 
         signatureProperty.addListener((_,_,_) -> {
             drawVerticalLines();
-            PlaybackController.getInstance().updateNotes();
+            PlaybackManager.getInstance().updateNotes();
         });
         strokeAmountProperty.addListener((_,_,_) -> drawHorizontalLines());
         gridProperty.addListener((_,_,_) -> drawVerticalLines());

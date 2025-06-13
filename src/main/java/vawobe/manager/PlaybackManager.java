@@ -1,10 +1,8 @@
-package vawobe.controller;
+package vawobe.manager;
 
 import vawobe.Note;
 import vawobe.PianoGrid;
 import vawobe.PianoGridPane;
-import vawobe.model.manager.MidiManager;
-import vawobe.model.manager.NoteManager;
 import vawobe.render.GridRenderer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -17,8 +15,8 @@ import java.util.ArrayList;
 
 import static vawobe.render.GridRenderer.CELL_WIDTH;
 
-public class PlaybackController {
-    private static PlaybackController instance;
+public class PlaybackManager {
+    private static PlaybackManager instance;
 
 
     private Timeline timeline;
@@ -28,13 +26,13 @@ public class PlaybackController {
 
     public boolean isPlaying() { return isPlayingProperty.get(); }
 
-    public static PlaybackController getInstance() {
+    public static PlaybackManager getInstance() {
         if(instance == null)
-            instance = new PlaybackController();
+            instance = new PlaybackManager();
         return instance;
     }
 
-    private PlaybackController() {
+    private PlaybackManager() {
         isPlayingProperty = new SimpleBooleanProperty(false);
         bpmProperty = new SimpleIntegerProperty(120);
         pausedBeats = 0;

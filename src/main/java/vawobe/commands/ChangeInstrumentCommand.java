@@ -2,7 +2,7 @@ package vawobe.commands;
 
 import vawobe.NoteView;
 import vawobe.enums.Instruments;
-import vawobe.model.manager.MidiManager;
+import vawobe.manager.MidiManager;
 
 import java.util.HashSet;
 import java.util.Map;

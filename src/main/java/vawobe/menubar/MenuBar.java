@@ -21,6 +21,7 @@ public class MenuBar extends HBox {
     private final InstrumentBox instrumentBox;
     private final TitleBox titleBox;
     private final ModeButtonBox modeButtonBox;
+    private final BPMField bpmField;
 
     public MenuBar() {
         setSpacing(5);
@@ -35,9 +36,11 @@ public class MenuBar extends HBox {
 
         modeButtonBox = new ModeButtonBox();
 
+        bpmField = new BPMField();
+
         getChildren().addAll(
                 new PlayerButtonBox(),
-                new BPMField(),
+                bpmField,
                 titleBox,
                 modeButtonBox,
                 instrumentBox,
@@ -45,6 +48,7 @@ public class MenuBar extends HBox {
                 new ZoomBox(),
                 new SaveSplitButton(),
                 new LoadButton(),
+                new HelpButton(),
                 spacer,
                 new VolumeBox()
         );

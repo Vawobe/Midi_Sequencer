@@ -1,4 +1,4 @@
-package vawobe.model.manager;
+package vawobe.manager;
 
 import vawobe.Note;
 import vawobe.enums.Instruments;

@@ -1,4 +1,4 @@
-package vawobe.model.manager;
+package vawobe.manager;
 
 import vawobe.enums.Modes;
 import javafx.beans.property.SimpleObjectProperty;

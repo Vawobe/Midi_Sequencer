@@ -1,6 +1,6 @@
 package vawobe;
 
-import vawobe.model.manager.MidiManager;
+import vawobe.manager.MidiManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;

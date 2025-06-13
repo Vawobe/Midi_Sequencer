@@ -4,12 +4,12 @@ import javafx.scene.effect.DropShadow;
 import lombok.Setter;
 import vawobe.commands.MoveNotesCommand;
 import vawobe.commands.RemoveNotesCommand;
-import vawobe.controller.PlaybackController;
+import vawobe.manager.PlaybackManager;
 import vawobe.enums.Modes;
-import vawobe.model.manager.CommandManager;
-import vawobe.model.manager.ModeManager;
-import vawobe.model.manager.NoteManager;
-import vawobe.model.manager.SelectionManager;
+import vawobe.manager.CommandManager;
+import vawobe.manager.ModeManager;
+import vawobe.manager.NoteManager;
+import vawobe.manager.SelectionManager;
 import vawobe.render.GridRenderer;
 import vawobe.render.NoteRenderer;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -76,9 +76,10 @@ public class NoteView extends Pane {
             if(ModeManager.getInstance().getCurrentModeProperty().get() != Modes.ERASE) {
                 if (event.isPrimaryButtonDown()) {
                     if (event.isControlDown()) {
-                        mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().setValue(getViewModel().getInstrumentProperty().getValue());
-                    } else if (event.isAltDown() && event.isShiftDown()) {
-                        NoteRenderer.getInstance().selectAllNotesWithInstrument(viewModel.getInstrumentProperty().get());
+                        if(event.isAltDown())
+                            NoteRenderer.getInstance().selectAllNotesWithInstrument(viewModel.getInstrumentProperty().get());
+                        else
+                            mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().setValue(getViewModel().getInstrumentProperty().getValue());
                     } else {
                         if (event.getX() > getWidth() - 5) {
                             resizing = true;
@@ -167,7 +168,7 @@ public class NoteView extends Pane {
                 SelectionManager.getInstance().getSelectedNotes().forEach(NoteView::resetAttributes);
             }
 
-            PlaybackController.getInstance().updateNotes();
+            PlaybackManager.getInstance().updateNotes();
             event.consume();
         });
     }
@@ -205,7 +206,7 @@ public class NoteView extends Pane {
         viewModel.calculateMidiNote();
         viewModel.updateNote();
         NoteManager.getInstance().getNotesList().sort(Comparator.comparingDouble(Note::getColumn));
-        PlaybackController.getInstance().updateNotes();
+        PlaybackManager.getInstance().updateNotes();
     }
 
     public void setNewLayout(double newX, double newY) {

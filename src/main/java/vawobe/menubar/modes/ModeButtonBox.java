@@ -2,7 +2,7 @@ package vawobe.menubar.modes;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.Toggle;
-import vawobe.model.manager.ModeManager;
+import vawobe.manager.ModeManager;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;

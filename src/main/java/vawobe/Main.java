@@ -1,7 +1,8 @@
 package vawobe;
 
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import vawobe.model.manager.MidiManager;
+import vawobe.manager.MidiManager;
 import vawobe.render.NoteRenderer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -16,6 +17,11 @@ import javafx.stage.Stage;
  * Info Button
  * (Auto scroll und key guide)?
  * Performance?
+ * Bereich zum Loopen auswählen
+ * Selektierte Noten mit Ctrl+Pfeiltasten verschieben
+ * Ctrl+Alt+C zum Aufteilen einer selektierten Note anhand der Grid
+ * Alt + Num zum Gridgröße ändern
+ * Alt + Scroll/Alt+ +/- Volume der selektierten Noten ändern
  */
 public class Main extends Application {
     public static MainPane mainPane;
@@ -31,6 +37,9 @@ public class Main extends Application {
         mainPane = new MainPane();
         Scene scene = new Scene(mainPane);
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            TextField titleTextField = mainPane.getMenuBar().getTitleBox().getTitleTextField();
+            TextField bpmTextField = mainPane.getMenuBar().getBpmField().getBpmTextField();
+            if(titleTextField.isFocused() || bpmTextField.isFocused()) return;
             NoteRenderer.getInstance().onKeyPressedEvent(event);
             event.consume();
         });

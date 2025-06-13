@@ -1,6 +1,6 @@
 package vawobe.menubar.player;
 
-import vawobe.controller.PlaybackController;
+import vawobe.manager.PlaybackManager;
 import vawobe.menubar.MenuButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
@@ -14,6 +14,6 @@ public class StopButton extends MenuButton {
         rectangle.setFill(Color.ORANGE);
         setGraphic(rectangle);
 
-        setOnAction(_ -> PlaybackController.getInstance().stopPlayback());
+        setOnAction(_ -> PlaybackManager.getInstance().stopPlayback());
     }
 }

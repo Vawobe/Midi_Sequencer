@@ -1,6 +1,6 @@
 package vawobe.menubar.player;
 
-import vawobe.controller.PlaybackController;
+import vawobe.manager.PlaybackManager;
 import vawobe.menubar.MenuButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
@@ -31,11 +31,11 @@ public class PlayButton extends MenuButton {
         rightBar.setFill(Color.ORANGE);
         pauseSymbol.getChildren().addAll(leftBar, rightBar);
 
-        PlaybackController.getInstance().getIsPlayingProperty().addListener((_,_,_) -> changeGraphic());
+        PlaybackManager.getInstance().getIsPlayingProperty().addListener((_, _, _) -> changeGraphic());
 
         setOnAction(_ -> {
-            if(PlaybackController.getInstance().isPlaying()) PlaybackController.getInstance().pausePlayback();
-            else PlaybackController.getInstance().startPlayback();
+            if(PlaybackManager.getInstance().isPlaying()) PlaybackManager.getInstance().pausePlayback();
+            else PlaybackManager.getInstance().startPlayback();
         });
     }
 

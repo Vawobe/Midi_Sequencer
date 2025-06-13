@@ -2,7 +2,7 @@ package vawobe;
 
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import vawobe.controller.PlaybackController;
+import vawobe.manager.PlaybackManager;
 import vawobe.render.GridRenderer;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -87,7 +87,7 @@ public class SignatureLine extends BasicScrollPane {
 
     private double calculateTimeAtX(double x) {
         double zoom = PianoGridPane.zoomX.get();
-        int bpm = PlaybackController.getInstance().getBpmProperty().get();
+        int bpm = PlaybackManager.getInstance().getBpmProperty().get();
 
         double beatsPerSecond = bpm / 60.0;
         double pixelsPerBeat = (double) CELL_WIDTH * zoom;
@@ -108,7 +108,7 @@ public class SignatureLine extends BasicScrollPane {
         double x = event.getX();
         double timeInSeconds = calculateTimeAtX(x);
 
-        PlaybackController playback = PlaybackController.getInstance();
+        PlaybackManager playback = PlaybackManager.getInstance();
         playback.startPlaybackAtSeconds(timeInSeconds);
     }
 }

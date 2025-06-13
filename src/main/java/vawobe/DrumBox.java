@@ -3,8 +3,8 @@ package vawobe;
 import vawobe.enums.Drums;
 import javafx.scene.paint.Color;
 
-import static vawobe.model.manager.NoteManager.OCTAVES;
-import static vawobe.model.manager.NoteManager.TONES;
+import static vawobe.manager.NoteManager.OCTAVES;
+import static vawobe.manager.NoteManager.TONES;
 
 public class DrumBox extends KeyBox{
     @Override

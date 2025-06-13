@@ -1,8 +1,8 @@
 package vawobe.commands;
 
 import vawobe.NoteView;
-import vawobe.controller.PlaybackController;
-import vawobe.model.manager.NoteManager;
+import vawobe.manager.PlaybackManager;
+import vawobe.manager.NoteManager;
 import vawobe.render.GridRenderer;
 import vawobe.render.NoteRenderer;
 
@@ -38,10 +38,10 @@ public class LoadCommand implements SequencerCommand {
         NoteManager.getInstance().getNotesList().clear();
 
         mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(newName);
-        PlaybackController.getInstance().getBpmProperty().set(newBPM);
+        PlaybackManager.getInstance().getBpmProperty().set(newBPM);
         GridRenderer. getInstance().getSignatureProperty().set(newSignature);
         for(NoteView noteView : loadedNotes) NoteRenderer.getInstance().addNoteView(noteView);
-        PlaybackController.getInstance().updateNotes();
+        PlaybackManager.getInstance().updateNotes();
 
     }
 
@@ -50,9 +50,9 @@ public class LoadCommand implements SequencerCommand {
         NoteManager.getInstance().getNotesList().clear();
 
         mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(oldName);
-        PlaybackController.getInstance().getBpmProperty().set(oldBPM);
+        PlaybackManager.getInstance().getBpmProperty().set(oldBPM);
         GridRenderer.getInstance().getSignatureProperty().set(oldSignature);
         for(NoteView noteView : oldNotes) NoteRenderer.getInstance().addNoteView(noteView);
-        PlaybackController.getInstance().updateNotes();
+        PlaybackManager.getInstance().updateNotes();
     }
 }

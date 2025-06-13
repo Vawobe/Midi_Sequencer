@@ -4,8 +4,8 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import vawobe.Note;
-import vawobe.controller.PlaybackController;
-import vawobe.model.manager.NoteManager;
+import vawobe.manager.PlaybackManager;
+import vawobe.manager.NoteManager;
 import vawobe.render.GridRenderer;
 import vawobe.save.ProjectIO;
 
@@ -34,7 +34,7 @@ public class SaveSplitButton extends DropDownButton {
     private void save() {
         List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
         if(!notes.isEmpty()) {
-            int bpm = PlaybackController.getInstance().getBpmProperty().get();
+            int bpm = PlaybackManager.getInstance().getBpmProperty().get();
             int signature = GridRenderer.getInstance().getSignatureProperty().get();
             ProjectIO.saveProject(bpm, signature, notes);
         }

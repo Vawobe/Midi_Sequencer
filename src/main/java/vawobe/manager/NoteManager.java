@@ -1,11 +1,10 @@
-package vawobe.model.manager;
+package vawobe.manager;
 
 import javafx.collections.ListChangeListener;
 import vawobe.Note;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
-import vawobe.controller.PlaybackController;
 import vawobe.enums.Instruments;
 
 import java.util.Comparator;
@@ -48,7 +47,7 @@ public class NoteManager {
                         MidiManager.getInstance().removeInstrument(instrument));
 
             }
-            PlaybackController.getInstance().updateNotes();
+            PlaybackManager.getInstance().updateNotes();
         });
     }
 

@@ -1,4 +1,4 @@
-package vawobe.controller;
+package vawobe.manager;
 
 import javafx.geometry.Point2D;
 import vawobe.CopiedNote;
@@ -7,9 +7,6 @@ import vawobe.NoteView;
 import vawobe.PianoGridPane;
 import vawobe.commands.AddNotesCommand;
 import vawobe.commands.RemoveNotesCommand;
-import vawobe.model.manager.CommandManager;
-import vawobe.model.manager.MidiManager;
-import vawobe.model.manager.SelectionManager;
 import vawobe.render.GridRenderer;
 import vawobe.render.NoteRenderer;
 
@@ -22,18 +19,18 @@ import java.util.Optional;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
 import static vawobe.render.GridRenderer.CELL_WIDTH;
 
-public class ClipboardController {
-    private static ClipboardController instance;
+public class ClipboardManager {
+    private static ClipboardManager instance;
     private final List<CopiedNote> clipboard;
 
-    public static ClipboardController getInstance() {
+    public static ClipboardManager getInstance() {
         if(instance == null) {
-            instance = new ClipboardController();
+            instance = new ClipboardManager();
         }
         return instance;
     }
 
-    private ClipboardController() {
+    private ClipboardManager() {
         clipboard = new ArrayList<>();
     }
 
@@ -92,6 +89,6 @@ public class ClipboardController {
             SelectionManager.getInstance().getSelectedNotes().add(noteView);
         }
         CommandManager.getInstance().executeCommand(new AddNotesCommand(noteViews));
-        PlaybackController.getInstance().updateNotes();
+        PlaybackManager.getInstance().updateNotes();
     }
 }
