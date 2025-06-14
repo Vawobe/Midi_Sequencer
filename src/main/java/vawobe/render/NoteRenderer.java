@@ -3,7 +3,7 @@ package vawobe.render;
 import javafx.collections.SetChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
 import vawobe.*;
 import vawobe.commands.AddNotesCommand;
 import vawobe.commands.RemoveNotesCommand;
@@ -17,17 +17,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import vawobe.menubar.other.TitleBox;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.Math.clamp;
 import static vawobe.Main.mainPane;
-import static vawobe.render.GridRenderer.CELL_HEIGHT;
-import static vawobe.render.GridRenderer.CELL_WIDTH;
 
 public class NoteRenderer extends Pane {
     private static NoteRenderer instance;
@@ -69,7 +65,8 @@ public class NoteRenderer extends Pane {
     }
 
     private void onMouseDraggedEvent(MouseEvent event) {
-        if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT) {
+        if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT
+                || event.isControlDown()) {
             SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
             if(selectionRectangle.isVisible()) {
                 selectionRectangle.setX(Math.min(selectionRectangle.getClickedX(), event.getX()));
@@ -92,7 +89,8 @@ public class NoteRenderer extends Pane {
         
     }
     private void onMouseReleasedEvent(MouseEvent event) {
-        if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT) {
+        if(ModeManager.getInstance().getCurrentModeProperty().get() == Modes.SELECT
+                || event.getButton() == MouseButton.PRIMARY) {
             SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
             Set<NoteView> oldSelect = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
             Set<NoteView> newSelect = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
@@ -104,21 +102,26 @@ public class NoteRenderer extends Pane {
     }
 
     private void onMousePressed(MouseEvent event) {
-        if(!event.isShiftDown()) {
+        if(!event.isControlDown()) {
             Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
             CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, new HashSet<>()));
-        }
-        switch (ModeManager.getInstance().getCurrentModeProperty().get()) {
-            case DRAW -> { if (event.getTarget() == this) addNote(event.getX(), event.getY()); }
-            case SELECT -> {
-                SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
-                selectionRectangle.setVisible(true);
-                selectionRectangle.setClickedX(event.getX());
-                selectionRectangle.setClickedY(event.getY());
+
+            switch (ModeManager.getInstance().getCurrentModeProperty().get()) {
+                case DRAW -> { if (event.getTarget() == this) addNote(event.getX(), event.getY()); }
+                case SELECT -> {
+                    SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
+                    selectionRectangle.setVisible(true);
+                    selectionRectangle.setClickedX(event.getX());
+                    selectionRectangle.setClickedY(event.getY());
+                }
+                case DRAG_TO_SCROLL -> setUserData(new Point2D(event.getSceneX(), event.getSceneY()));
             }
-            case DRAG_TO_SCROLL -> setUserData(new Point2D(event.getSceneX(), event.getSceneY()));
+        } else {
+            SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
+            selectionRectangle.setVisible(true);
+            selectionRectangle.setClickedX(event.getX());
+            selectionRectangle.setClickedY(event.getY());
         }
-        
     }
 
     public void onKeyPressedEvent(KeyEvent event) {
@@ -168,35 +171,28 @@ public class NoteRenderer extends Pane {
         if(channel == -1) channel = mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().addCurrentInstrument();
 
         if(channel != -1) {
+            double snappedX = GridRenderer.getInstance().snapXLayout(x);
+            double snappedY = GridRenderer.getInstance().snapYToGrid(y);
+            double column = GridRenderer.getInstance().xAsColumn(snappedX);
+            int row = GridRenderer.getInstance().yAsRow(snappedY);
             double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
 
-            int cell = (int) Math.ceil(x / (length * PianoGridPane.zoomX.get() * 100)) - 1;
-            double col = cell * length;
-            int row = (int) (y / (CELL_HEIGHT * PianoGridPane.zoomY.get()));
-
-            Note note = new Note(col, row, length, channel, mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
+            Note note = new Note(column, row, length, channel, mainPane.getMenuBar().getInstrumentBox().getInstrumentSelector().getValue());
 
             if (!PlaybackManager.getInstance().isPlaying()) {
-                MidiManager.getInstance().playNote(note);
-
                 PauseTransition pause = new PauseTransition(Duration.millis(200));
                 pause.setOnFinished(_ -> MidiManager.getInstance().stopNote(note));
+                MidiManager.getInstance().playNote(note);
                 pause.play();
             }
+
             NoteView noteView = new NoteView(note);
-
-            double snappedX = note.getColumn() * CELL_WIDTH * (4.0/GridRenderer.getInstance().getGridProperty().get()) * PianoGridPane.zoomX.get();
-            double snappedY = note.getRow() * CELL_HEIGHT * PianoGridPane.zoomY.get();
-
             noteView.setLayoutX(snappedX);
             noteView.setLayoutY(snappedY);
-            noteView.updateNoteSize();
+
             ArrayList<NoteView> noteViews = new ArrayList<>();
             noteViews.add(noteView);
-
             CommandManager.getInstance().executeCommand(new AddNotesCommand(noteViews));
-            SelectionManager.getInstance().getSelectedNotes().add(noteView);
-
             PlaybackManager.getInstance().updateNotes();
         } else {
             System.err.println("Keine freien Kanäle");

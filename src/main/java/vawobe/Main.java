@@ -22,6 +22,7 @@ import javafx.stage.Stage;
  * Ctrl+Alt+C zum Aufteilen einer selektierten Note anhand der Grid
  * Alt + Num zum Gridgröße ändern
  * Alt + Scroll/Alt+ +/- Volume der selektierten Noten ändern
+ * An Takt einfügen bei anderer Grid
  */
 public class Main extends Application {
     public static MainPane mainPane;

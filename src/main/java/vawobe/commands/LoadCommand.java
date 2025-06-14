@@ -42,7 +42,6 @@ public class LoadCommand implements SequencerCommand {
         GridRenderer. getInstance().getSignatureProperty().set(newSignature);
         for(NoteView noteView : loadedNotes) NoteRenderer.getInstance().addNoteView(noteView);
         PlaybackManager.getInstance().updateNotes();
-
     }
 
     @Override

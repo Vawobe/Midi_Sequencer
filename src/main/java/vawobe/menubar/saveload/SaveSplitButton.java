@@ -25,10 +25,8 @@ public class SaveSplitButton extends DropDownButton {
         saveMidiFX.setOnAction(_ -> save());
         Button exportMidi = new Button("Export MIDI");
         exportMidi.setOnAction(_ -> exportMidi());
-//        Button exportWav = new Button("Export WAV");
-//        Button exportMP3 = new Button("Export MP3");
 
-        addItems(saveMidiFX, exportMidi);//, exportWav, exportMP3);
+        addItems(saveMidiFX, exportMidi);
     }
 
     private void save() {

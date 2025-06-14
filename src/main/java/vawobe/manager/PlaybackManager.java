@@ -12,6 +12,7 @@ import javafx.util.Duration;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import static vawobe.render.GridRenderer.CELL_WIDTH;
 
@@ -40,6 +41,7 @@ public class PlaybackManager {
 
     public void startPlaybackAtSeconds(double timeInSeconds) {
         stopPlayback();
+        NoteManager.getInstance().getNotesList().sort(Comparator.comparingDouble(Note::getColumn));
         pausedBeats = timeInSeconds * (bpmProperty.get() / 60.0);
         startPlayback();
     }

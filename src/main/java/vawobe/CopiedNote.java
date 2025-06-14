@@ -2,6 +2,7 @@ package vawobe;
 
 import lombok.Getter;
 import vawobe.enums.Instruments;
+import vawobe.render.GridRenderer;
 
 @Getter
 public class CopiedNote {
@@ -11,6 +12,7 @@ public class CopiedNote {
     private final double length;
     private final int velocity;
     private final Instruments instrument;
+    private final int columnsPerFullNote;
 
     public CopiedNote(NoteView noteView) {
         layoutX = noteView.getLayoutX();
@@ -19,5 +21,6 @@ public class CopiedNote {
         velocity = noteView.getViewModel().getVelocityProperty().get();
         instrument = noteView.getViewModel().getInstrumentProperty().get();
         column = noteView.getViewModel().getColumnProperty().get();
+        columnsPerFullNote = GridRenderer.getInstance().getGridProperty().get();
     }
 }

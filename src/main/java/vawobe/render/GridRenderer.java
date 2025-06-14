@@ -135,4 +135,23 @@ public class GridRenderer extends Pane {
         setPrefWidth(width);
         setWidth(width);
     }
+
+    public double snapXLayout(double xPosition) {
+        int cellsPerQuarter = gridProperty.get() / 4;
+        double actualCellWidth = (CELL_WIDTH * PianoGridPane.zoomX.get()) / cellsPerQuarter;
+        return Math.floor(xPosition / actualCellWidth) * actualCellWidth;
+    }
+
+    public double xAsColumn(double x) {
+        return x / (CELL_WIDTH*PianoGridPane.zoomX.get());
+    }
+
+    public double snapYToGrid(double yPosition) {
+        double actualCellHeight = CELL_HEIGHT * PianoGridPane.zoomY.get();
+        return Math.floor(yPosition / actualCellHeight) * actualCellHeight;
+    }
+
+    public int yAsRow(double y) {
+        return (int) (y / (CELL_HEIGHT*PianoGridPane.zoomY.get()));
+    }
 }

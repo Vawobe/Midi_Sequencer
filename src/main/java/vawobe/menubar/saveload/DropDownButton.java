@@ -15,7 +15,6 @@ import javafx.scene.shape.Polygon;
 import javafx.stage.Popup;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

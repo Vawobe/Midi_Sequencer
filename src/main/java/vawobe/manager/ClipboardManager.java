@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
-import static vawobe.render.GridRenderer.CELL_WIDTH;
 
 public class ClipboardManager {
     private static ClipboardManager instance;
@@ -51,39 +50,30 @@ public class ClipboardManager {
         Point mousePoint = MouseInfo.getPointerInfo().getLocation();
         Point2D localMouse = NoteRenderer.getInstance().screenToLocal(mousePoint.getX(), mousePoint.getY());
         double xInPane = localMouse.getX();
+
+        double clickSnap = GridRenderer.getInstance().snapXLayout(xInPane);
+
         Optional<CopiedNote> minNoteView = clipboard.stream()
                 .min(Comparator.comparingDouble(CopiedNote::getLayoutX));
-        double xShift = 0;
 
-        if(minNoteView.isPresent())
-            xShift = minNoteView.get().getLayoutX() - xInPane;
+        double xShift = 0;
+        if(minNoteView.isPresent() && !preserveColumn)
+            xShift = clickSnap - minNoteView.get().getLayoutX();
 
         SelectionManager.getInstance().getSelectedNotes().clear();
-
         List<NoteView> noteViews = new ArrayList<>();
         for (CopiedNote original : clipboard) {
-            double length = 4.0 / GridRenderer.getInstance().getGridProperty().get();
-
-            double col;
-
-            if(preserveColumn) col = original.getColumn();
-            else {
-                int cell = (int) Math.ceil((original.getLayoutX() - xShift) / (length * PianoGridPane.zoomX.get() * 100)) - 1;
-                col = cell * length;
-            }
+            double xLayout = original.getLayoutX() + xShift;
+            double column = GridRenderer.getInstance().xAsColumn(xLayout);
             int row = original.getRow();
 
-            Note note = new Note(col, row, original.getLength(), MidiManager.getInstance().getInstrumentChannel(original.getInstrument()), original.getInstrument());
+            Note note = new Note(column, row, original.getLength(), MidiManager.getInstance().getInstrumentChannel(original.getInstrument()), original.getInstrument());
             note.setVelocity(original.getVelocity());
 
-
+            double yLayout = note.getRow() * CELL_HEIGHT * PianoGridPane.zoomY.get();
             NoteView noteView = new NoteView(note);
-
-            double snappedX = note.getColumn() * CELL_WIDTH * (4.0/GridRenderer.getInstance().getGridProperty().get()) * PianoGridPane.zoomX.get();
-            double snappedY = note.getRow() * CELL_HEIGHT * PianoGridPane.zoomY.get();
-
-            noteView.setLayoutX(snappedX);
-            noteView.setLayoutY(snappedY);
+            noteView.setLayoutX(xLayout);
+            noteView.setLayoutY(yLayout);
             noteViews.add(noteView);
 
             SelectionManager.getInstance().getSelectedNotes().add(noteView);
