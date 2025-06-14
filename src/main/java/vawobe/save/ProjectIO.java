@@ -2,7 +2,6 @@ package vawobe.save;
 
 import javafx.stage.FileChooser;
 import vawobe.Note;
-import vawobe.menubar.saveload.MidiIO;
 
 import java.io.*;
 import java.util.List;
@@ -73,6 +72,45 @@ public class ProjectIO {
             } catch (Exception e) {
                 // TODO
                 System.err.println("Fehler beim Export einer MID-Datei.\n" + e.getMessage());
+            }
+        }
+    }
+
+    public static void exportWav(List<Note> notes) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export WAV");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("WAV-Datei", "*.wav"));
+        fileChooser.setInitialFileName(String.format("%s.wav", mainPane.getMenuBar().getTitleBox().getTitleTextField().getText()));
+        File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
+
+        if(file != null) {
+            try {
+                WavExport.exportMIDIToWav(MidiIO.createMidiSequence(notes), file);
+            } catch (Exception e) {
+                // TODO
+                System.err.println("Fehler beim Export einer WAV-Datei.\n" + e.getMessage());
+            }
+        }
+    }
+
+    public static void exportMP3(List<Note> notes) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export MP3");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3-Datei", "*.mp3"));
+        fileChooser.setInitialFileName(String.format("%s.mp3", mainPane.getMenuBar().getTitleBox().getTitleTextField().getText()));
+        File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
+        if(file != null) {
+            try {
+                File tempFile = File.createTempFile("Midi Sequencer-", "-suffix");
+                WavExport.exportMIDIToWav(MidiIO.createMidiSequence(notes), tempFile);
+
+                MP3Exporter.convertWavToMp3(tempFile, file);
+                if (!tempFile.delete()) {
+                    System.err.println("Warnung: Temporäre Datei konnte nicht gelöscht werden: " + tempFile.getAbsolutePath());
+                }
+            } catch (Exception e) {
+                // TODO
+                System.err.println("Fehler beim Export einer MP3-Datei.\n" + e.getMessage());
             }
         }
     }

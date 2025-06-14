@@ -25,8 +25,12 @@ public class SaveSplitButton extends DropDownButton {
         saveMidiFX.setOnAction(_ -> save());
         Button exportMidi = new Button("Export MIDI");
         exportMidi.setOnAction(_ -> exportMidi());
+        Button exportWAV = new Button("Export WAV");
+        exportWAV.setOnAction(_ -> exportWav());
+        Button exportMP3 = new Button("Export MP3");
+        exportMP3.setOnAction(_ -> exportMp3());
 
-        addItems(saveMidiFX, exportMidi);
+        addItems(saveMidiFX, exportMidi, exportWAV, exportMP3);
     }
 
     private void save() {
@@ -40,9 +44,18 @@ public class SaveSplitButton extends DropDownButton {
 
     private void exportMidi() {
         List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
-        if(!notes.isEmpty()) {
-            ProjectIO.exportMidi(notes);
-        }
+        if(!notes.isEmpty()) ProjectIO.exportMidi(notes);
+
+    }
+
+    private void exportWav() {
+        List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
+        if(!notes.isEmpty()) ProjectIO.exportWav(notes);
+    }
+
+    private void exportMp3() {
+        List<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
+        if(!notes.isEmpty()) ProjectIO.exportMP3(notes);
     }
 
     private SVGPath getSvgPath() {
