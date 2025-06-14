@@ -7,6 +7,7 @@ import javafx.scene.input.MouseEvent;
 import vawobe.NoteView;
 import vawobe.PianoGrid;
 import vawobe.SelectionRectangle;
+import vawobe.commands.ChangeVolumeCommand;
 import vawobe.commands.RemoveNotesCommand;
 import vawobe.commands.SelectNotesCommand;
 import vawobe.enums.Modes;
@@ -14,6 +15,7 @@ import vawobe.render.GridRenderer;
 import vawobe.render.NoteRenderer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -105,8 +107,28 @@ public abstract class EventManager {
                 case NUMPAD6, DIGIT6 -> grid = 32;
                 case NUMPAD7, DIGIT7 -> grid = 48;
                 case NUMPAD8, DIGIT8 -> grid = 64;
-                case PLUS, ADD -> {}
-                case MINUS, SUBTRACT -> {}
+                case PLUS, ADD -> {
+                    HashMap<NoteView, Integer[]> volumeMap = new HashMap<>();
+                    for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
+                        int oldVolume = noteView.getViewModel().getVelocityProperty().get();
+                        int newVolume = Math.min(100, oldVolume+5);
+
+                        Integer[] volume = new Integer[]{newVolume, oldVolume};
+                        volumeMap.put(noteView, volume);
+                    }
+                    CommandManager.getInstance().executeCommand(new ChangeVolumeCommand(volumeMap));
+                }
+                case MINUS, SUBTRACT -> {
+                    HashMap<NoteView, Integer[]> volumeMap = new HashMap<>();
+                    for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
+                        int oldVolume = noteView.getViewModel().getVelocityProperty().get();
+                        int newVolume = Math.max(0, oldVolume-5);
+
+                        Integer[] volume = new Integer[]{newVolume, oldVolume};
+                        volumeMap.put(noteView, volume);
+                    }
+                    CommandManager.getInstance().executeCommand(new ChangeVolumeCommand(volumeMap));
+                }
             }
             if(grid != -1) GridRenderer.getInstance().getGridProperty().set(grid);
         } else {

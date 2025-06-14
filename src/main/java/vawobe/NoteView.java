@@ -1,5 +1,6 @@
 package vawobe;
 
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseButton;
 import vawobe.commands.MoveNotesCommand;
@@ -28,6 +29,7 @@ import static vawobe.render.GridRenderer.CELL_WIDTH;
 
 public class NoteView extends Pane {
     @Getter private final NoteViewModel viewModel;
+
     private double dragStartX;
     private double dragStartY;
     private double startXLayout;
@@ -64,6 +66,9 @@ public class NoteView extends Pane {
                 setBackground(new Background(new BackgroundFill(newValue.getColor(), new CornerRadii(10), null))));
 
         initDragHandler();
+
+        VolumeScale volumeScale = new VolumeScale(this);
+        getChildren().add(volumeScale);
     }
 
     private void initDragHandler() {
