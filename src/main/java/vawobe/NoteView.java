@@ -132,22 +132,21 @@ public class NoteView extends Pane {
                         setPrefWidth(newWidth);
                         viewModel.getLengthProperty().set(length);
                     } else if (dragging) {
-                        if (!SelectionManager.getInstance().getSelectedNotes().isEmpty()) {
-                            double maxLeftShift = 0;
-                            Optional<NoteView> minNoteView = SelectionManager.getInstance().getSelectedNotes().stream()
-                                    .min(Comparator.comparingDouble(NoteView::getLayoutX));
-                            if (minNoteView.isPresent()) maxLeftShift = -minNoteView.get().startXLayout;
+                        ArrayList<NoteView> selectedNoteView = new ArrayList<>(SelectionManager.getInstance().getSelectedNotes());
+                        if (!selectedNoteView.isEmpty()) {
+                            NoteView mostUp = null;
+                            NoteView mostDown = null;
+                            NoteView mostLeft = null;
+                            for (NoteView note : selectedNoteView) {
+                                if (mostUp == null || note.getLayoutY() < mostUp.getLayoutY()) mostUp = note;
+                                if (mostDown == null || note.getLayoutY() > mostDown.getLayoutY()) mostDown = note;
+                                if (mostLeft == null || note.getLayoutX() < mostLeft.getLayoutX()) mostLeft = note;
+                            }
 
-                            double maxUpShift = 0;
-                            double maxDownShift = 0;
-                            minNoteView = SelectionManager.getInstance().getSelectedNotes().stream()
-                                    .min(Comparator.comparingDouble(NoteView::getLayoutY));
-                            if (minNoteView.isPresent()) maxUpShift = -minNoteView.get().startYLayout;
-                            Optional<NoteView> maxNoteView = SelectionManager.getInstance().getSelectedNotes().stream()
-                                    .max(Comparator.comparingDouble(NoteView::getLayoutY));
-                            if (maxNoteView.isPresent())
-                                maxDownShift = NoteRenderer.getInstance().getHeight() - maxNoteView.get().startYLayout
-                                        - (CELL_HEIGHT * PianoGridPane.zoomY.get());
+                            double maxLeftShift = -mostLeft.startXLayout;
+                            double maxUpShift = -mostUp.startYLayout;
+                            double maxDownShift = NoteRenderer.getInstance().getHeight() - mostDown.startYLayout
+                                    - (CELL_HEIGHT * PianoGridPane.zoomY.get());
 
                             double snappedDragX = GridRenderer.getInstance().snapXLayout(event.getSceneX());
                             double snappedDragStartX = GridRenderer.getInstance().snapXLayout(dragStartX);

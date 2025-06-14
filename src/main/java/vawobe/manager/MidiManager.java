@@ -1,5 +1,10 @@
 package vawobe.manager;
 
+import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import vawobe.KeyBox;
+import vawobe.KeyButton;
 import vawobe.Note;
 import vawobe.enums.Instruments;
 import lombok.Getter;
@@ -9,6 +14,8 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Synthesizer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static vawobe.Main.mainPane;
 
 public class MidiManager {
     private static MidiManager instance;
@@ -41,6 +48,10 @@ public class MidiManager {
 
     public void playNote(Note note){
         if(channelIsValid(note.getChannel())) {
+            KeyBox keyBox = mainPane.getPianoGridPane().getCurrentKeyBox();
+            Button button = (Button) keyBox.getChildren().get(note.getRow());
+            button.setBackground(new Background(new BackgroundFill(note.getInstrument().getColor(), null, null)));
+
             channels[note.getChannel()].noteOn(note.getMidiNote(), note.getVelocity());
             activeNotes.add(note);
         }
@@ -48,6 +59,9 @@ public class MidiManager {
 
     public void stopNote(Note note) {
         if(channelIsValid(note.getChannel())) {
+            KeyBox keyBox = mainPane.getPianoGridPane().getCurrentKeyBox();
+            KeyButton button = (KeyButton) keyBox.getChildren().get(note.getRow());
+            button.setRightBackground();
             channels[note.getChannel()].noteOff(note.getMidiNote());
             activeNotes.remove(note);
         }

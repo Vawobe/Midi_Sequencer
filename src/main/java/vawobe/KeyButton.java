@@ -39,7 +39,7 @@ public class KeyButton extends Button {
             setBackground(normalBackground);
             setTextFill(key.contains("#") ? Color.WHITE : Color.BLACK);
         }
-        hoverProperty().addListener((_, _, newValue) -> setBackground(newValue ? hoverBackground : normalBackground));
+        hoverProperty().addListener((_, _, _) -> setRightBackground());
 
         setOnMousePressed(this::onMousePressedEvent);
         setOnDragDetected(this::onDragDetectedEvent);
@@ -47,6 +47,8 @@ public class KeyButton extends Button {
         setOnMouseDragEntered(this::onMouseDragEnteredEvent);
         setOnMouseDragExited(this::onMouseDragExitedEvent);
     }
+
+    public void setRightBackground() { setBackground(isHover() ? hoverBackground : normalBackground); }
 
     public void playTone() {
         if(!isPlaying) {

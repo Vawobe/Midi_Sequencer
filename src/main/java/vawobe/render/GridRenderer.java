@@ -82,6 +82,7 @@ public class GridRenderer extends Pane {
     }
 
     private void drawVerticalLines() {
+        System.err.println(gridProperty.get());
         int visibleCells = 0;
         if(getParent() != null) {
             double visibleWidth = ((Pane)getParent().getParent()).getWidth();

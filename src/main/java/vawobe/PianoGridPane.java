@@ -97,6 +97,10 @@ public class PianoGridPane extends GridPane {
         keyBoxScrollPane.setContent(keyBoxScrollPane.getContent() == drumBox ? keyBox : drumBox);
     }
 
+    public KeyBox getCurrentKeyBox() {
+        return (KeyBox) keyBoxScrollPane.getContent();
+    }
+
     private void applyZoom() {
         GridRenderer.getInstance().updateGridSize();
         keyBox.updateBox();

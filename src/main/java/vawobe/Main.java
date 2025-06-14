@@ -2,8 +2,8 @@ package vawobe;
 
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import vawobe.manager.EventManager;
 import vawobe.manager.MidiManager;
-import vawobe.render.NoteRenderer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -11,18 +11,14 @@ import javafx.stage.Stage;
 
 /**
  * TODO:
- * Taste in Instrument Farbe blinken lassen, solange der Ton gespielt wird?
  * Export -> .wav.mp3???
  * Noten Lautstärke
- * Info Button
+ * Info Button Inhalt
  * (Auto scroll und key guide)?
  * Performance?
  * Bereich zum Loopen auswählen
- * Selektierte Noten mit Ctrl+Pfeiltasten verschieben
  * Ctrl+Alt+C zum Aufteilen einer selektierten Note anhand der Grid
- * Alt + Num zum Gridgröße ändern
  * Alt + Scroll/Alt+ +/- Volume der selektierten Noten ändern
- * An Takt einfügen bei anderer Grid
  */
 public class Main extends Application {
     public static MainPane mainPane;
@@ -41,7 +37,7 @@ public class Main extends Application {
             TextField titleTextField = mainPane.getMenuBar().getTitleBox().getTitleTextField();
             TextField bpmTextField = mainPane.getMenuBar().getBpmField().getBpmTextField();
             if(titleTextField.isFocused() || bpmTextField.isFocused()) return;
-            NoteRenderer.getInstance().onKeyPressedEvent(event);
+            EventManager.onKeyPressedEvent(event);
             event.consume();
         });
 
