@@ -1,35 +1,16 @@
 package vawobe.menubar.player;
 
+import vawobe.icons.PauseIcon;
+import vawobe.icons.PlayIcon;
 import vawobe.manager.PlaybackManager;
 import vawobe.menubar.MenuButton;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 
 public class PlayButton extends MenuButton {
-    private final Polygon playSymbol;
-    private final HBox pauseSymbol;
-
     public PlayButton() {
         super();
         setTooltip(new Tooltip("Play"));
-        playSymbol = new Polygon();
-        playSymbol.getPoints().addAll(
-                0.0, 0.0,
-                15.0, 7.5,
-                0.0, 15.0
-        );
-        playSymbol.setFill(Color.ORANGE);
-        setGraphic(playSymbol);
-
-        pauseSymbol = new HBox(4);
-        Rectangle leftBar = new Rectangle(5, 15);
-        leftBar.setFill(Color.ORANGE);
-        Rectangle rightBar = new Rectangle(5, 15);
-        rightBar.setFill(Color.ORANGE);
-        pauseSymbol.getChildren().addAll(leftBar, rightBar);
+        setGraphic(new PlayIcon(1));
 
         PlaybackManager.getInstance().getIsPlayingProperty().addListener((_, _, _) -> changeGraphic());
 
@@ -40,12 +21,12 @@ public class PlayButton extends MenuButton {
     }
 
     public void changeGraphic() {
-        if(getGraphic() == playSymbol) {
-            setGraphic(pauseSymbol);
+        if(getGraphic() instanceof PlayIcon) {
+            setGraphic(new PauseIcon(1));
             setTooltip(new Tooltip("Pause"));
         }
         else {
-            setGraphic(playSymbol);
+            setGraphic(new PlayIcon(1));
             setTooltip(new Tooltip("Play"));
         }
     }

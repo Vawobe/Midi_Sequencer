@@ -1,6 +1,5 @@
 package vawobe;
 
-import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseButton;
 import vawobe.commands.MoveNotesCommand;

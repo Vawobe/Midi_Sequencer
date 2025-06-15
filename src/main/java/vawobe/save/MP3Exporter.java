@@ -1,9 +1,6 @@
 package vawobe.save;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class MP3Exporter {
     public static void convertWavToMp3(File wavFile, File mp3File) throws IOException, InterruptedException {
@@ -16,18 +13,21 @@ public class MP3Exporter {
 
         Process process = pb.start();
 
-        Thread outputThread = new Thread(() -> {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println("[ffmpeg stdout] " + line);
-                }
-            } catch (IOException e) {
-                System.err.println("Fehler beim MP3 Export: " + e.getMessage());
-            }
-        });
-        outputThread.start();
+        Thread outputThread = getOutputThread(process.getInputStream());
 
+        Thread errorThread = getErrorThread(process);
+
+        int exitCode = process.waitFor();
+
+        outputThread.join();
+        errorThread.join();
+
+        if (exitCode != 0) {
+            throw new IOException("ffmpeg wurde mit Exit-Code " + exitCode + " beendet.");
+        }
+    }
+
+    private static Thread getErrorThread(Process process) {
         Thread errorThread = new Thread(() -> {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
                 String line;
@@ -39,14 +39,21 @@ public class MP3Exporter {
             }
         });
         errorThread.start();
+        return errorThread;
+    }
 
-        int exitCode = process.waitFor();
-
-        outputThread.join();
-        errorThread.join();
-
-        if (exitCode != 0) {
-            throw new IOException("ffmpeg wurde mit Exit-Code " + exitCode + " beendet.");
-        }
+    private static Thread getOutputThread(InputStream process) {
+        Thread outputThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println("[ffmpeg stdout] " + line);
+                }
+            } catch (IOException e) {
+                System.err.println("Fehler beim MP3 Export: " + e.getMessage());
+            }
+        });
+        outputThread.start();
+        return outputThread;
     }
 }

@@ -1,5 +1,6 @@
 package vawobe.menubar.copypaste;
 
+import vawobe.icons.SelectAllIcon;
 import vawobe.menubar.MenuButton;
 import vawobe.render.NoteRenderer;
 import javafx.scene.control.Tooltip;
@@ -9,10 +10,7 @@ import javafx.scene.shape.Rectangle;
 public class SelectAllButton extends MenuButton {
     public SelectAllButton() {
         super();
-        Rectangle icon = new Rectangle(15,15);
-        icon.setStroke(Color.LIGHTGRAY);
-        icon.setFill(Color.TRANSPARENT);
-        icon.getStrokeDashArray().addAll(1.0,2.0);
+        Rectangle icon = new SelectAllIcon(1);
         setTooltip(new Tooltip("Select all"));
 
         setGraphic(icon);

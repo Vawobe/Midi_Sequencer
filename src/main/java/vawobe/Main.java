@@ -2,23 +2,21 @@ package vawobe;
 
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
 import vawobe.manager.EventManager;
 import vawobe.manager.MidiManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import vawobe.manager.SelectionManager;
 
 /**
  * TODO:
- * Export -> .wav.mp3???
- * Noten Lautstärke
  * Info Button Inhalt
  * (Auto scroll und key guide)?
  * Performance?
  * Bereich zum Loopen auswählen
- * Ctrl+Alt+C zum Aufteilen einer selektierten Note anhand der Grid
- * Alt + Scroll/Alt+ +/- Volume der selektierten Noten ändern
  */
 public class Main extends Application {
     public static MainPane mainPane;
@@ -40,6 +38,13 @@ public class Main extends Application {
             EventManager.onKeyPressedEvent(event);
             event.consume();
         });
+        scene.addEventFilter(ScrollEvent.SCROLL, event -> {
+            if(!SelectionManager.getInstance().getSelectedNotes().isEmpty() && event.isAltDown()) {
+                EventManager.onScrollEvent(event);
+                event.consume();
+            }
+        });
+        scene.addEventFilter(KeyEvent.KEY_RELEASED, EventManager::onKeyReleasedEvent);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("MIDI Sequencer");

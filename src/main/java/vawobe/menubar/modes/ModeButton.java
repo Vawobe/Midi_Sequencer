@@ -1,6 +1,7 @@
 package vawobe.menubar.modes;
 
 import vawobe.enums.Modes;
+import vawobe.icons.SvgIcon;
 import vawobe.menubar.MenuButton;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -13,26 +14,18 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 import lombok.Getter;
 
 public class ModeButton extends MenuButton implements Toggle {
     private final BooleanProperty selected = new SimpleBooleanProperty(false);
     private final ObjectProperty<ToggleGroup> toggleGroup = new SimpleObjectProperty<>(this, "toggleGroup");
-    private final SVGPath icon;
     @Getter private final Modes mode;
 
-    public ModeButton(String iconContent, Modes mode) {
+    public ModeButton(SvgIcon icon, Modes mode) {
         super();
         setAccessibleRole(AccessibleRole.TOGGLE_BUTTON);
 
         this.mode = mode;
-
-        icon = new SVGPath();
-        icon.setContent(iconContent);
-        icon.setFill(Color.TRANSPARENT);
-        icon.setStroke(Color.DARKGRAY);
-        icon.setStrokeWidth(1);
         setGraphic(icon);
 
 

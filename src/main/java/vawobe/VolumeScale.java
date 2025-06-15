@@ -5,14 +5,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class VolumeScale extends Pane {
-    private final Rectangle background;
-    private final Rectangle track;
-
     public VolumeScale(NoteView noteView) {
-        background = new Rectangle();
+        Rectangle background = new Rectangle();
         background.setFill(Color.web("#000", 0.25));
 
-        track = new Rectangle();
+        Rectangle track = new Rectangle();
         track.setFill(Color.web("#FFF", 0.25));
 
         track.widthProperty().bind(noteView.widthProperty().multiply(noteView.getViewModel().getVelocityProperty().divide(100.0)));
