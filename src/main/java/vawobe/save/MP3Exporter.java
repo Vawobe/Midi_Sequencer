@@ -1,11 +1,19 @@
 package vawobe.save;
 
+import javafx.geometry.Pos;
+import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
+
 import java.io.*;
+import java.nio.file.Paths;
+
+import static vawobe.Main.mainPane;
 
 public class MP3Exporter {
     public static void convertWavToMp3(File wavFile, File mp3File) throws IOException, InterruptedException {
+        String ffmpegPath = Paths.get("ffmpeg", "ffmpeg.exe").toAbsolutePath().toString();
         ProcessBuilder pb = new ProcessBuilder(
-                "C:\\Program Files\\Java\\ffmpeg-7.1.1-essentials_build\\bin\\ffmpeg.exe",
+                ffmpegPath,
                 "-y",
                 "-i", wavFile.getAbsolutePath(),
                 mp3File.getAbsolutePath()
@@ -23,6 +31,13 @@ public class MP3Exporter {
         errorThread.join();
 
         if (exitCode != 0) {
+            Notifications.create()
+                    .title("Fehler beim MP3 Export")
+                    .text("ffmpeg wurde mit Exit-Code " + exitCode + " beendet.")
+                    .owner(mainPane.getScene().getWindow())
+                    .hideAfter(Duration.seconds(3))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .showInformation();
             throw new IOException("ffmpeg wurde mit Exit-Code " + exitCode + " beendet.");
         }
     }
@@ -35,7 +50,13 @@ public class MP3Exporter {
                     System.out.println("[ffmpeg stderr] " + line);
                 }
             } catch (IOException e) {
-                System.err.println("Fehler beim MP3 Export: " + e.getMessage());
+                Notifications.create()
+                        .title("Fehler beim MP3 Export")
+                        .text("Datei konnte nicht exportiert werden.\n" + e.getMessage())
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             }
         });
         errorThread.start();
@@ -50,7 +71,13 @@ public class MP3Exporter {
                     System.out.println("[ffmpeg stdout] " + line);
                 }
             } catch (IOException e) {
-                System.err.println("Fehler beim MP3 Export: " + e.getMessage());
+                Notifications.create()
+                        .title("Fehler beim MP3 Export")
+                        .text("Datei konnte nicht exportiert werden.\n" + e.getMessage())
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             }
         });
         outputThread.start();

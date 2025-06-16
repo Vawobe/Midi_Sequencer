@@ -1,5 +1,9 @@
 package vawobe.save;
 
+import javafx.geometry.Pos;
+import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
+
 import javafx.stage.FileChooser;
 import vawobe.Note;
 
@@ -20,9 +24,22 @@ public class ProjectIO {
             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
                 ProjectData projectData = new ProjectData(bpm, signature, notes);
                 out.writeObject(projectData);
+
+                Notifications.create()
+                        .title("Speichern erfolgreich")
+                        .text("Die Datei " + file + " wurde gespeichert.")
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             } catch (IOException e) {
-                // TODO
-                System.err.println("Fehler beim Speichern.\n" + e.getMessage());
+                Notifications.create()
+                        .title("Fehler beim Speichern")
+                        .text("Die Datei " + file + " konnte nicht gespeichert werden.\n" + e.getMessage())
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             }
         }
     }
@@ -43,16 +60,26 @@ public class ProjectIO {
                     ret[1] = in.readObject();
                     return ret;
                 } catch (IOException | ClassNotFoundException e) {
-                    // TODO
-                    System.err.println("Fehler beim Laden einer MIDFX-Datei.\n" + e.getMessage());
+                    Notifications.create()
+                            .title("Fehler beim Laden")
+                            .text("Die Datei " + file + " konnte nicht geladen werden.\n" + e.getMessage())
+                            .owner(mainPane.getScene().getWindow())
+                            .hideAfter(Duration.seconds(3))
+                            .position(Pos.BOTTOM_RIGHT)
+                            .showInformation();
                 }
             } else if(name.toLowerCase().endsWith(".mid")) {
                 try {
                     ret[1] = MidiIO.importMidi(file);
                     return ret;
                 } catch (Exception e) {
-                    // TODO
-                    System.err.println("Fehler beim Laden einer MID-Datei.\n" + e.getMessage());
+                    Notifications.create()
+                            .title("Fehler beim Laden")
+                            .text("Die Datei " + file + " konnte nicht geladen werden.\n" + e.getMessage())
+                            .owner(mainPane.getScene().getWindow())
+                            .hideAfter(Duration.seconds(3))
+                            .position(Pos.BOTTOM_RIGHT)
+                            .showInformation();
                 }
             }
         }
@@ -69,9 +96,21 @@ public class ProjectIO {
         if(file != null) {
             try {
                 MidiIO.exportMidi(notes, file.getAbsolutePath());
+                Notifications.create()
+                        .title("Export erfolgreich")
+                        .text("Die Datei " + file + " wurde erfolgreich exportiert.")
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             } catch (Exception e) {
-                // TODO
-                System.err.println("Fehler beim Export einer MID-Datei.\n" + e.getMessage());
+                Notifications.create()
+                        .title("Fehler beim Export")
+                        .text("Die Datei " + file + " konnte nicht exportiert werden.\n" + e.getMessage())
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             }
         }
     }
@@ -86,9 +125,21 @@ public class ProjectIO {
         if(file != null) {
             try {
                 WavExport.exportMIDIToWav(MidiIO.createMidiSequence(notes), file);
+                Notifications.create()
+                        .title("Export erfolgreich")
+                        .text("Die Datei " + file + " wurde erfolgreich exportiert.")
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             } catch (Exception e) {
-                // TODO
-                System.err.println("Fehler beim Export einer WAV-Datei.\n" + e.getMessage());
+                Notifications.create()
+                        .title("Fehler beim Export")
+                        .text("Die Datei " + file + " konnte nicht exportiert werden.\n" + e.getMessage())
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             }
         }
     }
@@ -106,11 +157,30 @@ public class ProjectIO {
 
                 MP3Exporter.convertWavToMp3(tempFile, file);
                 if (!tempFile.delete()) {
-                    System.err.println("Warnung: Temporäre Datei konnte nicht gelöscht werden: " + tempFile.getAbsolutePath());
+                    Notifications.create()
+                            .title("Warnung")
+                            .text("Temporäre Datei konnte nicht gelöscht werden: " + tempFile.getAbsolutePath())
+                            .owner(mainPane.getScene().getWindow())
+                            .hideAfter(Duration.seconds(3))
+                            .position(Pos.BOTTOM_RIGHT)
+                            .showInformation();
                 }
+                Notifications.create()
+                        .title("Export erfolgreich")
+                        .text("Die Datei " + file + " wurde erfolgreich exportiert.")
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
+
             } catch (Exception e) {
-                // TODO
-                System.err.println("Fehler beim Export einer MP3-Datei.\n" + e.getMessage());
+                Notifications.create()
+                        .title("Fehler beim Export")
+                        .text("Die Datei " + file + " konnte nicht exportiert werden.\n" + e.getMessage())
+                        .owner(mainPane.getScene().getWindow())
+                        .hideAfter(Duration.seconds(3))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .showInformation();
             }
         }
     }

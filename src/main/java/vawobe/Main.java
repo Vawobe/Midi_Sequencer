@@ -13,10 +13,9 @@ import vawobe.manager.SelectionManager;
 
 /**
  * TODO:
- * Info Button Inhalt
  * (Auto scroll und key guide)?
  * Performance?
- * Bereich zum Loopen auswählen
+ * Bereich zum Loopen auswählen?
  */
 public class Main extends Application {
     public static MainPane mainPane;

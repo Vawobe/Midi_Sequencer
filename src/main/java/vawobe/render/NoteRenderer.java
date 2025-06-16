@@ -1,8 +1,10 @@
 package vawobe.render;
 
 import javafx.collections.SetChangeListener;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
+import org.controlsfx.control.Notifications;
 import vawobe.*;
 import vawobe.commands.AddNotesCommand;
 import vawobe.commands.MoveNotesCommand;
@@ -89,7 +91,12 @@ public class NoteRenderer extends Pane {
             CommandManager.getInstance().executeCommand(new AddNotesCommand(noteViews));
             PlaybackManager.getInstance().updateNotes();
         } else {
-            System.err.println("Keine freien Kanäle");
+            Notifications.create()
+                    .text("Keine freien Kanäle übrig. Es können maximal 15 Instrumente + das Schlagzeug verwendet werden.")
+                    .owner(mainPane.getScene().getWindow())
+                    .hideAfter(Duration.seconds(5))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .showInformation();
         }
     }
 
