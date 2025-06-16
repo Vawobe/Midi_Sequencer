@@ -1,6 +1,7 @@
 package vawobe;
 
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import vawobe.manager.EventManager;
@@ -10,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import vawobe.manager.SelectionManager;
+
+import java.util.Objects;
 
 /**
  * TODO:
@@ -44,6 +47,8 @@ public class Main extends Application {
             }
         });
         scene.addEventFilter(KeyEvent.KEY_RELEASED, EventManager::onKeyReleasedEvent);
+
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon.png"))));
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("MIDI Sequencer");
