@@ -91,7 +91,9 @@ public class NoteView extends Pane {
                             if(event.isControlDown())
                                 noteViews.addAll(SelectionManager.getInstance().getSelectedNotes());
                             noteViews.add(this);
-                            CommandManager.getInstance().executeCommand(new SelectNotesCommand(SelectionManager.getInstance().getSelectedNotes(), new HashSet<>(noteViews)));
+                            Set<NoteView> oldSelection = SelectionManager.getInstance().getSelectedNotes();
+                            Set<NoteView> newSelection = new HashSet<>(noteViews);
+                            if(!oldSelection.equals(newSelection)) CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
                         }
                         if (event.getX() > getWidth() - 5) {
                             resizing = true;
@@ -230,6 +232,7 @@ public class NoteView extends Pane {
 
         viewModel.calculateMidiNote();
         viewModel.updateNote();
+        updateNoteSize();
         NoteManager.getInstance().getNotesList().sort(Comparator.comparingDouble(Note::getColumn));
         PlaybackManager.getInstance().updateNotes();
     }

@@ -53,22 +53,24 @@ public abstract class EventManager {
             Set<NoteView> oldSelect = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
             Set<NoteView> newSelect = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
             newSelect.addAll(selectionRectangle.getAllNotesInRectangle());
-            CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelect, newSelect));
+            if(!oldSelect.equals(newSelect)) CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelect, newSelect));
             selectionRectangle.setVisible(false);
         }
     }
 
     public static void onMousePressed(MouseEvent event) {
         if (!event.isControlDown()) {
-            Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
-            CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, new HashSet<>()));
 
             switch (ModeManager.getInstance().getCurrentModeProperty().get()) {
                 case DRAW -> {
+                    SelectionManager.getInstance().getSelectedNotes().clear();
                     if (event.getTarget() == NoteRenderer.getInstance())
                         NoteRenderer.getInstance().addNote(event.getX(), event.getY());
                 }
                 case SELECT -> {
+                    Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
+                    if(!oldSelection.isEmpty()) CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, new HashSet<>()));
+
                     SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
                     selectionRectangle.setVisible(true);
                     selectionRectangle.setClickedX(event.getX());

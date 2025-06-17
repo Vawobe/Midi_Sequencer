@@ -110,7 +110,7 @@ public class NoteRenderer extends Pane {
                 }
             }
         }
-        CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
+        if(!oldSelection.equals(newSelection)) CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
     }
 
     public void selectAll() {
@@ -121,7 +121,7 @@ public class NoteRenderer extends Pane {
                 newSelection.add(noteView);
             }
         }
-        CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
+        if(!oldSelection.equals(newSelection)) CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
     }
 
     public void addNoteView(NoteView noteView) {
