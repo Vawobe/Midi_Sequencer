@@ -68,6 +68,7 @@ public class NoteView extends Pane {
 
         VolumeScale volumeScale = new VolumeScale(this);
         getChildren().add(volumeScale);
+        updateNoteSize();
     }
 
     private void initDragHandler() {

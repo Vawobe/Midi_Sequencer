@@ -27,9 +27,20 @@ import static vawobe.Main.mainColor;
 
 public class ImportMidiPane extends GridPane {
     private final Map<InstrumentSelector, List<Note>> selectorNoteMap = new HashMap<>();
-    private static final Stage stage = new Stage(StageStyle.UNDECORATED);
+    private static Stage stage = null;
+    private final Map<Integer, List<Note>> noteLists;
 
-    private ImportMidiPane(Map<Integer, List<Note>> noteLists) {
+    public void initializeStage() {
+        if(stage == null) {
+            stage = new Stage(StageStyle.UNDECORATED);
+            stage.setTitle("Import MIDI");
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.initModality(Modality.APPLICATION_MODAL);
+        }
+    }
+
+    public ImportMidiPane(Map<Integer, List<Note>> noteLists) {
+        this.noteLists = noteLists;
         int row = 0;
         setBackground(new Background(new BackgroundFill(mainColor, new CornerRadii(5), null)));
         setPadding(new Insets(10));
@@ -85,19 +96,16 @@ public class ImportMidiPane extends GridPane {
         buttonBox.getChildren().addAll(spacer, importButton, cancelButton);
         HBox.setHgrow(spacer, Priority.ALWAYS);
         GridPane.setHalignment(buttonBox, HPos.RIGHT);
+
+
     }
 
-    public static void open(Map<Integer, List<Note>> noteLists) {
-        stage.setTitle("Import MIDI");
-        stage.initStyle(StageStyle.TRANSPARENT);
-
+    public void open() {
+        initializeStage();
         ImportMidiPane importPane = new ImportMidiPane(noteLists);
-
         Scene scene = new Scene(importPane);
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL);
-
         stage.show();
     }
 
@@ -119,5 +127,7 @@ public class ImportMidiPane extends GridPane {
         }
         CommandManager.getInstance().clear();
         stage.close();
+
+
     }
 }

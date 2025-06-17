@@ -35,6 +35,8 @@ public class LoadCommand implements SequencerCommand {
 
     @Override
     public void execute() {
+        boolean isPlaying = PlaybackManager.getInstance().isPlaying();
+        if(isPlaying) PlaybackManager.getInstance().pausePlayback();
         NoteManager.getInstance().getNotesList().clear();
 
         mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(newName);
@@ -42,10 +44,13 @@ public class LoadCommand implements SequencerCommand {
         GridRenderer. getInstance().getSignatureProperty().set(newSignature);
         for(NoteView noteView : loadedNotes) NoteRenderer.getInstance().addNoteView(noteView);
         PlaybackManager.getInstance().updateNotes();
+        if(isPlaying) PlaybackManager.getInstance().startPlayback();
     }
 
     @Override
     public void undo() {
+        boolean isPlaying = PlaybackManager.getInstance().isPlaying();
+        if(isPlaying) PlaybackManager.getInstance().pausePlayback();
         NoteManager.getInstance().getNotesList().clear();
 
         mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(oldName);
@@ -53,5 +58,6 @@ public class LoadCommand implements SequencerCommand {
         GridRenderer.getInstance().getSignatureProperty().set(oldSignature);
         for(NoteView noteView : oldNotes) NoteRenderer.getInstance().addNoteView(noteView);
         PlaybackManager.getInstance().updateNotes();
+        if(isPlaying) PlaybackManager.getInstance().startPlayback();
     }
 }

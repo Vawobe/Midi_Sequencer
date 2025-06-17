@@ -60,7 +60,7 @@ public class LoadButton extends MenuButton {
                 } else {
                     Map<Integer, List<Note>> notes = isRightMap(data[1]);
                     if(notes != null)
-                        ImportMidiPane.open(notes);
+                        new ImportMidiPane(notes).open();
                 }
             }
         });

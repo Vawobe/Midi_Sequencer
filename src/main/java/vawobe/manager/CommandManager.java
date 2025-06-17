@@ -22,33 +22,24 @@ public class CommandManager {
     }
 
     public void executeCommand(SequencerCommand command) {
-        boolean isPlaying = PlaybackManager.getInstance().isPlaying();
-        if(isPlaying) PlaybackManager.getInstance().pausePlayback();
         command.execute();
         undoStack.push(command);
         redoStack.clear();
-        if(isPlaying) PlaybackManager.getInstance().startPlayback();
     }
 
     public void undo() {
         if(!undoStack.isEmpty()) {
-            boolean isPlaying = PlaybackManager.getInstance().isPlaying();
-            if(isPlaying) PlaybackManager.getInstance().pausePlayback();
             SequencerCommand command = undoStack.pop();
             command.undo();
             redoStack.push(command);
-            if(isPlaying) PlaybackManager.getInstance().startPlayback();
         }
     }
 
     public void redo() {
         if(!redoStack.isEmpty()) {
-            boolean isPlaying = PlaybackManager.getInstance().isPlaying();
-            if(isPlaying) PlaybackManager.getInstance().pausePlayback();
             SequencerCommand command = redoStack.pop();
             command.execute();
             undoStack.push(command);
-            if(isPlaying) PlaybackManager.getInstance().startPlayback();
         }
     }
 

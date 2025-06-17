@@ -15,7 +15,7 @@ public class PlayButton extends MenuButton {
         PlaybackManager.getInstance().getIsPlayingProperty().addListener((_, _, _) -> changeGraphic());
 
         setOnAction(_ -> {
-            if(PlaybackManager.getInstance().isPlaying()) PlaybackManager.getInstance().pausePlayback();
+            if (PlaybackManager.getInstance().isPlaying()) PlaybackManager.getInstance().pausePlayback();
             else PlaybackManager.getInstance().startPlayback();
         });
     }

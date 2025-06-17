@@ -17,8 +17,8 @@ import java.util.Comparator;
 import static vawobe.render.GridRenderer.CELL_WIDTH;
 
 public class PlaybackManager {
-    private static PlaybackManager instance;
 
+    private static PlaybackManager instance;
 
     private Timeline timeline;
     private double pausedBeats;
