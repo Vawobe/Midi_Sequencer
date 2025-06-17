@@ -9,6 +9,7 @@ Features
   - create and play simple MIDI sequences.
   - change instruments and bpm (up to 15 instruments + drums per sequence)
   - GUI with JavaFX
-  - 
+  - Export MIDI, WAV, MP3 (ffmpeg requiered)
+
 Requirements
 Build - JDK 17+, JavaFX SDK 22
