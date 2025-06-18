@@ -5,7 +5,7 @@ import javafx.scene.shape.Rectangle;
 
 public class StopIcon extends Rectangle {
     public StopIcon(double scale) {
-        super(13,13);
+        super(15,15);
         setFill(Color.ORANGE);
         setScaleX(scale);
         setScaleY(scale);

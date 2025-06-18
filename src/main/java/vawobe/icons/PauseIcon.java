@@ -12,6 +12,7 @@ public class PauseIcon extends HBox {
         Rectangle rightBar = new Rectangle(5, 15);
         rightBar.setFill(Color.ORANGE);
         getChildren().addAll(leftBar, rightBar);
+        setTranslateY(2.5);
 
         setScaleX(scale);
         setScaleY(scale);
