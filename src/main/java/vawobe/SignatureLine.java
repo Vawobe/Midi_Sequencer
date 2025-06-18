@@ -1,5 +1,6 @@
 package vawobe;
 
+import javafx.application.Platform;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import vawobe.manager.PlaybackManager;
@@ -26,13 +27,13 @@ public class SignatureLine extends BasicScrollPane {
 
     public SignatureLine(PianoGridPane pianoGridPane) {
         super();
+        content = new Pane();
 
         tactLines = new ArrayList<>();
         tactNums = new ArrayList<>();
         prefWidthProperty().bind(pianoGridPane.getPianoGridScrollPane().prefWidthProperty());
         widthProperty().addListener(e -> drawLines());
 
-        content = new Pane();
         content.prefWidthProperty().bind(pianoGridPane.getPianoGrid().prefWidthProperty());
         setMinHeight(HEIGHT);
         setMaxHeight(HEIGHT);
@@ -42,7 +43,8 @@ public class SignatureLine extends BasicScrollPane {
         setContent(content);
         hvalueProperty().bindBidirectional(pianoGridPane.getPianoGridScrollPane().hvalueProperty());
 
-        drawLines();
+        Platform.runLater(this::drawLines);
+
 
         GridRenderer.getInstance().getSignatureProperty().addListener((obs,oldV,e) -> drawLines());
 
@@ -59,6 +61,7 @@ public class SignatureLine extends BasicScrollPane {
         content.setOnMouseExited(e -> getTooltip().hide());
 
         content.setOnMousePressed(this::onMousePressedEvent);
+
     }
 
     public void drawLines() {
@@ -67,17 +70,20 @@ public class SignatureLine extends BasicScrollPane {
         tactLines.clear();
         tactNums.clear();
 
-        for(int signature = 0; signature <= GridRenderer.getInstance().getStrokeAmountProperty().get(); signature++) {
-            double x = signature * CELL_WIDTH * PianoGridPane.zoomX.get() * (GridRenderer.getInstance().getSignatureProperty().get());
-            Line line = new Line(x,0,x,HEIGHT);
+        double lineX = 0;
+        int i = 1;
+        while (lineX <= content.getPrefWidth()) {
+            Line line = new Line(lineX, 0, lineX, HEIGHT);
             line.setStrokeWidth(2);
             line.setStroke(gridLineColor);
             tactLines.add(line);
-            Text tact = new Text(Integer.toString(signature+1));
+            Text tact = new Text(Integer.toString(i));
             tact.setFill(Color.WHITE);
             tact.setY(15);
-            tact.setX(x+5);
+            tact.setX(lineX+5);
             tactNums.add(tact);
+            i++;
+            lineX += (CELL_WIDTH * PianoGridPane.zoomX.get())*GridRenderer.getInstance().getSignatureProperty().get();
         }
 
         content.getChildren().addAll(tactLines);

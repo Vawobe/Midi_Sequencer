@@ -22,7 +22,7 @@ public class CommandManager {
     }
 
     public void executeCommand(SequencerCommand command) {
-        System.out.println(command);
+//        System.out.println(command);
         command.execute();
         undoStack.push(command);
         redoStack.clear();
