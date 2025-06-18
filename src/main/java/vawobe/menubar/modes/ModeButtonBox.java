@@ -18,9 +18,9 @@ public class ModeButtonBox extends HBox {
         DragToScrollButton dragToScrollButton = new DragToScrollButton();
 
         toggleGroup.getToggles().addAll(drawButton, selectButton, eraseButton, dragToScrollButton);
-        toggleGroup.selectedToggleProperty().addListener((_,_,newValue) -> {
-            if(newValue instanceof ModeButton modeButton)
-                ModeManager.getInstance().changeMode(modeButton.getMode());
+        toggleGroup.selectedToggleProperty().addListener((obs,oldV,newValue) -> {
+            if(newValue instanceof ModeButton)
+                ModeManager.getInstance().changeMode(((ModeButton)newValue).getMode());
         });
 
         drawButton.setSelected(true);

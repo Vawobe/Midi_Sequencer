@@ -11,7 +11,7 @@ import static vawobe.Main.mainPane;
 
 public class MP3Exporter {
     public static void convertWavToMp3(File wavFile, File mp3File) throws IOException, InterruptedException {
-        String ffmpegPath = Paths.get("ffmpeg", "ffmpeg.exe").toAbsolutePath().toString();
+        String ffmpegPath = Paths.get("runtime", "ffmpeg.exe").toAbsolutePath().toString();
         ProcessBuilder pb = new ProcessBuilder(
                 ffmpegPath,
                 "-y",

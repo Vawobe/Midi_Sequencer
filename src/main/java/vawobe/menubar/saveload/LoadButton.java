@@ -31,26 +31,29 @@ public class LoadButton extends MenuButton {
 
         setTooltip(new Tooltip("Load"));
 
-        setOnAction(_ -> {
+        setOnAction(a -> {
             PlaybackManager.getInstance().stopPlayback();
             Object[] data = ProjectIO.loadProject();
             if(data != null) {
                 String oldName = mainPane.getMenuBar().getTitleBox().getTitleTextField().getText();
                 String newName = (String) data[0];
                 mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(newName);
-                if (data[1] instanceof ProjectData projectData) {
+                if (data[1] instanceof ProjectData) {
+                    ProjectData projectData = (ProjectData) data[1];
                     int oldBPM = PlaybackManager.getInstance().getBpmProperty().get();
                     int oldSignature = GridRenderer.getInstance().getSignatureProperty().get();
 
                     List<NoteView> oldNotes = new ArrayList<>();
                     for(Node child : NoteRenderer.getInstance().getChildren())
-                        if(child instanceof NoteView noteView) oldNotes.add(noteView);
+                        if(child instanceof NoteView) oldNotes.add((NoteView) child);
 
-                    int newBPM = projectData.bpm();
-                    int newSignature = projectData.signature();
+                    int newBPM = projectData.bpm;
+                    int newSignature = projectData.signature;
 
                     List<NoteView> loadedNotes = new ArrayList<>();
-                    for (Note note : projectData.notes()) loadedNotes.add(new NoteView(note));
+                    for (Note note : projectData.notes) {
+                        loadedNotes.add(new NoteView(note));
+                    }
 
                     CommandManager.getInstance().executeCommand(
                             new LoadCommand(loadedNotes, oldNotes,
@@ -67,9 +70,11 @@ public class LoadButton extends MenuButton {
     }
 
     public Map<Integer, List<Note>> isRightMap(Object data) {
-        if(data instanceof Map<?,?> map) {
+        if(data instanceof Map<?,?>) {
+            Map<?,?> map = (Map<?,?>) data;
             for(Map.Entry<?, ?> entry : map.entrySet()) {
-                if(entry.getKey() instanceof Integer && entry.getValue() instanceof List<?> list) {
+                if(entry.getKey() instanceof Integer && entry.getValue() instanceof List<?>) {
+                    List<?> list = (List<?>) entry.getValue();
                     for (Object note : list) {
                         if(note instanceof Note){
                             @SuppressWarnings("unchecked")

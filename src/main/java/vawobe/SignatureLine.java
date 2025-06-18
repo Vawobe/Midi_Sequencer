@@ -30,7 +30,7 @@ public class SignatureLine extends BasicScrollPane {
         tactLines = new ArrayList<>();
         tactNums = new ArrayList<>();
         prefWidthProperty().bind(pianoGridPane.getPianoGridScrollPane().prefWidthProperty());
-        widthProperty().addListener(_ -> drawLines());
+        widthProperty().addListener(e -> drawLines());
 
         content = new Pane();
         content.prefWidthProperty().bind(pianoGridPane.getPianoGrid().prefWidthProperty());
@@ -44,7 +44,7 @@ public class SignatureLine extends BasicScrollPane {
 
         drawLines();
 
-        GridRenderer.getInstance().getSignatureProperty().addListener((_,_,_) -> drawLines());
+        GridRenderer.getInstance().getSignatureProperty().addListener((obs,oldV,e) -> drawLines());
 
         content.getChildren().add(PianoGrid.getPlayhead().getHead());
 
@@ -56,7 +56,7 @@ public class SignatureLine extends BasicScrollPane {
             getTooltip().show(content, event.getScreenX() + 10, event.getScreenY() + 10);
         });
 
-        content.setOnMouseExited(_ -> getTooltip().hide());
+        content.setOnMouseExited(e -> getTooltip().hide());
 
         content.setOnMousePressed(this::onMousePressedEvent);
     }

@@ -30,7 +30,7 @@ public class InstrumentSelector extends ComboBox<Instruments> {
         setValue(Instruments.values()[1]);
         setTooltip(new Tooltip(getValue().getName()));
 
-        setCellFactory(_ -> new ListCell<>() {
+        setCellFactory(cell -> new ListCell<Instruments>() {
             @Override
             protected void updateItem(Instruments item, boolean empty) {
                 super.updateItem(item, empty);
@@ -52,7 +52,7 @@ public class InstrumentSelector extends ComboBox<Instruments> {
                         setBackground(new Background(new BackgroundFill(Color.SLATEGRAY, null, null)));
                     } else {
                         setTextFill(Color.DARKGRAY);
-                        hoverProperty().addListener((_,_,newValue) -> {
+                        hoverProperty().addListener((obs,oldV,newValue) -> {
                             setBackground(new Background(new BackgroundFill(newValue ? Color.ORANGE : Color.TRANSPARENT, null, null)));
                             setTextFill(newValue ? Color.WHITE : Color.DARKGRAY);
                         });
@@ -70,7 +70,7 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             }
         });
 
-        setButtonCell(new ListCell<>() {
+        setButtonCell(new ListCell<Instruments>() {
             @Override
             protected void updateItem(Instruments item, boolean empty) {
                 super.updateItem(item, empty);
@@ -82,7 +82,7 @@ public class InstrumentSelector extends ComboBox<Instruments> {
             }
         });
 
-        valueProperty().addListener((_, oldValue, newValue) -> {
+        valueProperty().addListener((obs, oldValue, newValue) -> {
             MidiManager.getInstance().changeDemoChannel(newValue);
             if (newValue == Instruments.DRUMS || oldValue == Instruments.DRUMS) {
                 mainPane.getPianoGridPane().changeKeyBox();

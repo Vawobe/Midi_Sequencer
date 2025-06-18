@@ -52,12 +52,12 @@ public class GridRenderer extends Pane {
         gridProperty = new SimpleIntegerProperty(4);
         updateGridSize();
 
-        signatureProperty.addListener((_,_,_) -> {
+        signatureProperty.addListener((obs,oldV,newV) -> {
             drawVerticalLines();
             PlaybackManager.getInstance().updateNotes();
         });
-        strokeAmountProperty.addListener((_,_,_) -> drawHorizontalLines());
-        gridProperty.addListener((_,_,_) -> drawVerticalLines());
+        strokeAmountProperty.addListener((obs,oldV,newV) -> drawHorizontalLines());
+        gridProperty.addListener((obs,oldV,newV) -> drawVerticalLines());
     }
 
     public void drawGrid() {
@@ -88,7 +88,7 @@ public class GridRenderer extends Pane {
             visibleCells = (int) Math.ceil(visibleWidth / (CELL_WIDTH * PianoGridPane.zoomX.get()));
         }
         if(!NoteManager.getInstance().getNotesList().isEmpty()) {
-            Note lastNote = NoteManager.getInstance().getNotesList().getLast();
+            Note lastNote = NoteManager.getInstance().getNotesList().get(NoteManager.getInstance().getNotesList().size()-1);
             int lastCell = (int) Math.ceil(lastNote.getColumn()+lastNote.getLength() / CELL_WIDTH * PianoGridPane.zoomX.get());
             if(lastCell > visibleCells) visibleCells = lastCell;
         }
@@ -124,8 +124,8 @@ public class GridRenderer extends Pane {
         setPrefHeight(TONES.length * (OCTAVES.length) * CELL_HEIGHT * PianoGridPane.zoomY.get());
 
         for(Node node : NoteRenderer.getInstance().getChildren()) {
-            if(node instanceof NoteView noteView) {
-                noteView.updateNoteSize();
+            if(node instanceof NoteView) {
+                ((NoteView)node).updateNoteSize();
             }
         }
         drawGrid();

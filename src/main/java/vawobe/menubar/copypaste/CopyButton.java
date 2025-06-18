@@ -12,10 +12,10 @@ public class CopyButton extends MenuButton {
         super();
         SvgIcon icon = new CopyIcon(1);
         setGraphic(icon);
-        hoverProperty().addListener((_,_,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
+        hoverProperty().addListener((obs,oldV,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Copy"));
 
-        setOnAction(_ -> copyAction());
+        setOnAction(a -> copyAction());
     }
 
     private void copyAction() {

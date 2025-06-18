@@ -11,10 +11,10 @@ public class PasteButton extends MenuButton {
         super();
         PasteIcon icon = new PasteIcon(1);
         setGraphic(icon);
-        hoverProperty().addListener((_,_,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
+        hoverProperty().addListener((obs,oldV,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Paste"));
 
-        setOnAction(_ -> pasteAction());
+        setOnAction(a -> pasteAction());
     }
 
     private void pasteAction() {

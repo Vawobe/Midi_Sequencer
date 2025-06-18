@@ -61,9 +61,12 @@ public class WavExport {
             long tick = event.getTick();
             MidiMessage msg = event.getMessage();
 
-            if (msg instanceof MetaMessage mm && mm.getType() == 0x51) {
-                byte[] data = mm.getData();
-                mpq = ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
+            if (msg instanceof MetaMessage) {
+                MetaMessage mm = (MetaMessage) msg;
+                if(mm.getType() == 0x51) {
+                    byte[] data = mm.getData();
+                    mpq = ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
+                }
             }
 
             long deltaTicks = tick - currentTick;

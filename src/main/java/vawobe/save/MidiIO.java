@@ -25,7 +25,8 @@ public class MidiIO {
                 MidiEvent event = track.get(i);
                 MidiMessage message = event.getMessage();
 
-                if (message instanceof ShortMessage sm) {
+                if (message instanceof ShortMessage) {
+                    ShortMessage sm = (ShortMessage) message;
                     int command = sm.getCommand();
                     int key = sm.getData1();
                     int velocity = sm.getData2();
@@ -51,7 +52,7 @@ public class MidiIO {
                     }
                 }
             }
-            notesPerTrack.computeIfAbsent(instrument, _ -> new ArrayList<>()).addAll(notes);
+            notesPerTrack.computeIfAbsent(instrument, list -> new ArrayList<>()).addAll(notes);
         }
         return notesPerTrack;
     }

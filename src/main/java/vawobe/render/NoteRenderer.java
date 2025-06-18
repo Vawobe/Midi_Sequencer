@@ -18,8 +18,8 @@ import javafx.util.Duration;
 
 import java.util.*;
 
-import static java.lang.Math.clamp;
 import static vawobe.Main.mainPane;
+import static vawobe.MathClamp.clamp;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
 import static vawobe.render.GridRenderer.CELL_WIDTH;
 
@@ -45,7 +45,8 @@ public class NoteRenderer extends Pane {
                     for(Note note : change.getRemoved()) {
                         ArrayList<NoteView> noteViewsToRemove = new ArrayList<>();
                         getChildren().forEach(node -> {
-                            if(node instanceof NoteView noteView) {
+                            if(node instanceof NoteView) {
+                                NoteView noteView = (NoteView) node;
                                 if(noteView.getViewModel().getNote() == note) {
                                     noteViewsToRemove.add(noteView);
                                 }
@@ -77,7 +78,7 @@ public class NoteRenderer extends Pane {
 
             if (!PlaybackManager.getInstance().isPlaying()) {
                 PauseTransition pause = new PauseTransition(Duration.millis(200));
-                pause.setOnFinished(_ -> MidiManager.getInstance().stopNote(note));
+                pause.setOnFinished(e -> MidiManager.getInstance().stopNote(note));
                 MidiManager.getInstance().playNote(note);
                 pause.play();
             }
@@ -104,7 +105,8 @@ public class NoteRenderer extends Pane {
         Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
         Set<NoteView> newSelection = new HashSet<>();
         for(Node node : getChildren()) {
-            if(node instanceof NoteView noteView) {
+            if(node instanceof NoteView) {
+                NoteView noteView = (NoteView) node;
                 if(noteView.getViewModel().getInstrumentProperty().get() == instrument) {
                     newSelection.add(noteView);
                 }
@@ -117,8 +119,8 @@ public class NoteRenderer extends Pane {
         Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
         Set<NoteView> newSelection = new HashSet<>();
         for(Node node : getChildren()) {
-            if(node instanceof NoteView noteView) {
-                newSelection.add(noteView);
+            if(node instanceof NoteView) {
+                newSelection.add((NoteView) node);
             }
         }
         if(!oldSelection.equals(newSelection)) CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, newSelection));
@@ -138,10 +140,10 @@ public class NoteRenderer extends Pane {
         double dx = 0;
         double dy = 0;
         switch (keyCode) {
-            case UP -> dy = 10;
-            case DOWN -> dy = -10;
-            case LEFT -> dx = 20;
-            case RIGHT -> dx = -10;
+            case UP: dy = 10; break;
+            case DOWN: dy = -10; break;
+            case LEFT: dx = 20; break;
+            case RIGHT: dx = -10; break;
         }
 
         scrollBy(dx, dy);
@@ -178,15 +180,15 @@ public class NoteRenderer extends Pane {
         double yShift = 0;
 
         switch (keyCode) {
-            case UP -> { if (mostUp.getLayoutY() > 0) yShift = -yStep; }
-            case DOWN -> { if(mostDown.getLayoutY() < getHeight()-yStep) yShift = yStep; }
-            case LEFT -> {
+            case UP: if (mostUp.getLayoutY() > 0) yShift = -yStep; break;
+            case DOWN: if(mostDown.getLayoutY() < getHeight()-yStep) yShift = yStep;  break;
+            case LEFT:
                 if(mostLeft.getLayoutX() > 0) {
                     if (mostLeft.getLayoutX() - xStep < 0) xShift = -mostLeft.getLayoutX();
                     else xShift = -xStep;
-                }
+                    break;
             }
-            case RIGHT -> xShift = xStep;
+            case RIGHT: xShift = xStep; break;
         }
 
         HashMap<NoteView, Double[]> moveMap = new HashMap<>();

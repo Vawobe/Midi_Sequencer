@@ -39,7 +39,7 @@ public class KeyButton extends Button {
             setBackground(normalBackground);
             setTextFill(key.contains("#") ? Color.WHITE : Color.BLACK);
         }
-        hoverProperty().addListener((_, _, _) -> setRightBackground());
+        hoverProperty().addListener((obs,oldV,newV) -> setRightBackground());
 
         setOnMousePressed(this::onMousePressedEvent);
         setOnDragDetected(this::onDragDetectedEvent);

@@ -1,5 +1,6 @@
 package vawobe.manager;
 
+import vawobe.MidiEvent;
 import vawobe.Note;
 import vawobe.PianoGrid;
 import vawobe.PianoGridPane;
@@ -76,14 +77,13 @@ public class PlaybackManager {
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        record MidiEvent(double time, Note note, boolean isOn) {}
         ArrayList<MidiEvent> midiEvents = new ArrayList<>();
 
         ArrayList<Note> notes = new ArrayList<>(NoteManager.getInstance().getNotesList());
         int trackLength = GridRenderer.getInstance().getSignatureProperty().get();
 
         if(!notes.isEmpty()) {
-            double lastNoteEnd = notes.getLast().getColumn() + notes.getLast().getLength();
+            double lastNoteEnd = notes.get(notes.size()-1).getColumn() + notes.get(notes.size()-1).getLength();
             if(lastNoteEnd % GridRenderer.getInstance().getSignatureProperty().get() == 0) trackLength = (int) lastNoteEnd;
             else trackLength =
                     (int) ((lastNoteEnd+GridRenderer.getInstance().getSignatureProperty().get()) -
@@ -98,7 +98,7 @@ public class PlaybackManager {
         }
 
         for(MidiEvent event : midiEvents) {
-            KeyFrame frame = new KeyFrame(Duration.millis(event.time), _ -> {
+            KeyFrame frame = new KeyFrame(Duration.millis(event.time), e -> {
                 if(event.isOn) MidiManager.getInstance().playNote(event.note);
                 else MidiManager.getInstance().stopNote(event.note);
             });
@@ -112,7 +112,7 @@ public class PlaybackManager {
             double progress = t/totalTime;
             double x = (trackLength*CELL_WIDTH*progress);
 
-            KeyFrame frame = new KeyFrame(Duration.millis(t), _ -> {
+            KeyFrame frame = new KeyFrame(Duration.millis(t), e -> {
                 PianoGrid.getPlayhead().setStartX(x * PianoGridPane.zoomX.get());
                 pausedBeats = timeline.getCurrentTime().toMillis() / getMsPerBeat();
             });

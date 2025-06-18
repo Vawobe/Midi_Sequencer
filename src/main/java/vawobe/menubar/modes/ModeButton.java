@@ -29,7 +29,7 @@ public class ModeButton extends MenuButton implements Toggle {
         setGraphic(icon);
 
 
-        hoverProperty().addListener((_,_,newValue) -> {
+        hoverProperty().addListener((obs,oldV,newValue) -> {
             if(!isSelected()) {
                 icon.setStroke(newValue ? Color.ANTIQUEWHITE : Color.DARKGRAY);
             } else {
@@ -38,7 +38,7 @@ public class ModeButton extends MenuButton implements Toggle {
             }
         });
 
-        selected.addListener((_,_,newValue) -> {
+        selected.addListener((obs,oldV,newValue) -> {
             if(newValue) {
                 icon.setStroke(Color.BLACK);
                 setBackground(new Background(new BackgroundFill(Color.web("#FFF", 0.25), new CornerRadii(5), null)));
@@ -52,7 +52,7 @@ public class ModeButton extends MenuButton implements Toggle {
             }
         });
 
-        toggleGroup.addListener((_,oldGroup, newGroup) -> {
+        toggleGroup.addListener((obs,oldGroup, newGroup) -> {
             if(oldGroup != null)
                 oldGroup.getToggles().remove(this);
             if(newGroup != null) {
@@ -66,7 +66,7 @@ public class ModeButton extends MenuButton implements Toggle {
         });
 
 
-        setOnAction(_ -> {
+        setOnAction(a -> {
             if(!isSelected()) setSelected(true);
         });
     }

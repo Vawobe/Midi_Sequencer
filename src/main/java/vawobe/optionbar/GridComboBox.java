@@ -18,7 +18,7 @@ public class GridComboBox extends ComboBox<Integer> {
         getItems().addAll(4, 8, 12, 16, 24, 32, 48, 64);
         setValue(4);
 
-        setCellFactory(_ -> new ListCell<>() {
+        setCellFactory(cell -> new ListCell<Integer>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -26,7 +26,7 @@ public class GridComboBox extends ComboBox<Integer> {
                 else {
                     setText(item == 4 ? "1" : "1/" + item / 4);
                     setTextFill(Color.DARKGRAY);
-                    hoverProperty().addListener((_,_,newValue) -> {
+                    hoverProperty().addListener((obs,oldV,newValue) -> {
                         setBackground(new Background(new BackgroundFill(newValue ? Color.ORANGE : Color.TRANSPARENT, null, null)));
                         setTextFill(newValue ? Color.WHITE : Color.DARKGRAY);
                     });
@@ -35,7 +35,7 @@ public class GridComboBox extends ComboBox<Integer> {
                 }
             }
         });
-        setButtonCell(new ListCell<>() {
+        setButtonCell(new ListCell<Integer>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -47,6 +47,6 @@ public class GridComboBox extends ComboBox<Integer> {
             }
         });
 
-        valueProperty().addListener((_,_,newValue) -> GridRenderer.getInstance().getGridProperty().set(newValue));
+        valueProperty().addListener((obs,oldV,newValue) -> GridRenderer.getInstance().getGridProperty().set(newValue));
     }
 }

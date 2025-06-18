@@ -42,7 +42,9 @@ public class LoadCommand implements SequencerCommand {
         mainPane.getMenuBar().getTitleBox().getTitleTextField().setText(newName);
         PlaybackManager.getInstance().getBpmProperty().set(newBPM);
         GridRenderer. getInstance().getSignatureProperty().set(newSignature);
-        for(NoteView noteView : loadedNotes) NoteRenderer.getInstance().addNoteView(noteView);
+        for(NoteView noteView : loadedNotes) {
+            NoteRenderer.getInstance().addNoteView(noteView);
+        }
         PlaybackManager.getInstance().updateNotes();
         if(isPlaying) PlaybackManager.getInstance().startPlayback();
     }

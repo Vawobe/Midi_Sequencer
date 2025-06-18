@@ -10,6 +10,8 @@ import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 import vawobe.manager.MidiManager;
 
+import static vawobe.MathClamp.clamp;
+
 public class VolumeSlider extends Pane {
     private final Rectangle track;
     private final Rectangle background;
@@ -44,21 +46,21 @@ public class VolumeSlider extends Pane {
         setPrefWidth(100);
         setMinHeight(HEIGHT+10);
 
-        layoutBoundsProperty().addListener((_,_,_) -> layoutChildren());
-        fillPercentageProperty.addListener((_,_,_) -> updateThumbAndTrack());
+        layoutBoundsProperty().addListener((obs,oldV,newV) -> layoutChildren());
+        fillPercentageProperty.addListener((obs,oldV,newV) -> updateThumbAndTrack());
 
-        thumb.hoverProperty().addListener((_,_,newValue) -> changeThumbHover(newValue));
-        background.hoverProperty().addListener((_,_,newValue) -> changeThumbHover(newValue));
-        track.hoverProperty().addListener((_,_,newValue) -> changeThumbHover(newValue));
+        thumb.hoverProperty().addListener((obs,oldV,newValue) -> changeThumbHover(newValue));
+        background.hoverProperty().addListener((obs,oldV,newValue) -> changeThumbHover(newValue));
+        track.hoverProperty().addListener((obs,oldV,newValue) -> changeThumbHover(newValue));
 
         setOnMousePressed(this::handleMouse);
         setOnMouseDragged(this::handleMouse);
-        setOnMouseReleased(_ -> {
+        setOnMouseReleased(e -> {
             isPressed = false;
             changeThumbHover(isHover());
         });
 
-        fillPercentageProperty.addListener((_,_,newValue) -> {
+        fillPercentageProperty.addListener((obs,oldV,newValue) -> {
             int volume = (int) (newValue.doubleValue() * 127);
             MidiManager.getInstance().setVolume(volume);
             Tooltip.install(this, new Tooltip(Integer.toString((int) (newValue.doubleValue()*100))));
@@ -79,7 +81,7 @@ public class VolumeSlider extends Pane {
     }
 
     private void updateThumbAndTrack() {
-        double percent = Math.clamp(fillPercentageProperty.get(), 0, 1);
+        double percent = clamp(fillPercentageProperty.get(), 0, 1);
         double w = background.getWidth();
         double h = getHeight();
 
@@ -100,7 +102,7 @@ public class VolumeSlider extends Pane {
     private void handleMouse(MouseEvent event) {
 
         isPressed = true;
-        double mouseX = Math.clamp(event.getX(), 0, background.getWidth());
+        double mouseX = clamp(event.getX(), 0, background.getWidth());
         fillPercentageProperty.set(mouseX / background.getWidth());
         thumb.setFill(Color.ORANGE);
     }

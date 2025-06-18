@@ -6,6 +6,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 
+import static vawobe.MathClamp.clamp;
 import static vawobe.PianoGridPane.*;
 
 public class ZoomInButton extends MenuButton {
@@ -14,14 +15,14 @@ public class ZoomInButton extends MenuButton {
         SVGPath icon = new ZoomInIcon(1);
         setGraphic(icon);
 
-        hoverProperty().addListener((_,_,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
+        hoverProperty().addListener((obs,oldV,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Zoom in"));
-        setOnAction(_ -> zoomInAction());
+        setOnAction(a -> zoomInAction());
     }
 
     private void zoomInAction() {
         double zoomFactor = 1.1;
-        zoomX.set(Math.clamp(zoomX.get() * zoomFactor, MIN_X_ZOOM, MAX_ZOOM));
-        zoomY.set(Math.clamp(zoomX.get() * zoomFactor, MIN_Y_ZOOM, MAX_ZOOM));
+        zoomX.set(clamp(zoomX.get() * zoomFactor, MIN_X_ZOOM, MAX_ZOOM));
+        zoomY.set(clamp(zoomX.get() * zoomFactor, MIN_Y_ZOOM, MAX_ZOOM));
     }
 }

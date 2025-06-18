@@ -21,7 +21,7 @@ public class TitleBox extends HBox {
         titleTextField = new TextField("Untitled");
         titleTextField.setPrefWidth(100);
         titleTextField.setBackground(new Background(new BackgroundFill(mainColor, null, null)));
-        titleTextField.textProperty().addListener((_,_,newValue) -> titleTextField.setTooltip(new Tooltip(newValue)));
+        titleTextField.textProperty().addListener((obs,oldV,newValue) -> titleTextField.setTooltip(new Tooltip(newValue)));
         titleTextField.setStyle("-fx-text-fill: white;") ;
 
         getChildren().addAll(label, titleTextField);

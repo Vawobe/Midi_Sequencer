@@ -15,8 +15,6 @@ import javafx.scene.shape.Polygon;
 import javafx.stage.Popup;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 public class DropDownButton extends HBox {
     protected final Button button;
@@ -51,7 +49,7 @@ public class DropDownButton extends HBox {
         menuButton.setMinWidth(Region.USE_PREF_SIZE);
         menuButton.setPrefWidth(10);
         menuButton.setTooltip(new Tooltip("Show options"));
-        menuButton.setOnAction(_ -> {
+        menuButton.setOnAction(a -> {
             if(popup.isShowing()) popup.hide();
             else {
                 Bounds bounds = menuButton.localToScreen(menuButton.getBoundsInLocal());
@@ -64,5 +62,9 @@ public class DropDownButton extends HBox {
     public final void setOnAction(EventHandler<ActionEvent> eventHandler) { button.setOnAction(eventHandler); }
     public final void setGraphic(Node graphic) { button.setGraphic(graphic);}
     public final void setTooltip(Tooltip tooltip) { button.setTooltip(tooltip); }
-    public final void addItems(Button... buttons) { contextMenu.addAll(List.of(buttons));}
+    public final void addItems(Button... buttons) {
+        for(Button button : buttons) {
+            contextMenu.add(button);
+        }
+    }
 }

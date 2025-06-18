@@ -11,6 +11,6 @@ public class StopButton extends MenuButton {
         setTooltip(new Tooltip("Stop"));
         setGraphic(new StopIcon(1));
 
-        setOnAction(_ -> PlaybackManager.getInstance().stopPlayback());
+        setOnAction(a -> PlaybackManager.getInstance().stopPlayback());
     }
 }

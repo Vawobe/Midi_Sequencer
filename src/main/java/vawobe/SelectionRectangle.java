@@ -22,7 +22,7 @@ public class SelectionRectangle extends Rectangle {
         getStrokeDashArray().addAll(5.0,5.0);
 
         setFill(Color.web("#000", 0.1));
-        visibleProperty().addListener((_,_,newValue) -> {
+        visibleProperty().addListener((obs, oldVal,newValue) -> {
             if(!newValue) reset();
         });
     }
@@ -40,7 +40,8 @@ public class SelectionRectangle extends Rectangle {
         Bounds selectionBounds = getBoundsInParent();
 
         for(Node node : NoteRenderer.getInstance().getChildren()) {
-            if(node instanceof NoteView note) {
+            if(node instanceof NoteView) {
+                NoteView note = (NoteView) node;
                 Bounds noteBounds = note.getBoundsInParent();
                 if(selectionBounds.intersects(noteBounds)) {
                     selectedNotes.add(note);

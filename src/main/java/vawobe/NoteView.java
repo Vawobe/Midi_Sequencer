@@ -23,6 +23,7 @@ import java.util.*;
 
 import static vawobe.Main.mainColor;
 import static vawobe.Main.mainPane;
+import static vawobe.MathClamp.clamp;
 import static vawobe.render.GridRenderer.CELL_HEIGHT;
 import static vawobe.render.GridRenderer.CELL_WIDTH;
 
@@ -56,12 +57,12 @@ public class NoteView extends Pane {
         double width = note.getLength() * CELL_WIDTH;
         setPrefSize(width*PianoGridPane.zoomX.get(), CELL_HEIGHT*PianoGridPane.zoomY.get());
 
-        selectedProperty.addListener((_,_,newValue) -> {
+        selectedProperty.addListener((obs,oldV,newValue) -> {
             setBorder(newValue ? selectedBorder : normalBorder);
             setEffect(newValue ? dropShadow : null);
         });
 
-        viewModel.getInstrumentProperty().addListener((_,_,newValue) ->
+        viewModel.getInstrumentProperty().addListener((obs,oldV,newValue) ->
                 setBackground(new Background(new BackgroundFill(newValue.getColor(), new CornerRadii(10), null))));
 
         initDragHandler();
@@ -161,7 +162,7 @@ public class NoteView extends Pane {
 
                             double snappedDragY = GridRenderer.getInstance().snapYToGrid(event.getSceneY());
                             double snappedDragStartY = GridRenderer.getInstance().snapYToGrid(dragStartY);
-                            double yShift = Math.clamp(snappedDragY - snappedDragStartY, maxUpShift, maxDownShift);
+                            double yShift = clamp(snappedDragY - snappedDragStartY, maxUpShift, maxDownShift);
 
                             for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
                                 double newXLayout = noteView.startXLayout + xShift;

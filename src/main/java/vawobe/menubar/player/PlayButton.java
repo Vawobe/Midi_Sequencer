@@ -12,9 +12,9 @@ public class PlayButton extends MenuButton {
         setTooltip(new Tooltip("Play"));
         setGraphic(new PlayIcon(1));
 
-        PlaybackManager.getInstance().getIsPlayingProperty().addListener((_, _, _) -> changeGraphic());
+        PlaybackManager.getInstance().getIsPlayingProperty().addListener((obs, oldV, newV) -> changeGraphic());
 
-        setOnAction(_ -> {
+        setOnAction(a -> {
             if (PlaybackManager.getInstance().isPlaying()) PlaybackManager.getInstance().pausePlayback();
             else PlaybackManager.getInstance().startPlayback();
         });

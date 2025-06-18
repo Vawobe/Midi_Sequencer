@@ -73,21 +73,21 @@ public class ImportMidiPane extends GridPane {
 
         Button importButton = new Button("Import");
         importButton.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(5), null)));
-        importButton.hoverProperty().addListener((_,_,newValue) ->
+        importButton.hoverProperty().addListener((obs,oldV,newValue) ->
                 importButton.setBackground(new Background(new BackgroundFill(
                         newValue ? Color.DARKORANGE : Color.ORANGE,
                         new CornerRadii(5), null))));
         importButton.setTextFill(Color.WHITE);
-        importButton.setOnAction(_ -> loadNotes());
+        importButton.setOnAction(e -> loadNotes());
 
         Button cancelButton = new Button("Cancel");
         cancelButton.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(5), null)));
-        cancelButton.hoverProperty().addListener((_,_,newValue) ->
+        cancelButton.hoverProperty().addListener((obs,oldV,newValue) ->
                 cancelButton.setBackground(new Background(new BackgroundFill(
                         newValue ? Color.DARKORANGE : Color.ORANGE,
                         new CornerRadii(5), null))));
         cancelButton.setTextFill(Color.WHITE);
-        cancelButton.setOnAction(_ -> stage.close());
+        cancelButton.setOnAction(e -> stage.close());
 
         add(buttonBox,0,row);
         GridPane.setColumnSpan(buttonBox,2);

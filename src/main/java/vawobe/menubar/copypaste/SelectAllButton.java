@@ -14,8 +14,8 @@ public class SelectAllButton extends MenuButton {
         setTooltip(new Tooltip("Select all"));
 
         setGraphic(icon);
-        hoverProperty().addListener((_,_,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
-        setOnAction(_ -> selectAllAction());
+        hoverProperty().addListener((obs,oldV,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
+        setOnAction(a -> selectAllAction());
     }
     private void selectAllAction() {
         NoteRenderer.getInstance().selectAll();

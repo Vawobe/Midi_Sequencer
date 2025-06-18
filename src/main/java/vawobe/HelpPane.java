@@ -25,9 +25,9 @@ public class HelpPane extends BorderPane {
         Button closeButton = new Button("✖");
         closeButton.setTextFill(Color.LIGHTGRAY);
         closeButton.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
-        closeButton.hoverProperty().addListener((_,_,newValue) ->
+        closeButton.hoverProperty().addListener((obs,oldV,newValue) ->
                 closeButton.setTextFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
-        closeButton.setOnAction(_ -> mainPane.setRight(null));
+        closeButton.setOnAction(e -> mainPane.setRight(null));
 
         HBox topBar = new HBox();
         topBar.getChildren().add(closeButton);

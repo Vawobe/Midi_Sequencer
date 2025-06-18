@@ -5,23 +5,23 @@ public class ToneToMidiConverter {
         String toneName = note.substring(0, note.length() - 1);
         int octave = Integer.parseInt(note.substring(note.length() - 1));
 
-        int base = switch (toneName) {
-            case "C" -> 0;
-            case "C#" -> 1;
-            case "D" -> 2;
-            case "D#" -> 3;
-            case "E" -> 4;
-            case "F" -> 5;
-            case "F#" -> 6;
-            case "G" -> 7;
-            case "G#" -> 8;
-            case "A" -> 9;
-            case "A#" -> 10;
-            case "B" -> 11;
-            default -> throw new IllegalArgumentException("Unbekannter Ton: " + toneName);
-        };
+        int base;
+        switch (toneName) {
+            case "C": base = 0; break;
+            case "C#": base = 1; break;
+            case "D": base = 2; break;
+            case "D#": base = 3; break;
+            case "E": base = 4; break;
+            case "F": base = 5; break;
+            case "F#": base = 6; break;
+            case "G": base = 7; break;
+            case "G#": base = 8; break;
+            case "A": base = 9; break;
+            case "A#": base = 10; break;
+            case "B": base = 11; break;
+            default: throw new IllegalArgumentException("Unbekannter Ton: " + toneName);
+        }
 
         return 12 * (octave + 1) + base - 12;
     }
-
 }

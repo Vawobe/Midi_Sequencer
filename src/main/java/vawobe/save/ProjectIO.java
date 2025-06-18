@@ -2,12 +2,13 @@ package vawobe.save;
 
 import javafx.geometry.Pos;
 import javafx.util.Duration;
-import org.controlsfx.control.Notifications;
 
 import javafx.stage.FileChooser;
+import org.controlsfx.control.Notifications;
 import vawobe.Note;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 
 import static vawobe.Main.mainPane;
@@ -21,7 +22,7 @@ public class ProjectIO {
         File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
 
         if(file != null) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(file.toPath()))) {
                 ProjectData projectData = new ProjectData(bpm, signature, notes);
                 out.writeObject(projectData);
 
@@ -56,7 +57,7 @@ public class ProjectIO {
             Object[] ret = new Object[2];
             ret[0] = name.substring(0,name.lastIndexOf("."));
             if(name.toLowerCase().endsWith(".midfx")) {
-                try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+                try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(file.toPath()))) {
                     ret[1] = in.readObject();
                     return ret;
                 } catch (IOException | ClassNotFoundException e) {
@@ -124,7 +125,17 @@ public class ProjectIO {
 
         if(file != null) {
             try {
-                WavExport.exportMIDIToWav(MidiIO.createMidiSequence(notes), file);
+                File tempFile = File.createTempFile("MidiSequencer-", ".mid");
+                WavExport.exportMIDIToWav(MidiIO.createMidiSequence(notes), tempFile);
+                if (!tempFile.delete()) {
+                    Notifications.create()
+                            .title("Warnung")
+                            .text("Temporäre Datei konnte nicht gelöscht werden: " + tempFile.getAbsolutePath())
+                            .owner(mainPane.getScene().getWindow())
+                            .hideAfter(Duration.seconds(3))
+                            .position(Pos.BOTTOM_RIGHT)
+                            .showInformation();
+                }
                 Notifications.create()
                         .title("Export erfolgreich")
                         .text("Die Datei " + file + " wurde erfolgreich exportiert.")
@@ -132,6 +143,7 @@ public class ProjectIO {
                         .hideAfter(Duration.seconds(3))
                         .position(Pos.BOTTOM_RIGHT)
                         .showInformation();
+
             } catch (Exception e) {
                 Notifications.create()
                         .title("Fehler beim Export")
@@ -152,7 +164,7 @@ public class ProjectIO {
         File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
         if(file != null) {
             try {
-                File tempFile = File.createTempFile("Midi Sequencer-", "-suffix");
+                File tempFile = File.createTempFile("Midi Sequencer-", ".wav");
                 WavExport.exportMIDIToWav(MidiIO.createMidiSequence(notes), tempFile);
 
                 MP3Exporter.convertWavToMp3(tempFile, file);

@@ -62,12 +62,12 @@ public abstract class EventManager {
         if (!event.isControlDown()) {
 
             switch (ModeManager.getInstance().getCurrentModeProperty().get()) {
-                case DRAW -> {
+                case DRAW:
                     SelectionManager.getInstance().getSelectedNotes().clear();
                     if (event.getTarget() == NoteRenderer.getInstance())
                         NoteRenderer.getInstance().addNote(event.getX(), event.getY());
-                }
-                case SELECT -> {
+                    break;
+                case SELECT:
                     Set<NoteView> oldSelection = new HashSet<>(SelectionManager.getInstance().getSelectedNotes());
                     if(!oldSelection.isEmpty()) CommandManager.getInstance().executeCommand(new SelectNotesCommand(oldSelection, new HashSet<>()));
 
@@ -75,9 +75,10 @@ public abstract class EventManager {
                     selectionRectangle.setVisible(true);
                     selectionRectangle.setClickedX(event.getX());
                     selectionRectangle.setClickedY(event.getY());
-                }
-                case DRAG_TO_SCROLL ->
+                    break;
+                case DRAG_TO_SCROLL:
                         NoteRenderer.getInstance().setUserData(new Point2D(event.getSceneX(), event.getSceneY()));
+                        break;
             }
         } else {
             SelectionRectangle selectionRectangle = PianoGrid.getSelectionRectangle();
@@ -90,31 +91,31 @@ public abstract class EventManager {
     public static void onKeyPressedEvent(KeyEvent event) {
         if (event.isControlDown()) {
             switch (event.getCode()) {
-                case A -> NoteRenderer.getInstance().selectAll();
-                case C -> ClipboardManager.getInstance().copySelectedNotes();
-                case X -> ClipboardManager.getInstance().cutSelectedNotes();
-                case V -> {
+                case A: NoteRenderer.getInstance().selectAll(); break;
+                case C: ClipboardManager.getInstance().copySelectedNotes(); break;
+                case X: ClipboardManager.getInstance().cutSelectedNotes(); break;
+                case V:
                     boolean altPressed = event.isAltDown();
                     ClipboardManager.getInstance().pasteNotes(!altPressed);
-                }
-                case Z -> CommandManager.getInstance().undo();
-                case Y -> CommandManager.getInstance().redo();
-                case UP, DOWN, LEFT, RIGHT -> NoteRenderer.getInstance().moveNoteViews(event.getCode());
+                    break;
+                case Z: CommandManager.getInstance().undo();break;
+                case Y: CommandManager.getInstance().redo(); break;
+                case UP: case DOWN: case LEFT: case RIGHT: NoteRenderer.getInstance().moveNoteViews(event.getCode()); break;
             }
 
         } else if (event.isAltDown()) {
+            HashMap<NoteView, Integer[]> volumeMap = new HashMap<>();
             int grid = -1;
             switch (event.getCode()) {
-                case NUMPAD1, DIGIT1 -> grid = 4;
-                case NUMPAD2, DIGIT2 -> grid = 8;
-                case NUMPAD3, DIGIT3 -> grid = 12;
-                case NUMPAD4, DIGIT4 -> grid = 16;
-                case NUMPAD5, DIGIT5 -> grid = 18;
-                case NUMPAD6, DIGIT6 -> grid = 32;
-                case NUMPAD7, DIGIT7 -> grid = 48;
-                case NUMPAD8, DIGIT8 -> grid = 64;
-                case PLUS, ADD -> {
-                    HashMap<NoteView, Integer[]> volumeMap = new HashMap<>();
+                case NUMPAD1: case DIGIT1: grid = 4; break;
+                case NUMPAD2: case DIGIT2: grid = 8; break;
+                case NUMPAD3: case DIGIT3: grid = 12; break;
+                case NUMPAD4: case DIGIT4: grid = 16; break;
+                case NUMPAD5: case DIGIT5: grid = 18; break;
+                case NUMPAD6: case DIGIT6: grid = 32; break;
+                case NUMPAD7: case DIGIT7: grid = 48; break;
+                case NUMPAD8: case DIGIT8: grid = 64; break;
+                case PLUS: case ADD:
                     for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
                         int oldVolume = noteView.getViewModel().getVelocityProperty().get();
                         int newVolume = Math.min(100, oldVolume + 5);
@@ -123,9 +124,8 @@ public abstract class EventManager {
                         volumeMap.put(noteView, volume);
                     }
                     CommandManager.getInstance().executeCommand(new ChangeVolumeCommand(volumeMap));
-                }
-                case MINUS, SUBTRACT -> {
-                    HashMap<NoteView, Integer[]> volumeMap = new HashMap<>();
+                    break;
+                case MINUS: case SUBTRACT:
                     for (NoteView noteView : SelectionManager.getInstance().getSelectedNotes()) {
                         int oldVolume = noteView.getViewModel().getVelocityProperty().get();
                         int newVolume = Math.max(0, oldVolume - 5);
@@ -134,29 +134,30 @@ public abstract class EventManager {
                         volumeMap.put(noteView, volume);
                     }
                     CommandManager.getInstance().executeCommand(new ChangeVolumeCommand(volumeMap));
-                }
+                    break;
             }
             if (grid != -1) GridRenderer.getInstance().getGridProperty().set(grid);
         } else {
             switch (event.getCode()) {
-                case DELETE, BACK_SPACE -> {
+                case DELETE: case BACK_SPACE:
                     ArrayList<NoteView> notesToDelete = new ArrayList<>();
                     NoteRenderer.getInstance().getChildren().forEach(node -> {
-                        if (node instanceof NoteView noteView) {
+                        if (node instanceof NoteView) {
+                            NoteView noteView = (NoteView) node;
                             if (noteView.getSelectedProperty().get()) {
                                 notesToDelete.add(noteView);
                             }
                         }
                     });
                     CommandManager.getInstance().executeCommand(new RemoveNotesCommand(notesToDelete));
-                }
-                case SPACE, ENTER -> {
+                    break;
+                case SPACE: case ENTER:
                     if (PlaybackManager.getInstance().isPlaying()) PlaybackManager.getInstance().pausePlayback();
                     else PlaybackManager.getInstance().startPlayback();
-                }
-                case ESCAPE -> PlaybackManager.getInstance().stopPlayback();
-                case UP, DOWN, LEFT, RIGHT -> NoteRenderer.getInstance().scroll(event.getCode());
-                case TAB -> mainPane.getMenuBar().getModeButtonBox().toggleNextButton();
+                    break;
+                case ESCAPE: PlaybackManager.getInstance().stopPlayback(); break;
+                case UP: case DOWN: case LEFT: case RIGHT: NoteRenderer.getInstance().scroll(event.getCode()); break;
+                case TAB: mainPane.getMenuBar().getModeButtonBox().toggleNextButton(); break;
             }
 
         }

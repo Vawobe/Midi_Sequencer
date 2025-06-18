@@ -92,8 +92,8 @@ public class MidiManager {
         if(freeChannels.isEmpty()) return -1;
 
         Collections.sort(freeChannels);
-        int nextFreeChannel = freeChannels.getFirst();
-        freeChannels.removeFirst();
+        int nextFreeChannel = freeChannels.get(0);
+        freeChannels.remove(0);
         return nextFreeChannel;
     }
 

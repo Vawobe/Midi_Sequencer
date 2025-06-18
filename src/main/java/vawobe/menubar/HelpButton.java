@@ -16,10 +16,10 @@ public class HelpButton extends MenuButton{
         icon.setStroke(Color.LIGHTGRAY);
         icon.setFill(Color.TRANSPARENT);
         setGraphic(icon);
-        hoverProperty().addListener((_,_,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
+        hoverProperty().addListener((obs,oldV,newValue) -> icon.setStroke(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Help"));
 
-        setOnAction(_ -> helpAction());
+        setOnAction(a -> helpAction());
     }
 
     public void helpAction(){

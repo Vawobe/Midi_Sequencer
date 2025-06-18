@@ -19,16 +19,16 @@ public class SaveSplitButton extends DropDownButton {
         SVGPath icon = new SaveIcon(1);
         setGraphic(icon);
         setTooltip(new Tooltip("Save"));
-        setOnAction(_ -> save());
+        setOnAction(a -> save());
 
         Button saveMidiFX = new Button("Save File");
-        saveMidiFX.setOnAction(_ -> save());
+        saveMidiFX.setOnAction(a -> save());
         Button exportMidi = new Button("Export MIDI");
-        exportMidi.setOnAction(_ -> exportMidi());
+        exportMidi.setOnAction(a -> exportMidi());
         Button exportWAV = new Button("Export WAV");
-        exportWAV.setOnAction(_ -> exportWav());
+        exportWAV.setOnAction(a -> exportWav());
         Button exportMP3 = new Button("Export MP3");
-        exportMP3.setOnAction(_ -> exportMp3());
+        exportMP3.setOnAction(a -> exportMp3());
 
         addItems(saveMidiFX, exportMidi, exportWAV, exportMP3);
     }

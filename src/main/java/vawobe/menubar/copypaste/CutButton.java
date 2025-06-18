@@ -12,10 +12,10 @@ public class CutButton extends MenuButton {
         super();
         CutIcon icon = new CutIcon(1);
         setGraphic(icon);
-        hoverProperty().addListener((_,_,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
+        hoverProperty().addListener((obs,oldV,newValue) -> icon.setFill(newValue ? Color.WHITE : Color.LIGHTGRAY));
         setTooltip(new Tooltip("Cut"));
 
-        setOnAction(_ -> cutAction());
+        setOnAction(a -> cutAction());
     }
 
     private void cutAction() {

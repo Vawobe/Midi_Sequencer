@@ -6,12 +6,13 @@ import javafx.scene.layout.*;
 import lombok.Getter;
 
 import static javafx.scene.input.ScrollEvent.SCROLL;
+import static vawobe.MathClamp.clamp;
 
 public class PianoGridPane extends GridPane {
     public static final SimpleDoubleProperty zoomX = new SimpleDoubleProperty(1.0);
     public static final SimpleDoubleProperty zoomY = new SimpleDoubleProperty(1.0);
     public static final double MIN_X_ZOOM = 0.04;
-    public static final double MIN_Y_ZOOM = 0.38;
+    public static final double MIN_Y_ZOOM = 0.48;
     public static final double MAX_ZOOM = 3.0;
 
     @Getter private final PianoGrid pianoGrid;
@@ -30,7 +31,7 @@ public class PianoGridPane extends GridPane {
 
         keyBoxScrollPane = new BasicScrollPane();
         pianoGridScrollPane = new BasicScrollPane();
-        pianoGridScrollPane.widthProperty().addListener((_,_,_) -> applyZoom());
+        pianoGridScrollPane.widthProperty().addListener((obs,oldV,e) -> applyZoom());
 
         keyBoxScrollPane.setContent(keyBox);
         pianoGridScrollPane.setContent(pianoGrid);
@@ -46,8 +47,8 @@ public class PianoGridPane extends GridPane {
         add(keyBoxScrollPane,0,1);
         add(pianoGridScrollPane, 1, 1);
 
-        zoomX.addListener(_ -> applyZoom());
-        zoomY.addListener(_ -> applyZoom());
+        zoomX.addListener(e -> applyZoom());
+        zoomY.addListener(e -> applyZoom());
 
         keyBoxScrollPane.setMinWidth(KeyBox.WIDTH);
         pianoGridScrollPane.addEventFilter(SCROLL, event -> {
@@ -58,7 +59,7 @@ public class PianoGridPane extends GridPane {
                     double hValue = pianoGridScrollPane.getHvalue();
                     double delta = -event.getDeltaX() / pianoGridScrollPane.getContent().getBoundsInLocal().getWidth();
                     double newHValue = hValue + delta;
-                    newHValue = Math.clamp(newHValue,0, 1);
+                    newHValue = clamp(newHValue,0, 1);
                     pianoGridScrollPane.setHvalue(newHValue);
                 }
                 event.consume();
@@ -84,8 +85,8 @@ public class PianoGridPane extends GridPane {
                 if(event.getDeltaY() < 0) {
                     zoomFactor = 1/zoomFactor;
                 }
-                zoomX.set(Math.clamp(zoomX.get() * zoomFactor, MIN_X_ZOOM, MAX_ZOOM));
-                zoomY.set(Math.clamp(zoomX.get() * zoomFactor, MIN_Y_ZOOM, MAX_ZOOM));
+                zoomX.set(clamp(zoomX.get() * zoomFactor, MIN_X_ZOOM, MAX_ZOOM));
+                zoomY.set(clamp(zoomX.get() * zoomFactor, MIN_Y_ZOOM, MAX_ZOOM));
 
                 event.consume();
             }

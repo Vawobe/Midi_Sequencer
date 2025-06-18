@@ -16,7 +16,7 @@ public class KeyBox extends Pane {
         setPrefWidth(WIDTH);
 
         setOnMouseDragged(this::onMouseDraggedEvent);
-        setOnMouseReleased(_ -> onMouseReleasedEvent());
+        setOnMouseReleased(e -> onMouseReleasedEvent());
     }
 
 
@@ -34,7 +34,8 @@ public class KeyBox extends Pane {
 
     private void onMouseDraggedEvent(MouseEvent event) {
         Node node = pickNode(event.getX(), event.getY());
-        if(node instanceof KeyButton kb) {
+        if(node instanceof KeyButton) {
+            KeyButton kb = (KeyButton) node;
             if(kb != lastActiveButton) {
                 if(lastActiveButton != null) {
                     lastActiveButton.stopTone();
@@ -70,8 +71,8 @@ public class KeyBox extends Pane {
 
     public void updateBox() {
         for(Node n : getChildren()) {
-            if(n instanceof KeyButton btn) {
-                btn.zoom();
+            if(n instanceof KeyButton) {
+                ((KeyButton)n).zoom();
 
             }
         }

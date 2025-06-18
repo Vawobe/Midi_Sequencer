@@ -3,6 +3,9 @@ package vawobe;
 import vawobe.enums.Drums;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import static vawobe.manager.NoteManager.OCTAVES;
 import static vawobe.manager.NoteManager.TONES;
 
@@ -12,10 +15,9 @@ public class DrumBox extends KeyBox{
         int row = 0;
         for(Drums drum : Drums.values()) {
             int noteInOctave = row % 12;
-            boolean isBlack = switch (noteInOctave) {
-                case 1, 3, 5, 8, 10 -> true;
-                default -> false;
-            };
+            ArrayList<Integer> octaveNotes = new ArrayList<>();
+            Collections.addAll(octaveNotes, 1, 3, 5, 8, 10);
+            boolean isBlack = octaveNotes.contains(noteInOctave);
 
 
             DrumButton drumButton = new DrumButton(drum, isBlack ? Color.BLACK : Color.WHITE, row);
