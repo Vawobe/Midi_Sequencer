@@ -111,13 +111,13 @@ public enum Instruments {
     LEAD_8_BASS_LEAD("Lead 8 (bass + lead)", 87, LIGHTSLATEGRAY),
     TITLE_12("Synth Pad", ""),
     PAD_1_NEW_AGE("Pad 1 (new age)", 88, LIGHTPINK),
-    PAD_2_WARM("Pad 2 (warm)", 89, Color.valueOf("#FFB347")),       // warm orange
-    PAD_3_POLYSYNTH("Pad 3 (polysynth)", 90, Color.valueOf("#B19CD9")), // weiches Lila
-    PAD_4_CHOIR("Pad 4 (choir)", 91, Color.valueOf("#D8BFD8")),     // helle Chorfarbe
-    PAD_5_BOWED("Pad 5 (bowed)", 92, Color.valueOf("#A9A9F5")),     // kaltes Blau
-    PAD_6_METALLIC("Pad 6 (metallic)", 93, Color.valueOf("#C0C0C0")), // silber/metallisch
-    PAD_7_HALO("Pad 7 (halo)", 94, Color.valueOf("#E0FFFF")),       // himmlisch hellblau
-    PAD_8_SWEEP("Pad 8 (sweep)", 95, Color.valueOf("#98FB98")),     // weiches Mintgrün
+    PAD_2_WARM("Pad 2 (warm)", 89, Color.valueOf("#FFB347")),
+    PAD_3_POLYSYNTH("Pad 3 (polysynth)", 90, Color.valueOf("#B19CD9")),
+    PAD_4_CHOIR("Pad 4 (choir)", 91, Color.valueOf("#D8BFD8")),
+    PAD_5_BOWED("Pad 5 (bowed)", 92, Color.valueOf("#A9A9F5")),
+    PAD_6_METALLIC("Pad 6 (metallic)", 93, Color.valueOf("#C0C0C0")),
+    PAD_7_HALO("Pad 7 (halo)", 94, Color.valueOf("#E0FFFF")),
+    PAD_8_SWEEP("Pad 8 (sweep)", 95, Color.valueOf("#98FB98")),
     TITLE_13("Synth Effects",""),
     FX_1_RAIN("FX 1 (rain)", 96, Color.valueOf("#4682B4")),         // stahlblau
     FX_2_SOUNDTRACK("FX 2 (soundtrack)", 97, Color.valueOf("#708090")), // filmisch grau

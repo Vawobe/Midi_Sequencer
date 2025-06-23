@@ -101,11 +101,13 @@ public class MidiIO {
         for (Note note : notes) {
             int channel = note.getChannel();
             if (!channelsSet.contains(channel)) {
-                ShortMessage programChange = new ShortMessage();
-                programChange.setMessage(ShortMessage.PROGRAM_CHANGE, channel, note.getInstrument().getNum(), 0);
-                MidiEvent programChangeEvent = new MidiEvent(programChange, 0);
-                track.add(programChangeEvent);
-                channelsSet.add(channel);
+                if (channel != 9) {
+                    ShortMessage programChange = new ShortMessage();
+                    programChange.setMessage(ShortMessage.PROGRAM_CHANGE, channel, note.getInstrument().getNum(), 0);
+                    MidiEvent programChangeEvent = new MidiEvent(programChange, 0);
+                    track.add(programChangeEvent);
+                    channelsSet.add(channel);
+                }
             }
         }
 
